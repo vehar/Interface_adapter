@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.1.30  C:\Users\abc\Dropbox\ADAPTER_CV_PROJ_v7 - current\List\adapter.asm Fri May 16 11:07:34 2014
+AVRASM ver. 2.1.30  C:\Users\abc\Dropbox\ADAPTER_CV_PROJ_v7 - current\List\adapter.asm Fri May 16 12:06:48 2014
 
 C:\Users\abc\Dropbox\ADAPTER_CV_PROJ_v7 - current\List\adapter.asm(1061): warning: Register r5 already defined by the .DEF directive
 C:\Users\abc\Dropbox\ADAPTER_CV_PROJ_v7 - current\List\adapter.asm(1062): warning: Register r4 already defined by the .DEF directive
