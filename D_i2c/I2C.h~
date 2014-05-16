@@ -1,0 +1,143 @@
+//***************************************************************************
+//
+//  Author(s)...:
+//
+//  Target(s)...: Mega
+//
+//  Compiler....:
+//
+//  Description.: ƒрайвер I2C
+//
+//  Data........:
+//
+//***************************************************************************
+#ifndef I2C_H
+#define I2C_H
+
+//#include <i2c.h>
+//#include <1wire.h>
+
+#include "compilers.h"
+#include "global_defines.h"
+
+
+#define COUNT_OF_I2C 2
+#define MAX_I2C_SPEED //_MCU_CLOCK_FREQUENCY_/2
+#define MAX_I2C_PRESCALLER 64
+
+
+#define SCL_FREQ (F_CPU/((2*TWI_BITRATE)*PRESCALLER+16))
+
+//SOFTWARE
+// I2C Bus functions    //???
+#asm
+   .equ __i2c_port=0x1B ;PORTA
+   .equ __sda_bit=0
+   .equ __scl_bit=1
+#endasm
+
+//#define I2C_PORTX   PORTE
+//#define I2C_DDRX    DDRE
+
+//#define SDA    1
+//#define SCL    0
+
+
+//HARDWARE
+#define DDR_I2C    DDRD
+#define PORT_I2C   PORTD
+
+#define _SDA    1
+#define _SCL    0
+
+
+
+#define I2C_0 0
+#define I2C_1 1
+#define I2C_2 2
+
+#define I2C_SLAVE 0
+#define I2C_MASTER 1
+
+
+
+
+#define SIZE_I2C_BUF_TX  128
+#define SIZE_I2C_BUF_RX  128
+/*____________функции____________________*/
+
+ void hard_twi_init(void);
+void hard_twi_start(void);
+void hard_twi_stop(void);
+unsigned char hard_twi_read(unsigned char ack);
+unsigned char hard_twi_write(unsigned char data);
+
+
+void I2C_FlushTxBuf(uint8_t sel); //"очищает" передающий буфер (буфер пока не ииспльзуетс€)
+
+/*инициализаци€ TWI/I2C модул€*/
+void Soft_I2C_Master_Init(void);
+void Hard_I2C_Master_Init_default(void);
+void Hard_I2C_Master_Init(bool phase, bool polarity, uint8_t prescaller);
+
+
+void Hard_I2C_Slave_Init(void);
+//void cust_I2C_init(char sel);
+
+#endif //I2C_H
+
+
+
+
+/*
+ссыль на статью
+http://we.easyelectronics.ru/AVR/sniffer-emulyator-i2c-i-1-wire.html
+
+TODO
+
+I2C мастер.
+¬с€ движуха на линии делитс€ на четыре типа:
+0x1 Ч —тарт детектед
+0x2 Ч —топ детектед
+0x4 Ч Ѕайт + ACK
+0xC Ч Ѕайт + NACK
+
+ оманды дл€ i2c мастер-режима могут быть такие:
+0x05 Ч —тарт (»ли повстарт)
+0x02 Ч —топ
+0x07 Ч «аписать байт. (¬о втором байте Ч данные, которые нужно записать)
+0x10 Ч ѕрочитать байт, передать ACK
+0x11 Ч ѕрочитать байт, передать NACK
+
+ оды отчЄтов:
+0x05 Ч ѕередан start-condition
+0x02 Ч ѕередан stop-condition
+0x07 Ч ѕередали байт, нам ответили ACK
+0x08 Ч ѕередали байт, в ответ Ч NACK
+0x10 Ч ѕрочитали байт, сказали ACK
+0x11 Ч ѕрочитали байт, сказали NACK
+
+1-Wire мастер.
+
+ƒл€ работы с 1-Wire есть 5 команд:
+0x01 Ч ѕослать RESET импульс, и прочитать PRESENSE.
+0x03 Ч ѕрочитать байт
+0x06 Ч ѕередать байт
+0x12 Ч ѕодключить дополнительное питание на линию Dq
+0x13 Ч ќтключить дополнительное питание.
+
+ѕосле выполнени€ списка, отладчик может выдать вот такие коды:
+0x01 Ч ѕередали RESET, поймали PRESENSE импульс.
+0x04 Ч ѕередали RESET, но PRESENSE не было.
+0x06 Ч Ѕайт прочитан
+0x09 Ч Ѕайт передан
+0x12 Ч ƒополнительное питание подключено
+0x13 Ч ƒополнительное питание отключено
+
+
+дл€ iWire мастера € добавил бы команду прин€ть/передать 1 тайм- слот-
+пригодитс€, например, дл€ чтени€ режима питани€ термометров ds1820, или
+при записи заготовок rw1990.2- там есть команда записи флага, плюс большие
+промежутки (>10мс) между тайм- слотами во врем€ записи кода
+
+*/

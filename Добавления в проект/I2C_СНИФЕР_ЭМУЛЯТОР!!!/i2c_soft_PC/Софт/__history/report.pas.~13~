@@ -1,0 +1,106 @@
+unit report;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls;
+
+type
+  TForm3 = class(TForm)
+    ListBox1: TListBox;
+    GroupBox1: TGroupBox;
+    Label1: TLabel;
+    Label2: TLabel;
+    Label3: TLabel;
+    Label4: TLabel;
+    Label5: TLabel;
+    procedure ListBox1Click(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  Form3: TForm3;
+  Report_str: string;
+
+implementation
+
+uses add_byte;
+
+{$R *.dfm}
+
+procedure TForm3.FormShow(Sender: TObject);
+var
+ c,c1,c2: byte;
+ i: integer;
+begin
+ListBox1.Clear;
+ListBox1.Items.Clear;
+c2 := Byte('т');
+for I := 1 to (Length(Report_str)) div 2 do
+ begin
+  c := Byte(Report_str[I*2-1]);
+  c1 := Byte(Report_str[I*2]);
+
+  if c = $5  then ListBox1.Items.Add('Старт');
+  if c = $2  then ListBox1.Items.Add('Стоп');
+  if c = $7  then ListBox1.Items.Add('Передан байт 0x'+IntToHex(c1,2)+', получен ACK');
+  if c = $8  then ListBox1.Items.Add('Передан байт 0x'+IntToHex(c1,2)+', получен NACK');
+  if c = $10 then ListBox1.Items.Add('Прочитан байт байт 0x'+IntToHex(c1,2)+', передан ACK');
+  if c = $11 then ListBox1.Items.Add('Прочитан байт 0x'+IntToHex(c1,2)+', передан NACK');
+ end;
+end;
+
+procedure TForm3.ListBox1Click(Sender: TObject);
+var
+tmp_str: string;
+tmp_byte: byte;
+begin
+tmp_str := ListBox1.Items.Strings[ListBox1.ItemIndex];
+
+if Copy(tmp_str,1,15)='Передан байт 0x' then
+ begin
+  GroupBox1.Caption := tmp_str;
+  tmp_byte := StrToInt('$'+Copy(tmp_str,16,2));
+  Label1.Caption := 'HEX: '+Copy(tmp_str,16,2);
+  Label2.Caption := 'DEC: '+IntToStr(tmp_byte);
+  Label3.Caption := 'BIN: '+Form2.IntToBin(tmp_byte);
+  Label4.Caption := 'Char: '+Char(tmp_byte);
+  Label5.Caption := 'NACK';
+  Label5.Font.Color := clRed;
+  if tmp_Str[28]='A' then
+   begin
+    Label5.Caption := 'ACK';
+    Label5.Font.Color := clGreen;
+   end;
+  Form3.Height := 434;
+  exit;
+ end;
+
+if Copy(tmp_str,1,16)='Прочитан байт 0x' then
+ begin
+  GroupBox1.Caption := tmp_str;
+  tmp_byte := StrToInt('$'+Copy(tmp_str,17,2));
+  Label1.Caption := 'HEX: '+Copy(tmp_str,17,2);
+  Label2.Caption := 'DEC: '+IntToStr(tmp_byte);
+  Label3.Caption := 'BIN: '+Form2.IntToBin(tmp_byte);
+  Label4.Caption := 'Char: '+Char(tmp_byte);
+  Label5.Caption := 'NACK';
+  Label5.Font.Color := clRed;
+  if tmp_Str[29]='A' then
+   begin
+    Label5.Caption := 'ACK';
+    Label5.Font.Color := clGreen;
+   end;
+  Form3.Height := 434;
+  exit;
+ end;
+
+Form3.Height := 330;
+end;
+
+end.

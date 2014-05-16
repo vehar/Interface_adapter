@@ -1,0 +1,8 @@
+main DSTACK_USAGE:0 DSTACK_LEVEL:0 FILE:"debugger.c" LINE:581
+mymain DSTACK_USAGE:0 DSTACK_LEVEL:0 FILE:"m328p_SoftDebugger.c" LINE:47
+initialize DSTACK_USAGE:8 DSTACK_LEVEL:8 FILE:"m328p_SoftDebugger.c" LINE:139
+cmd DSTACK_USAGE:36 DSTACK_LEVEL:44 FILE:"debugger.c" LINE:327
+printf DSTACK_USAGE:10 DSTACK_LEVEL:54 FILE:"C:\Program Files\CV_avr\lib\stdio.lib" LINE:1476
+_print DSTACK_USAGE:20 DSTACK_LEVEL:74 FILE:"C:\Program Files\CV_avr\lib\stdio.lib" LINE:503
+strlen DSTACK_USAGE:2 DSTACK_LEVEL:76 FILE:"C:\Program Files\CV_avr\lib\string.lib" LINE:1707
+timer0_compare DSTACK_USAGE:2 DSTACK_LEVEL:78 FILE:"m328p_SoftDebugger.c" LINE:35

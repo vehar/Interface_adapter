@@ -1,0 +1,21 @@
+RAM Allocation
+Variable                                                          Address   Size
+--------------------------------------------------------------------------------
+ubbr                                                              0x0160       2
+Checkdata                                                         0x0162       2
+PageBuffer                                                        0x0164     128
+
+EEPROM Allocation
+Variable                                                          Address   Size
+--------------------------------------------------------------------------------
+
+Register Allocation
+Variable                                                          Register  Size
+--------------------------------------------------------------------------------
+Pagedata                                                          R2,R3        2
+PageAddress                                                       R4,R5        2
+CurrentAddress                                                    R6,R7        2
+inchar                                                            R8           1
+spmcrval                                                          R10          1
+i                                                                 R11,R12      2
+j                                                                 R13,R14      2

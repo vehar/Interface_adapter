@@ -1,0 +1,1990 @@
+;
+;
+;//********************************************************
+;#include "debugger.c"
+;/*************************************************************************
+;A simple target debug program meant to be used interactivly.
+;
+;The target is a program written in Codevision C running on a Mega32.
+;
+;Bruce Land -- BRL4@cornell.edu
+;VERSION 10feb2007
+;**************************************************************************/
+;//================
+;// eliminate the debugger compleletly if defined
+;//#define nullify_debugger
+;
+;
+;//================
+;
+;//#include <mega32.h>
+;#include <mega328p.h>
+;PCODE: $00000000 VOL: 0
+	#ifndef __SLEEP_DEFINED__
+;PCODE: $00000001 VOL: 0
+	#define __SLEEP_DEFINED__
+;PCODE: $00000002 VOL: 0
+	.EQU __se_bit=0x01
+;PCODE: $00000003 VOL: 0
+	.EQU __sm_mask=0x0E
+;PCODE: $00000004 VOL: 0
+	.EQU __sm_adc_noise_red=0x02
+;PCODE: $00000005 VOL: 0
+	.EQU __sm_powerdown=0x04
+;PCODE: $00000006 VOL: 0
+	.EQU __sm_powersave=0x06
+;PCODE: $00000007 VOL: 0
+	.EQU __sm_standby=0x0C
+;PCODE: $00000008 VOL: 0
+	.EQU __sm_ext_standby=0x0E
+;PCODE: $00000009 VOL: 0
+	.SET power_ctrl_reg=smcr
+;PCODE: $0000000A VOL: 0
+	#endif
+;PCODE: $0000000B VOL: 0
+;PCODE: $0000000C VOL: 0
+;#include <delay.h>
+;
+;#ifndef nullify_debugger
+;//Uncomment this define if you want to activate the receive interrupt
+;//The rxc ISR allows you to enter debugger with a <control-c>
+;//#define use_rxc_isr
+;//With it commented, the debugger does not use any interrupts,
+;//nor turn on the global I bit.
+;//Uncommented, it uses the UART rxc ISR and enables the I bit.
+;
+;//Comment this define if you want to disable verbose help
+;#define verbose
+;//Commenting this saves about 300 bytes of flash
+;
+;//Uncomment this define to enable inline reporting
+;//of registers and memory
+;#define use_reporting
+;
+;//Uncomment this define to enable logging of a variable to RAM on the fly
+;#define use_logging
+;
+;/**************************************************************/
+;// UART communication code
+;//written by BRL4
+;
+;#pragma regalloc-
+;//variable set by break and <cntl-c>
+;unsigned char db_break_id;
+;unsigned char db_t0temp, db_t1temp, db_t2temp;
+;unsigned int db_swstk, db_hwstk;
+;unsigned char db_regs[32], db_sreg;
+;unsigned char db_cmd_running;
+;#ifdef use_logging
+;unsigned int db_logcount;
+;unsigned char db_logMax, db_logname[16];
+;#endif
+;#pragma regalloc+
+;
+;//define entries
+;void cmd(void);
+;void mymain(void);
+;
+;/**********************************************************/
+;//macro to force entry into cmd shell
+;//DEBUG jumps to cmd function, and freezes clocks.
+;//It is defined here because of the tight relationship with getchar
+;
+;
+;void saveitall(void)
+; 0000 0004 {
+
+	.CSEG
+;PCODE: $0000000D VOL: 0
+;PCODE: $0000000E VOL: 0
+;        #asm
+;PCODE: $0000000F VOL: 0
+        ;save the two stack pointers for viewing in the debugger
+;PCODE: $00000010 VOL: 0
+        sts _db_swstk, r28
+;PCODE: $00000011 VOL: 0
+        sts _db_swstk+1, r29
+;PCODE: $00000012 VOL: 0
+        in r28, 0x3d   ;stack ptr
+;PCODE: $00000013 VOL: 0
+        in r29, 0x3e
+;PCODE: $00000014 VOL: 0
+        sts _db_hwstk, r28
+;PCODE: $00000015 VOL: 0
+        sts _db_hwstk+1, r29
+;PCODE: $00000016 VOL: 0
+        in  r28, 0x3f ;sreg
+;PCODE: $00000017 VOL: 0
+        sts _db_sreg, r28
+;PCODE: $00000018 VOL: 0
+        lds r28, _db_swstk
+;PCODE: $00000019 VOL: 0
+        lds r29, _db_swstk+1
+;PCODE: $0000001A VOL: 0
+        ;save registers for viewing
+;PCODE: $0000001B VOL: 0
+        sts _db_regs,r0
+;PCODE: $0000001C VOL: 0
+        sts _db_regs+1,r1
+;PCODE: $0000001D VOL: 0
+        sts _db_regs+2,r2
+;PCODE: $0000001E VOL: 0
+        sts _db_regs+3,r3
+;PCODE: $0000001F VOL: 0
+        sts _db_regs+4,r4
+;PCODE: $00000020 VOL: 0
+        sts _db_regs+5,r5
+;PCODE: $00000021 VOL: 0
+        sts _db_regs+6,r6
+;PCODE: $00000022 VOL: 0
+        sts _db_regs+7,r7
+;PCODE: $00000023 VOL: 0
+        sts _db_regs+8,r8
+;PCODE: $00000024 VOL: 0
+        sts _db_regs+9,r9
+;PCODE: $00000025 VOL: 0
+        sts _db_regs+10,r10
+;PCODE: $00000026 VOL: 0
+        sts _db_regs+11,r11
+;PCODE: $00000027 VOL: 0
+        sts _db_regs+12,r12
+;PCODE: $00000028 VOL: 0
+        sts _db_regs+13,r13
+;PCODE: $00000029 VOL: 0
+        sts _db_regs+14,r14
+;PCODE: $0000002A VOL: 0
+        sts _db_regs+15,r15
+;PCODE: $0000002B VOL: 0
+        sts _db_regs+16,r16
+;PCODE: $0000002C VOL: 0
+        sts _db_regs+17,r17
+;PCODE: $0000002D VOL: 0
+        sts _db_regs+18,r18
+;PCODE: $0000002E VOL: 0
+        sts _db_regs+19,r19
+;PCODE: $0000002F VOL: 0
+        sts _db_regs+20,r20
+;PCODE: $00000030 VOL: 0
+        sts _db_regs+21,r21
+;PCODE: $00000031 VOL: 0
+        sts _db_regs+22,r22
+;PCODE: $00000032 VOL: 0
+        sts _db_regs+23,r23
+;PCODE: $00000033 VOL: 0
+        sts _db_regs+24,r24
+;PCODE: $00000034 VOL: 0
+        sts _db_regs+25,r25
+;PCODE: $00000035 VOL: 0
+        sts _db_regs+26,r26
+;PCODE: $00000036 VOL: 0
+        sts _db_regs+27,r27
+;PCODE: $00000037 VOL: 0
+        sts _db_regs+28,r28
+;PCODE: $00000038 VOL: 0
+        sts _db_regs+29,r29
+;PCODE: $00000039 VOL: 0
+        sts _db_regs+30,r30
+;PCODE: $0000003A VOL: 0
+        sts _db_regs+31,r31
+;PCODE: $0000003B VOL: 0
+;PCODE: $0000003C VOL: 0
+;} //end saveitall
+;PCODE: $0000003D VOL: 0
+;PCODE: $0000003E VOL: 0
+;
+;void loaddatareg(void)
+;{
+;PCODE: $0000003F VOL: 0
+;PCODE: $00000040 VOL: 0
+;        #asm
+;PCODE: $00000041 VOL: 0
+        lds r0, _db_regs
+;PCODE: $00000042 VOL: 0
+        lds r1, _db_regs+1
+;PCODE: $00000043 VOL: 0
+        lds r2, _db_regs+2
+;PCODE: $00000044 VOL: 0
+        lds r3, _db_regs+3
+;PCODE: $00000045 VOL: 0
+        lds r4, _db_regs+4
+;PCODE: $00000046 VOL: 0
+        lds r5, _db_regs+5
+;PCODE: $00000047 VOL: 0
+        lds r6, _db_regs+6
+;PCODE: $00000048 VOL: 0
+        lds r7, _db_regs+7
+;PCODE: $00000049 VOL: 0
+        lds r8, _db_regs+8
+;PCODE: $0000004A VOL: 0
+        lds r9, _db_regs+9
+;PCODE: $0000004B VOL: 0
+        lds r10, _db_regs+10
+;PCODE: $0000004C VOL: 0
+        lds r11, _db_regs+11
+;PCODE: $0000004D VOL: 0
+        lds r12, _db_regs+12
+;PCODE: $0000004E VOL: 0
+        lds r13, _db_regs+13
+;PCODE: $0000004F VOL: 0
+        lds r14, _db_regs+14
+;PCODE: $00000050 VOL: 0
+        lds r15, _db_regs+15
+;PCODE: $00000051 VOL: 0
+        lds r16, _db_regs+16
+;PCODE: $00000052 VOL: 0
+        lds r17, _db_regs+17
+;PCODE: $00000053 VOL: 0
+        lds r18, _db_regs+18
+;PCODE: $00000054 VOL: 0
+        lds r19, _db_regs+19
+;PCODE: $00000055 VOL: 0
+        lds r20, _db_regs+20
+;PCODE: $00000056 VOL: 0
+        lds r21, _db_regs+21
+;PCODE: $00000057 VOL: 0
+;PCODE: $00000058 VOL: 0
+;} //end loaddatareg
+;PCODE: $00000059 VOL: 0
+;PCODE: $0000005A VOL: 0
+;
+;
+;#define debug(id) \
+;	do{      	\
+;	db_t0temp = TCCR0A;  \
+;	db_t1temp = TCCR1B; \
+;	db_t2temp = TCCR2A;  \
+;	TCCR0A = 0;  \
+;	TCCR1B = 0; \
+;	TCCR2A = 0;  \
+;	saveitall(); \
+;	db_break_id = id;  \
+;	cmd();     \
+;	loaddatareg(); \
+;	TCCR0A = db_t0temp;	\
+;	TCCR1B = db_t1temp;\
+;	TCCR2A = db_t2temp;	\
+;	}while(0)
+;
+;#ifdef use_reporting
+;//read a reg on the fly
+;void peekreg(void)
+;{
+;PCODE: $0000005B VOL: 0
+;PCODE: $0000005C VOL: 0
+;#asm
+;PCODE: $0000005D VOL: 0
+    push r26
+;PCODE: $0000005E VOL: 0
+    push r27
+;PCODE: $0000005F VOL: 0
+    push r16
+;PCODE: $00000060 VOL: 0
+    lds  r26, _db_temp1;address of register
+;PCODE: $00000061 VOL: 0
+    ldi r27, 0			;always zero when datareg
+;PCODE: $00000062 VOL: 0
+    ;adiw r27:r26, 0x20;ioreg 0 position in memory
+;PCODE: $00000063 VOL: 0
+    ld   r16, x 	    ;get the data reg contents
+;PCODE: $00000064 VOL: 0
+    sts _db_temp, r16	;and store datareg contents
+;PCODE: $00000065 VOL: 0
+    pop  r16
+;PCODE: $00000066 VOL: 0
+    pop  r27
+;PCODE: $00000067 VOL: 0
+    pop  r26
+;PCODE: $00000068 VOL: 0
+;PCODE: $00000069 VOL: 0
+;}
+;PCODE: $0000006A VOL: 0
+;PCODE: $0000006B VOL: 0
+;
+;#define reportR(regnum) \
+;    do{ \
+;        db_temp1 = regnum;  \
+;        peekreg(); \
+;        printf("R%d=%x\n\r",db_temp1,db_temp) ;  \
+;    }while(0)
+;
+;//read a I/Oreg on the fly
+;void peekio(void)
+;{
+;PCODE: $0000006C VOL: 0
+;PCODE: $0000006D VOL: 0
+;#asm
+;PCODE: $0000006E VOL: 0
+    push r26
+;PCODE: $0000006F VOL: 0
+    push r27
+;PCODE: $00000070 VOL: 0
+    push r16
+;PCODE: $00000071 VOL: 0
+    in r16, SREG        ;store this before it is destroyed
+;PCODE: $00000072 VOL: 0
+    lds  r26, _db_temp1 ;address of ioregister
+;PCODE: $00000073 VOL: 0
+    ldi r27, 0			;always zero when ioreg
+;PCODE: $00000074 VOL: 0
+    cpi r26, 0x3f       ;output if user asked for SREG
+;PCODE: $00000075 VOL: 0
+    breq isSREG
+;PCODE: $00000076 VOL: 0
+    adiw r27:r26, 0x20  ;ioreg 0 position in memory
+;PCODE: $00000077 VOL: 0
+    ld   r16, x 	    ;get the data reg contents
+;PCODE: $00000078 VOL: 0
+    isSREG:
+;PCODE: $00000079 VOL: 0
+    sts _db_temp, r16	;and store datareg contents
+;PCODE: $0000007A VOL: 0
+    pop  r16
+;PCODE: $0000007B VOL: 0
+    pop  r27
+;PCODE: $0000007C VOL: 0
+    pop  r26
+;PCODE: $0000007D VOL: 0
+;PCODE: $0000007E VOL: 0
+;}
+;PCODE: $0000007F VOL: 0
+;PCODE: $00000080 VOL: 0
+;
+;#define reportI(regnum) \
+;    do{ \
+;        db_temp1 = regnum;  \
+;        peekio(); \
+;        printf("I%x=%x\n\r",db_temp1,db_temp) ;  \
+;    }while(0)
+;
+;//read memory in the fly
+;void peekmem(void)
+;{
+;PCODE: $00000081 VOL: 0
+;PCODE: $00000082 VOL: 0
+;#asm
+;PCODE: $00000083 VOL: 0
+    push r26
+;PCODE: $00000084 VOL: 0
+     push r27
+;PCODE: $00000085 VOL: 0
+     push r16
+;PCODE: $00000086 VOL: 0
+     lds  r26, _db_temp3;low address of memory
+;PCODE: $00000087 VOL: 0
+     lds r27, _db_temp3+1;high address of memory
+;PCODE: $00000088 VOL: 0
+     ld   r16, x ;get the memory contents
+;PCODE: $00000089 VOL: 0
+     sts _db_temp, r16		;and save memory contents
+;PCODE: $0000008A VOL: 0
+     pop  r16
+;PCODE: $0000008B VOL: 0
+     pop  r27
+;PCODE: $0000008C VOL: 0
+     pop  r26
+;PCODE: $0000008D VOL: 0
+;PCODE: $0000008E VOL: 0
+;}
+;PCODE: $0000008F VOL: 0
+;PCODE: $00000090 VOL: 0
+;#define reportM(addr) \
+;    do{ \
+;        db_temp3 = addr;  \
+;        peekmem(); \
+;        printf("M%x=%x\n\r",db_temp3,db_temp) ;  \
+;    }while(0)
+;
+;#define reportVhex(varname) \
+;    do{ \
+;        printf(#varname);   \
+;        printf("=%x\n\r",varname) ;  \
+;    }while(0)
+;
+;#define reportVdec(varname) \
+;    do{ \
+;        printf(#varname);   \
+;        printf("=%d\n\r",varname) ;  \
+;    }while(0)
+;#endif
+;
+;#ifdef use_logging
+;    #include <mem.h>
+;    #define logInit(varname,logsize) \
+;    do{ \
+;        db_logMax = logsize;  \
+;        db_logcount=0;   \
+;        sprintf(db_logname,"%p", #varname); \
+;    }while(0)
+;
+;    #define logV(varname) \
+;    do{ \
+;        if (db_logcount >= db_logMax) debug(254);    \
+;        else pokeb(0x60+db_logcount++,varname); \
+;    }while(0)
+;
+;#endif
+;
+;/**********************************************************/
+;//define the structures and turn on the UART
+;void db_init_uart(long baud)
+;{
+;PCODE: $00000091 VOL: 0
+;PCODE: $00000092 VOL: 0
+;   	//uses the clock freq set in the config dialog box
+; 	//UBRRL= _MCU_CLOCK_FREQUENCY_ /(baud*16L) - 1L;
+;    UBRR0L= _MCU_CLOCK_FREQUENCY_ /(baud*16L) - 1L;
+;	baud -> Y+0
+;PCODE: $00000093 VOL: 0
+;PCODE: $00000094 VOL: 0
+;PCODE: $00000095 VOL: 0
+;PCODE: $00000096 VOL: 0
+;PCODE: $00000097 VOL: 0
+;PCODE: $00000098 VOL: 0
+;PCODE: $00000099 VOL: 0
+; 	UCSR0B=0x18; // activate UART
+;PCODE: $0000009A VOL: 0
+;PCODE: $0000009B VOL: 0
+; 	#ifdef use_rxc_isr
+; 		//UCSR0B.7=1;   //turn on ISR
+;        UCSR0B=128;   //turn on ISR
+; 		#asm("sei")
+; 	#endif
+;}
+;PCODE: $0000009C VOL: 0
+;PCODE: $0000009D VOL: 0
+;PCODE: $0000009E VOL: 0
+;
+;//redefine getchar if necessary
+;#ifdef use_rxc_isr
+;    #define _ALTERNATE_GETCHAR_
+;
+;    #pragma regalloc-
+;    char db_temp_char, db_char_flag;
+;    #pragma regalloc+
+;
+;    char getchar(void)
+;    {
+;    	db_char_flag=0;
+;        while (db_char_flag==0); //set by ISR
+;    	return db_temp_char;	 //set by ISR
+;    }
+;
+;    interrupt [USART_RXC] void uart_rec(void)
+;    {
+;    	db_temp_char=UDR0;   	//get a char
+;    	//IF cntl-c and NOT currently in the debugger
+;    	if (db_temp_char==0x03 && db_cmd_running==0)
+;    	{
+;    	    #asm("sei")
+;    		debug(255);			//then break to debugger
+;    	}
+;    	else
+;    		db_char_flag = 1;
+;    } //end ISR
+;#endif
+;
+;#include <stdio.h>
+;
+;/**********************************************************/
+;
+;//global variables for debugger
+;#pragma regalloc-
+;//MUST BE in memory so asmembler can find them
+;unsigned char db_temp, db_temp1, db_temp2 ;
+;unsigned int db_temp3, db_temp4;
+;#pragma regalloc+
+;
+;//********************************************************
+;//the debug function
+;void cmd( void )
+;{
+;PCODE: $0000009F VOL: 0
+;PCODE: $000000A0 VOL: 0
+;	unsigned char cmd1str[32], current_char, in_count;
+;    unsigned int iter;
+;
+;   	//this variable is cleared by the "g" (go) command
+;   	db_cmd_running = 1;
+;PCODE: $000000A1 VOL: 0
+;PCODE: $000000A2 VOL: 0
+;	cmd1str -> Y+4
+;	current_char -> R17
+;	in_count -> R16
+;	iter -> R18,R19
+;PCODE: $000000A3 VOL: 0
+;PCODE: $000000A4 VOL: 0
+;
+;   	//print break source: 255 is <cntl-c>
+;	printf("db ID:%d\r\n",db_break_id);
+;PCODE: $000000A5 VOL: 0
+;PCODE: $000000A6 VOL: 0
+;PCODE: $000000A7 VOL: 0
+;PCODE: $000000A8 VOL: 0
+;PCODE: $000000A9 VOL: 0
+;PCODE: $000000AA VOL: 0
+;PCODE: $000000AB VOL: 0
+;PCODE: $000000AC VOL: 0
+;PCODE: $000000AD VOL: 0
+;PCODE: $000000AE VOL: 0
+;
+;	while(db_cmd_running)
+;PCODE: $000000AF VOL: 0
+;PCODE: $000000B0 VOL: 0
+;PCODE: $000000B1 VOL: 0
+;PCODE: $000000B2 VOL: 0
+;	{
+;	    cmd1str[0]=0;
+;PCODE: $000000B3 VOL: 0
+;PCODE: $000000B4 VOL: 0
+;
+;	    //get the next command
+;    	//handles backspace, <enter>
+;            printf("db>");
+;PCODE: $000000B5 VOL: 0
+;PCODE: $000000B6 VOL: 0
+;PCODE: $000000B7 VOL: 0
+;PCODE: $000000B8 VOL: 0
+;PCODE: $000000B9 VOL: 0
+;PCODE: $000000BA VOL: 0
+;PCODE: $000000BB VOL: 0
+;            in_count=0;
+;PCODE: $000000BC VOL: 0
+;PCODE: $000000BD VOL: 0
+;        while ( (current_char=getchar()) != '\r' /*'='*/)  //<enter>
+;PCODE: $000000BE VOL: 0
+;PCODE: $000000BF VOL: 0
+;PCODE: $000000C0 VOL: 0
+;PCODE: $000000C1 VOL: 0
+;PCODE: $000000C2 VOL: 0
+;        {
+;        	putchar(current_char);
+;PCODE: $000000C3 VOL: 0
+;PCODE: $000000C4 VOL: 0
+;        	if (current_char == 0x08 & in_count>0)	//backspace
+;PCODE: $000000C5 VOL: 0
+;PCODE: $000000C6 VOL: 0
+;PCODE: $000000C7 VOL: 0
+;PCODE: $000000C8 VOL: 0
+;PCODE: $000000C9 VOL: 0
+;PCODE: $000000CA VOL: 0
+;PCODE: $000000CB VOL: 0
+;PCODE: $000000CC VOL: 0
+;PCODE: $000000CD VOL: 0
+;        		--in_count;
+;PCODE: $000000CE VOL: 0
+;PCODE: $000000CF VOL: 0
+;        	else
+;PCODE: $000000D0 VOL: 0
+;PCODE: $000000D1 VOL: 0
+;        		cmd1str[in_count++]=current_char;
+;PCODE: $000000D2 VOL: 0
+;PCODE: $000000D3 VOL: 0
+;PCODE: $000000D4 VOL: 0
+;PCODE: $000000D5 VOL: 0
+;PCODE: $000000D6 VOL: 0
+;PCODE: $000000D7 VOL: 0
+;PCODE: $000000D8 VOL: 0
+;        }
+;PCODE: $000000D9 VOL: 0
+;PCODE: $000000DA VOL: 0
+;PCODE: $000000DB VOL: 0
+;        cmd1str[in_count] = 0;	//terminate the string
+;PCODE: $000000DC VOL: 0
+;PCODE: $000000DD VOL: 0
+;PCODE: $000000DE VOL: 0
+;PCODE: $000000DF VOL: 0
+;PCODE: $000000E0 VOL: 0
+;PCODE: $000000E1 VOL: 0
+;        putchar('\r');  		//emit carriage return
+;PCODE: $000000E2 VOL: 0
+;PCODE: $000000E3 VOL: 0
+;PCODE: $000000E4 VOL: 0
+;        putchar('\n'); 			//line feed makes output nicer
+;PCODE: $000000E5 VOL: 0
+;PCODE: $000000E6 VOL: 0
+;PCODE: $000000E7 VOL: 0
+;
+;        //execute the shell command
+;        //printf("%s\r\n", cmd1str);
+;
+;        //target go comand
+;        //and return to target program
+;        if (cmd1str[0]=='g') db_cmd_running = 0;
+;PCODE: $000000E8 VOL: 0
+;PCODE: $000000E9 VOL: 0
+;PCODE: $000000EA VOL: 0
+;PCODE: $000000EB VOL: 0
+;PCODE: $000000EC VOL: 0
+;
+;        //reset -- this forces a reboot!!!
+;        if (cmd1str[0]=='x')
+;PCODE: $000000ED VOL: 0
+;PCODE: $000000EE VOL: 0
+;PCODE: $000000EF VOL: 0
+;PCODE: $000000F0 VOL: 0
+;        {
+;            while(!UCSR0A&0x0010000); //wait for last char to transmit
+;PCODE: $000000F1 VOL: 0
+;PCODE: $000000F2 VOL: 0
+;PCODE: $000000F3 VOL: 0
+;PCODE: $000000F4 VOL: 0
+;PCODE: $000000F5 VOL: 0
+;PCODE: $000000F6 VOL: 0
+;PCODE: $000000F7 VOL: 0
+;PCODE: $000000F8 VOL: 0
+;PCODE: $000000F9 VOL: 0
+;            UCSR0B = 0x00;    //turn off uart
+;PCODE: $000000FA VOL: 0
+;PCODE: $000000FB VOL: 0
+;            //Force a watchdog reset
+;           // WDTCR=0x08;   //enable watchdog
+;           WDTCSR=0x08;   //enable watchdog
+;PCODE: $000000FC VOL: 0
+;PCODE: $000000FD VOL: 0
+;            while(1);     //just wait for watchdog to reset machine
+;PCODE: $000000FE VOL: 0
+;PCODE: $000000FF VOL: 0
+;PCODE: $00000100 VOL: 0
+;        }
+;
+;        //read an i/o register
+;        if (cmd1str[0]=='i')
+;PCODE: $00000101 VOL: 0
+;PCODE: $00000102 VOL: 0
+;PCODE: $00000103 VOL: 0
+;PCODE: $00000104 VOL: 0
+;        {
+;        	sscanf(cmd1str,"%c%x", &db_temp, &db_temp1);
+;PCODE: $00000105 VOL: 0
+;PCODE: $00000106 VOL: 0
+;PCODE: $00000107 VOL: 0
+;PCODE: $00000108 VOL: 0
+;PCODE: $00000109 VOL: 0
+;PCODE: $0000010A VOL: 0
+;PCODE: $0000010B VOL: 0
+;PCODE: $0000010C VOL: 0
+;PCODE: $0000010D VOL: 0
+;PCODE: $0000010E VOL: 0
+;PCODE: $0000010F VOL: 0
+;PCODE: $00000110 VOL: 0
+;PCODE: $00000111 VOL: 0
+;PCODE: $00000112 VOL: 0
+;PCODE: $00000113 VOL: 0
+;
+;        	//check to see if ioreg is timer control
+;        	//(which were saved when cmd was entered)
+;        	if (db_temp1==0x33)
+;PCODE: $00000114 VOL: 0
+;PCODE: $00000115 VOL: 0
+;PCODE: $00000116 VOL: 0
+;        		db_temp = db_t0temp;
+;PCODE: $00000117 VOL: 0
+;PCODE: $00000118 VOL: 0
+;        	else if (db_temp1==0x2e)
+;PCODE: $00000119 VOL: 0
+;PCODE: $0000011A VOL: 0
+;PCODE: $0000011B VOL: 0
+;PCODE: $0000011C VOL: 0
+;PCODE: $0000011D VOL: 0
+;        		db_temp = db_t1temp;
+;PCODE: $0000011E VOL: 0
+;PCODE: $0000011F VOL: 0
+;        	else if (db_temp1==0x25)
+;PCODE: $00000120 VOL: 0
+;PCODE: $00000121 VOL: 0
+;PCODE: $00000122 VOL: 0
+;PCODE: $00000123 VOL: 0
+;PCODE: $00000124 VOL: 0
+;        		db_temp = db_t2temp;
+;PCODE: $00000125 VOL: 0
+;PCODE: $00000126 VOL: 0
+;        	else
+;PCODE: $00000127 VOL: 0
+;PCODE: $00000128 VOL: 0
+;        	{
+;        	#asm
+;PCODE: $00000129 VOL: 0
+        	 	push r26
+;PCODE: $0000012A VOL: 0
+        	 	push r27
+;PCODE: $0000012B VOL: 0
+        	 	push r16
+;PCODE: $0000012C VOL: 0
+        	 	lds  r26, _db_temp1	;address of ioregister
+;PCODE: $0000012D VOL: 0
+        	 	ldi	 r27, 0			;always zero when ioreg
+;PCODE: $0000012E VOL: 0
+        	 	adiw r27:r26, 0x20	;ioreg 0 position in memory
+;PCODE: $0000012F VOL: 0
+        	 	ld   r16, x 		;get the ioreg contents
+;PCODE: $00000130 VOL: 0
+        	 	sts	 _db_temp, r16		;and store ioreg contents
+;PCODE: $00000131 VOL: 0
+        	 	pop  r16
+;PCODE: $00000132 VOL: 0
+        	 	pop  r27
+;PCODE: $00000133 VOL: 0
+        	 	pop  r26
+;PCODE: $00000134 VOL: 0
+;PCODE: $00000135 VOL: 0
+;        	}
+;PCODE: $00000136 VOL: 0
+;PCODE: $00000137 VOL: 0
+;PCODE: $00000138 VOL: 0
+;        	printf("ioport %x= %x\n\r",db_temp1,db_temp) ;
+;PCODE: $00000139 VOL: 0
+;PCODE: $0000013A VOL: 0
+;PCODE: $0000013B VOL: 0
+;PCODE: $0000013C VOL: 0
+;PCODE: $0000013D VOL: 0
+;PCODE: $0000013E VOL: 0
+;PCODE: $0000013F VOL: 0
+;PCODE: $00000140 VOL: 0
+;PCODE: $00000141 VOL: 0
+;PCODE: $00000142 VOL: 0
+;PCODE: $00000143 VOL: 0
+;PCODE: $00000144 VOL: 0
+;PCODE: $00000145 VOL: 0
+;        }
+;
+;        //write an i/o register
+;        if (cmd1str[0]=='I')
+;PCODE: $00000146 VOL: 0
+;PCODE: $00000147 VOL: 0
+;PCODE: $00000148 VOL: 0
+;PCODE: $00000149 VOL: 0
+;        {
+;        	sscanf(cmd1str,"%c%x%x", &db_temp,&db_temp1, &db_temp2);
+;PCODE: $0000014A VOL: 0
+;PCODE: $0000014B VOL: 0
+;PCODE: $0000014C VOL: 0
+;PCODE: $0000014D VOL: 0
+;PCODE: $0000014E VOL: 0
+;PCODE: $0000014F VOL: 0
+;PCODE: $00000150 VOL: 0
+;PCODE: $00000151 VOL: 0
+;PCODE: $00000152 VOL: 0
+;PCODE: $00000153 VOL: 0
+;PCODE: $00000154 VOL: 0
+;PCODE: $00000155 VOL: 0
+;PCODE: $00000156 VOL: 0
+;PCODE: $00000157 VOL: 0
+;PCODE: $00000158 VOL: 0
+;PCODE: $00000159 VOL: 0
+;PCODE: $0000015A VOL: 0
+;PCODE: $0000015B VOL: 0
+;        	//check to see if ioreg is timer control
+;        	//(which were saved when cmd was entered)
+;        	if (db_temp1==0x33)
+;PCODE: $0000015C VOL: 0
+;PCODE: $0000015D VOL: 0
+;PCODE: $0000015E VOL: 0
+;        		db_t0temp = db_temp2;
+;PCODE: $0000015F VOL: 0
+;PCODE: $00000160 VOL: 0
+;        	else if (db_temp1==0x2e)
+;PCODE: $00000161 VOL: 0
+;PCODE: $00000162 VOL: 0
+;PCODE: $00000163 VOL: 0
+;PCODE: $00000164 VOL: 0
+;PCODE: $00000165 VOL: 0
+;        		db_t1temp = db_temp2;
+;PCODE: $00000166 VOL: 0
+;PCODE: $00000167 VOL: 0
+;        	else if (db_temp1==0x25)
+;PCODE: $00000168 VOL: 0
+;PCODE: $00000169 VOL: 0
+;PCODE: $0000016A VOL: 0
+;PCODE: $0000016B VOL: 0
+;PCODE: $0000016C VOL: 0
+;        		db_t2temp = db_temp2;
+;PCODE: $0000016D VOL: 0
+;PCODE: $0000016E VOL: 0
+;        	else
+;PCODE: $0000016F VOL: 0
+;PCODE: $00000170 VOL: 0
+;        	{
+;        	#asm
+;PCODE: $00000171 VOL: 0
+        	 	push r26
+;PCODE: $00000172 VOL: 0
+        	 	push r27
+;PCODE: $00000173 VOL: 0
+        	 	push r16
+;PCODE: $00000174 VOL: 0
+        	 	lds  r16, _db_temp2	;data to be put in ioreg
+;PCODE: $00000175 VOL: 0
+        	 	lds  r26, _db_temp1	;address of ioregister
+;PCODE: $00000176 VOL: 0
+        	 	ldi	 r27, 0		;always zero when ioreg
+;PCODE: $00000177 VOL: 0
+        	 	adiw r27:r26, 0x20	;ioreg 0 position in memory
+;PCODE: $00000178 VOL: 0
+        	 	st   x, r16 		;set the ioreg contents
+;PCODE: $00000179 VOL: 0
+        	 	pop  r16
+;PCODE: $0000017A VOL: 0
+        	 	pop  r27
+;PCODE: $0000017B VOL: 0
+        	 	pop  r26
+;PCODE: $0000017C VOL: 0
+;PCODE: $0000017D VOL: 0
+;        	}
+;PCODE: $0000017E VOL: 0
+;PCODE: $0000017F VOL: 0
+;PCODE: $00000180 VOL: 0
+;        	printf("ioport %x-> %x\n\r",db_temp1,db_temp2) ;
+;PCODE: $00000181 VOL: 0
+;PCODE: $00000182 VOL: 0
+;PCODE: $00000183 VOL: 0
+;PCODE: $00000184 VOL: 0
+;PCODE: $00000185 VOL: 0
+;PCODE: $00000186 VOL: 0
+;PCODE: $00000187 VOL: 0
+;PCODE: $00000188 VOL: 0
+;PCODE: $00000189 VOL: 0
+;PCODE: $0000018A VOL: 0
+;PCODE: $0000018B VOL: 0
+;PCODE: $0000018C VOL: 0
+;PCODE: $0000018D VOL: 0
+;        }
+;
+;
+;        //read a data register
+;        if(cmd1str[0]=='r')
+;PCODE: $0000018E VOL: 0
+;PCODE: $0000018F VOL: 0
+;PCODE: $00000190 VOL: 0
+;PCODE: $00000191 VOL: 0
+;        {
+;        	sscanf(cmd1str,"%c%d", &db_temp, &db_temp2);
+;PCODE: $00000192 VOL: 0
+;PCODE: $00000193 VOL: 0
+;PCODE: $00000194 VOL: 0
+;PCODE: $00000195 VOL: 0
+;PCODE: $00000196 VOL: 0
+;PCODE: $00000197 VOL: 0
+;PCODE: $00000198 VOL: 0
+;PCODE: $00000199 VOL: 0
+;PCODE: $0000019A VOL: 0
+;PCODE: $0000019B VOL: 0
+;PCODE: $0000019C VOL: 0
+;PCODE: $0000019D VOL: 0
+;PCODE: $0000019E VOL: 0
+;PCODE: $0000019F VOL: 0
+;PCODE: $000001A0 VOL: 0
+;        	if (db_temp2 < 32)
+;PCODE: $000001A1 VOL: 0
+;PCODE: $000001A2 VOL: 0
+;PCODE: $000001A3 VOL: 0
+;        	{
+;        	        db_temp = db_regs[db_temp2];
+;PCODE: $000001A4 VOL: 0
+;PCODE: $000001A5 VOL: 0
+;PCODE: $000001A6 VOL: 0
+;PCODE: $000001A7 VOL: 0
+;PCODE: $000001A8 VOL: 0
+;        	        printf("dataReg %d= %x\n\r", db_temp2, db_temp);
+;PCODE: $000001A9 VOL: 0
+;PCODE: $000001AA VOL: 0
+;PCODE: $000001AB VOL: 0
+;PCODE: $000001AC VOL: 0
+;PCODE: $000001AD VOL: 0
+;PCODE: $000001AE VOL: 0
+;PCODE: $000001AF VOL: 0
+;PCODE: $000001B0 VOL: 0
+;PCODE: $000001B1 VOL: 0
+;PCODE: $000001B2 VOL: 0
+;PCODE: $000001B3 VOL: 0
+;PCODE: $000001B4 VOL: 0
+;PCODE: $000001B5 VOL: 0
+;        	 }
+;        }
+;PCODE: $000001B6 VOL: 0
+;
+;        //WRITE a data register
+;        //don't mess with C registers 22-31
+;        if(cmd1str[0]=='R')
+;PCODE: $000001B7 VOL: 0
+;PCODE: $000001B8 VOL: 0
+;PCODE: $000001B9 VOL: 0
+;PCODE: $000001BA VOL: 0
+;        {
+;        	sscanf(cmd1str,"%c%d%x", &db_temp, &db_temp2, &db_temp4);
+;PCODE: $000001BB VOL: 0
+;PCODE: $000001BC VOL: 0
+;PCODE: $000001BD VOL: 0
+;PCODE: $000001BE VOL: 0
+;PCODE: $000001BF VOL: 0
+;PCODE: $000001C0 VOL: 0
+;PCODE: $000001C1 VOL: 0
+;PCODE: $000001C2 VOL: 0
+;PCODE: $000001C3 VOL: 0
+;PCODE: $000001C4 VOL: 0
+;PCODE: $000001C5 VOL: 0
+;PCODE: $000001C6 VOL: 0
+;PCODE: $000001C7 VOL: 0
+;PCODE: $000001C8 VOL: 0
+;PCODE: $000001C9 VOL: 0
+;PCODE: $000001CA VOL: 0
+;PCODE: $000001CB VOL: 0
+;PCODE: $000001CC VOL: 0
+;        	if (db_temp2 < 22)
+;PCODE: $000001CD VOL: 0
+;PCODE: $000001CE VOL: 0
+;PCODE: $000001CF VOL: 0
+;        	{
+;        	        db_regs[db_temp2] = db_temp4;
+;PCODE: $000001D0 VOL: 0
+;PCODE: $000001D1 VOL: 0
+;PCODE: $000001D2 VOL: 0
+;PCODE: $000001D3 VOL: 0
+;PCODE: $000001D4 VOL: 0
+;        	        printf("dataReg %d-> %x\n\r", db_temp2, db_temp4);
+;PCODE: $000001D5 VOL: 0
+;PCODE: $000001D6 VOL: 0
+;PCODE: $000001D7 VOL: 0
+;PCODE: $000001D8 VOL: 0
+;PCODE: $000001D9 VOL: 0
+;PCODE: $000001DA VOL: 0
+;PCODE: $000001DB VOL: 0
+;PCODE: $000001DC VOL: 0
+;PCODE: $000001DD VOL: 0
+;PCODE: $000001DE VOL: 0
+;PCODE: $000001DF VOL: 0
+;PCODE: $000001E0 VOL: 0
+;PCODE: $000001E1 VOL: 0
+;        	}
+;        	else printf("register # must be < 22\r\n");
+;PCODE: $000001E2 VOL: 0
+;PCODE: $000001E3 VOL: 0
+;PCODE: $000001E4 VOL: 0
+;PCODE: $000001E5 VOL: 0
+;PCODE: $000001E6 VOL: 0
+;PCODE: $000001E7 VOL: 0
+;PCODE: $000001E8 VOL: 0
+;PCODE: $000001E9 VOL: 0
+;PCODE: $000001EA VOL: 0
+;
+;        }
+;PCODE: $000001EB VOL: 0
+;
+;        //read an memory location
+;        if (cmd1str[0]=='m')
+;PCODE: $000001EC VOL: 0
+;PCODE: $000001ED VOL: 0
+;PCODE: $000001EE VOL: 0
+;PCODE: $000001EF VOL: 0
+;        {
+;        	sscanf(cmd1str,"%c%x", &db_temp, &db_temp3);
+;PCODE: $000001F0 VOL: 0
+;PCODE: $000001F1 VOL: 0
+;PCODE: $000001F2 VOL: 0
+;PCODE: $000001F3 VOL: 0
+;PCODE: $000001F4 VOL: 0
+;PCODE: $000001F5 VOL: 0
+;PCODE: $000001F6 VOL: 0
+;PCODE: $000001F7 VOL: 0
+;PCODE: $000001F8 VOL: 0
+;PCODE: $000001F9 VOL: 0
+;PCODE: $000001FA VOL: 0
+;PCODE: $000001FB VOL: 0
+;PCODE: $000001FC VOL: 0
+;PCODE: $000001FD VOL: 0
+;PCODE: $000001FE VOL: 0
+;        	#asm
+;PCODE: $000001FF VOL: 0
+        	 	push r26
+;PCODE: $00000200 VOL: 0
+        	 	push r27
+;PCODE: $00000201 VOL: 0
+        	 	push r16
+;PCODE: $00000202 VOL: 0
+        	 	lds  r26, _db_temp3	;low address of memory
+;PCODE: $00000203 VOL: 0
+        	 	lds	 r27, _db_temp3+1	;high address of memory
+;PCODE: $00000204 VOL: 0
+        	 	ld   r16, x 		;get the memory contents
+;PCODE: $00000205 VOL: 0
+        	 	sts	 _db_temp, r16		;and save memory contents
+;PCODE: $00000206 VOL: 0
+        	 	pop  r16
+;PCODE: $00000207 VOL: 0
+        	 	pop  r27
+;PCODE: $00000208 VOL: 0
+        	 	pop  r26
+;PCODE: $00000209 VOL: 0
+;PCODE: $0000020A VOL: 0
+;        	printf("memory %x= %x\n\r",db_temp3,db_temp) ;
+;PCODE: $0000020B VOL: 0
+;PCODE: $0000020C VOL: 0
+;PCODE: $0000020D VOL: 0
+;PCODE: $0000020E VOL: 0
+;PCODE: $0000020F VOL: 0
+;PCODE: $00000210 VOL: 0
+;PCODE: $00000211 VOL: 0
+;PCODE: $00000212 VOL: 0
+;PCODE: $00000213 VOL: 0
+;PCODE: $00000214 VOL: 0
+;PCODE: $00000215 VOL: 0
+;PCODE: $00000216 VOL: 0
+;PCODE: $00000217 VOL: 0
+;        }
+;
+;        //WRITE an memory location
+;        if (cmd1str[0]=='M')
+;PCODE: $00000218 VOL: 0
+;PCODE: $00000219 VOL: 0
+;PCODE: $0000021A VOL: 0
+;PCODE: $0000021B VOL: 0
+;        {
+;        	sscanf(cmd1str,"%c%x%x", &db_temp, &db_temp3, &db_temp4);
+;PCODE: $0000021C VOL: 0
+;PCODE: $0000021D VOL: 0
+;PCODE: $0000021E VOL: 0
+;PCODE: $0000021F VOL: 0
+;PCODE: $00000220 VOL: 0
+;PCODE: $00000221 VOL: 0
+;PCODE: $00000222 VOL: 0
+;PCODE: $00000223 VOL: 0
+;PCODE: $00000224 VOL: 0
+;PCODE: $00000225 VOL: 0
+;PCODE: $00000226 VOL: 0
+;PCODE: $00000227 VOL: 0
+;PCODE: $00000228 VOL: 0
+;PCODE: $00000229 VOL: 0
+;PCODE: $0000022A VOL: 0
+;PCODE: $0000022B VOL: 0
+;PCODE: $0000022C VOL: 0
+;PCODE: $0000022D VOL: 0
+;        	#asm
+;PCODE: $0000022E VOL: 0
+        	 	push r26
+;PCODE: $0000022F VOL: 0
+        	 	push r27
+;PCODE: $00000230 VOL: 0
+        	 	push r16
+;PCODE: $00000231 VOL: 0
+        	 	lds  r26, _db_temp3	;low address of memory
+;PCODE: $00000232 VOL: 0
+        	 	lds	 r27, _db_temp3+1	;high address of memory
+;PCODE: $00000233 VOL: 0
+        	 	lds	 r16, _db_temp4 	;get the data
+;PCODE: $00000234 VOL: 0
+        	 	st	 x, r16			;put it in memory
+;PCODE: $00000235 VOL: 0
+        	 	pop  r16
+;PCODE: $00000236 VOL: 0
+        	 	pop  r27
+;PCODE: $00000237 VOL: 0
+        	 	pop  r26
+;PCODE: $00000238 VOL: 0
+;PCODE: $00000239 VOL: 0
+;        	db_temp4 = db_temp4 & 0xff;
+;PCODE: $0000023A VOL: 0
+;PCODE: $0000023B VOL: 0
+;PCODE: $0000023C VOL: 0
+;        	printf("memory %x-> %x\n\r",db_temp3,db_temp4) ;
+;PCODE: $0000023D VOL: 0
+;PCODE: $0000023E VOL: 0
+;PCODE: $0000023F VOL: 0
+;PCODE: $00000240 VOL: 0
+;PCODE: $00000241 VOL: 0
+;PCODE: $00000242 VOL: 0
+;PCODE: $00000243 VOL: 0
+;PCODE: $00000244 VOL: 0
+;PCODE: $00000245 VOL: 0
+;PCODE: $00000246 VOL: 0
+;PCODE: $00000247 VOL: 0
+;PCODE: $00000248 VOL: 0
+;PCODE: $00000249 VOL: 0
+;        }
+;
+;        //get data stack location
+;        if (cmd1str[0]=='d')
+;PCODE: $0000024A VOL: 0
+;PCODE: $0000024B VOL: 0
+;PCODE: $0000024C VOL: 0
+;PCODE: $0000024D VOL: 0
+;        {
+;         	printf("data stk addr=%x\n\r", db_swstk);
+;PCODE: $0000024E VOL: 0
+;PCODE: $0000024F VOL: 0
+;PCODE: $00000250 VOL: 0
+;PCODE: $00000251 VOL: 0
+;PCODE: $00000252 VOL: 0
+;PCODE: $00000253 VOL: 0
+;PCODE: $00000254 VOL: 0
+;PCODE: $00000255 VOL: 0
+;PCODE: $00000256 VOL: 0
+;PCODE: $00000257 VOL: 0
+;        }
+;
+;        //get hw stack location
+;        //add two because it is read in a function
+;        if (cmd1str[0]=='w')
+;PCODE: $00000258 VOL: 0
+;PCODE: $00000259 VOL: 0
+;PCODE: $0000025A VOL: 0
+;PCODE: $0000025B VOL: 0
+;        {
+;         	printf("hw stk addr=%x\n\r", db_hwstk+2);
+;PCODE: $0000025C VOL: 0
+;PCODE: $0000025D VOL: 0
+;PCODE: $0000025E VOL: 0
+;PCODE: $0000025F VOL: 0
+;PCODE: $00000260 VOL: 0
+;PCODE: $00000261 VOL: 0
+;PCODE: $00000262 VOL: 0
+;PCODE: $00000263 VOL: 0
+;PCODE: $00000264 VOL: 0
+;PCODE: $00000265 VOL: 0
+;PCODE: $00000266 VOL: 0
+;        }
+;
+;        //get status register
+;        if (cmd1str[0]=='s')
+;PCODE: $00000267 VOL: 0
+;PCODE: $00000268 VOL: 0
+;PCODE: $00000269 VOL: 0
+;PCODE: $0000026A VOL: 0
+;        {
+;         	printf("SREG=%x\n\r", db_sreg);
+;PCODE: $0000026B VOL: 0
+;PCODE: $0000026C VOL: 0
+;PCODE: $0000026D VOL: 0
+;PCODE: $0000026E VOL: 0
+;PCODE: $0000026F VOL: 0
+;PCODE: $00000270 VOL: 0
+;PCODE: $00000271 VOL: 0
+;PCODE: $00000272 VOL: 0
+;PCODE: $00000273 VOL: 0
+;PCODE: $00000274 VOL: 0
+;        }
+;
+;        #ifdef use_logging
+;        //dump log
+;        if (cmd1str[0]=='l')
+;PCODE: $00000275 VOL: 0
+;PCODE: $00000276 VOL: 0
+;PCODE: $00000277 VOL: 0
+;PCODE: $00000278 VOL: 0
+;        {
+;            if (cmd1str[1]=='c') db_logcount=0;
+;PCODE: $00000279 VOL: 0
+;PCODE: $0000027A VOL: 0
+;PCODE: $0000027B VOL: 0
+;PCODE: $0000027C VOL: 0
+;PCODE: $0000027D VOL: 0
+;            else if (cmd1str[1]=='d')
+;PCODE: $0000027E VOL: 0
+;PCODE: $0000027F VOL: 0
+;PCODE: $00000280 VOL: 0
+;PCODE: $00000281 VOL: 0
+;PCODE: $00000282 VOL: 0
+;            {
+;                printf("--%s--\n\r",db_logname);
+;PCODE: $00000283 VOL: 0
+;PCODE: $00000284 VOL: 0
+;PCODE: $00000285 VOL: 0
+;PCODE: $00000286 VOL: 0
+;PCODE: $00000287 VOL: 0
+;PCODE: $00000288 VOL: 0
+;PCODE: $00000289 VOL: 0
+;PCODE: $0000028A VOL: 0
+;PCODE: $0000028B VOL: 0
+;PCODE: $0000028C VOL: 0
+;                for(iter=0; iter<db_logcount; iter++)
+;PCODE: $0000028D VOL: 0
+;PCODE: $0000028E VOL: 0
+;PCODE: $0000028F VOL: 0
+;PCODE: $00000290 VOL: 0
+;PCODE: $00000291 VOL: 0
+;PCODE: $00000292 VOL: 0
+;PCODE: $00000293 VOL: 0
+;PCODE: $00000294 VOL: 0
+;PCODE: $00000295 VOL: 0
+;                    printf("%d\r\n",peekb(0x60+iter));
+;PCODE: $00000296 VOL: 0
+;PCODE: $00000297 VOL: 0
+;PCODE: $00000298 VOL: 0
+;PCODE: $00000299 VOL: 0
+;PCODE: $0000029A VOL: 0
+;PCODE: $0000029B VOL: 0
+;PCODE: $0000029C VOL: 0
+;PCODE: $0000029D VOL: 0
+;PCODE: $0000029E VOL: 0
+;PCODE: $0000029F VOL: 0
+;PCODE: $000002A0 VOL: 0
+;PCODE: $000002A1 VOL: 0
+;PCODE: $000002A2 VOL: 0
+;PCODE: $000002A3 VOL: 0
+;PCODE: $000002A4 VOL: 0
+;PCODE: $000002A5 VOL: 0
+;PCODE: $000002A6 VOL: 0
+;            else
+;PCODE: $000002A7 VOL: 0
+;PCODE: $000002A8 VOL: 0
+;            {
+;                printf("--%s--\n\r",db_logname);
+;PCODE: $000002A9 VOL: 0
+;PCODE: $000002AA VOL: 0
+;PCODE: $000002AB VOL: 0
+;PCODE: $000002AC VOL: 0
+;PCODE: $000002AD VOL: 0
+;PCODE: $000002AE VOL: 0
+;PCODE: $000002AF VOL: 0
+;PCODE: $000002B0 VOL: 0
+;PCODE: $000002B1 VOL: 0
+;PCODE: $000002B2 VOL: 0
+;                for(iter=0; iter<db_logcount; iter++)
+;PCODE: $000002B3 VOL: 0
+;PCODE: $000002B4 VOL: 0
+;PCODE: $000002B5 VOL: 0
+;PCODE: $000002B6 VOL: 0
+;PCODE: $000002B7 VOL: 0
+;PCODE: $000002B8 VOL: 0
+;PCODE: $000002B9 VOL: 0
+;PCODE: $000002BA VOL: 0
+;PCODE: $000002BB VOL: 0
+;                    printf("%x\r\n",peekb(0x60+iter));
+;PCODE: $000002BC VOL: 0
+;PCODE: $000002BD VOL: 0
+;PCODE: $000002BE VOL: 0
+;PCODE: $000002BF VOL: 0
+;PCODE: $000002C0 VOL: 0
+;PCODE: $000002C1 VOL: 0
+;PCODE: $000002C2 VOL: 0
+;PCODE: $000002C3 VOL: 0
+;PCODE: $000002C4 VOL: 0
+;PCODE: $000002C5 VOL: 0
+;PCODE: $000002C6 VOL: 0
+;PCODE: $000002C7 VOL: 0
+;PCODE: $000002C8 VOL: 0
+;PCODE: $000002C9 VOL: 0
+;PCODE: $000002CA VOL: 0
+;PCODE: $000002CB VOL: 0
+;PCODE: $000002CC VOL: 0
+;PCODE: $000002CD VOL: 0
+;PCODE: $000002CE VOL: 0
+;        }
+;        #endif
+;
+;        //help
+;        if  (cmd1str[0]=='h')
+;PCODE: $000002CF VOL: 0
+;PCODE: $000002D0 VOL: 0
+;PCODE: $000002D1 VOL: 0
+;PCODE: $000002D2 VOL: 0
+;        {
+;        #ifdef verbose
+;            printf("g -- go run target code \r\n");
+;PCODE: $000002D3 VOL: 0
+;PCODE: $000002D4 VOL: 0
+;PCODE: $000002D5 VOL: 0
+;PCODE: $000002D6 VOL: 0
+;PCODE: $000002D7 VOL: 0
+;PCODE: $000002D8 VOL: 0
+;PCODE: $000002D9 VOL: 0
+;            printf("x -- reboot mcu \r\n");
+;PCODE: $000002DA VOL: 0
+;PCODE: $000002DB VOL: 0
+;PCODE: $000002DC VOL: 0
+;PCODE: $000002DD VOL: 0
+;PCODE: $000002DE VOL: 0
+;PCODE: $000002DF VOL: 0
+;PCODE: $000002E0 VOL: 0
+;            printf("i ioreg -- read i/o register; ioreg in hex\r\n");
+;PCODE: $000002E1 VOL: 0
+;PCODE: $000002E2 VOL: 0
+;PCODE: $000002E3 VOL: 0
+;PCODE: $000002E4 VOL: 0
+;PCODE: $000002E5 VOL: 0
+;PCODE: $000002E6 VOL: 0
+;PCODE: $000002E7 VOL: 0
+;            printf("I ioreg data -- write i/o register - hex\r\n");
+;PCODE: $000002E8 VOL: 0
+;PCODE: $000002E9 VOL: 0
+;PCODE: $000002EA VOL: 0
+;PCODE: $000002EB VOL: 0
+;PCODE: $000002EC VOL: 0
+;PCODE: $000002ED VOL: 0
+;PCODE: $000002EE VOL: 0
+;            printf("r datareg -- read; datareg in dec \r\n");
+;PCODE: $000002EF VOL: 0
+;PCODE: $000002F0 VOL: 0
+;PCODE: $000002F1 VOL: 0
+;PCODE: $000002F2 VOL: 0
+;PCODE: $000002F3 VOL: 0
+;PCODE: $000002F4 VOL: 0
+;PCODE: $000002F5 VOL: 0
+;            printf("R datareg data -- write; data in hex \r\n");
+;PCODE: $000002F6 VOL: 0
+;PCODE: $000002F7 VOL: 0
+;PCODE: $000002F8 VOL: 0
+;PCODE: $000002F9 VOL: 0
+;PCODE: $000002FA VOL: 0
+;PCODE: $000002FB VOL: 0
+;PCODE: $000002FC VOL: 0
+;            printf("m addr -- read memory; hex\r\n") ;
+;PCODE: $000002FD VOL: 0
+;PCODE: $000002FE VOL: 0
+;PCODE: $000002FF VOL: 0
+;PCODE: $00000300 VOL: 0
+;PCODE: $00000301 VOL: 0
+;PCODE: $00000302 VOL: 0
+;PCODE: $00000303 VOL: 0
+;            printf("M addr dat -- write memory; hex\r\n");
+;PCODE: $00000304 VOL: 0
+;PCODE: $00000305 VOL: 0
+;PCODE: $00000306 VOL: 0
+;PCODE: $00000307 VOL: 0
+;PCODE: $00000308 VOL: 0
+;PCODE: $00000309 VOL: 0
+;PCODE: $0000030A VOL: 0
+;            printf("d -- top of data stack; hex\r\n");
+;PCODE: $0000030B VOL: 0
+;PCODE: $0000030C VOL: 0
+;PCODE: $0000030D VOL: 0
+;PCODE: $0000030E VOL: 0
+;PCODE: $0000030F VOL: 0
+;PCODE: $00000310 VOL: 0
+;PCODE: $00000311 VOL: 0
+;            printf("w -- top of hardware stack; hex\r\n");
+;PCODE: $00000312 VOL: 0
+;PCODE: $00000313 VOL: 0
+;PCODE: $00000314 VOL: 0
+;PCODE: $00000315 VOL: 0
+;PCODE: $00000316 VOL: 0
+;PCODE: $00000317 VOL: 0
+;PCODE: $00000318 VOL: 0
+;            printf("s -- mcu status register; hex\r\n");
+;PCODE: $00000319 VOL: 0
+;PCODE: $0000031A VOL: 0
+;PCODE: $0000031B VOL: 0
+;PCODE: $0000031C VOL: 0
+;PCODE: $0000031D VOL: 0
+;PCODE: $0000031E VOL: 0
+;PCODE: $0000031F VOL: 0
+;            #ifdef use_logging
+;            printf("l, lc, ld -- logged variables\r\n");
+;PCODE: $00000320 VOL: 0
+;PCODE: $00000321 VOL: 0
+;PCODE: $00000322 VOL: 0
+;PCODE: $00000323 VOL: 0
+;PCODE: $00000324 VOL: 0
+;PCODE: $00000325 VOL: 0
+;PCODE: $00000326 VOL: 0
+;            #endif
+;            printf("Target code commands:\r\n");
+;PCODE: $00000327 VOL: 0
+;PCODE: $00000328 VOL: 0
+;PCODE: $00000329 VOL: 0
+;PCODE: $0000032A VOL: 0
+;PCODE: $0000032B VOL: 0
+;PCODE: $0000032C VOL: 0
+;PCODE: $0000032D VOL: 0
+;            printf("  debug(DebugID) -- enter debugger\r\n");
+;PCODE: $0000032E VOL: 0
+;PCODE: $0000032F VOL: 0
+;PCODE: $00000330 VOL: 0
+;PCODE: $00000331 VOL: 0
+;PCODE: $00000332 VOL: 0
+;PCODE: $00000333 VOL: 0
+;PCODE: $00000334 VOL: 0
+;            #ifdef use_rxc_isr
+;            printf("  <cntl-c> -- enter debugger with debugID=255\r\n");
+;            #endif
+;            #ifdef use_reporting
+;            printf("  reportVdec, reportVhex -- print variables\r\n");
+;PCODE: $00000335 VOL: 0
+;PCODE: $00000336 VOL: 0
+;PCODE: $00000337 VOL: 0
+;PCODE: $00000338 VOL: 0
+;PCODE: $00000339 VOL: 0
+;PCODE: $0000033A VOL: 0
+;PCODE: $0000033B VOL: 0
+;            #endif
+;            #ifdef use_logging
+;            printf("  loginit, logV -- save variables\r\n");
+;PCODE: $0000033C VOL: 0
+;PCODE: $0000033D VOL: 0
+;PCODE: $0000033E VOL: 0
+;PCODE: $0000033F VOL: 0
+;PCODE: $00000340 VOL: 0
+;PCODE: $00000341 VOL: 0
+;PCODE: $00000342 VOL: 0
+;            #endif
+;        #else
+;            printf("no help \r\n");
+;        #endif
+;        }
+;
+;	}  //end while(db_cmd_running)
+;PCODE: $00000343 VOL: 0
+;PCODE: $00000344 VOL: 0
+;PCODE: $00000345 VOL: 0
+;}    //end cmd
+;PCODE: $00000346 VOL: 0
+;PCODE: $00000347 VOL: 0
+;PCODE: $00000348 VOL: 0
+;PCODE: $00000349 VOL: 0
+;
+;// set up UART and jump to mymain
+;void main(void)
+;{
+;PCODE: $0000034A VOL: 0
+;    //allocate UART structures, turn on UART
+;   	//parameter is baud rate given as an integer
+;   	//This routine uses the clock value set in the
+;   	//Project...Config dialog!!
+;
+;   	db_init_uart(9600);
+;PCODE: $0000034B VOL: 0
+;PCODE: $0000034C VOL: 0
+;PCODE: $0000034D VOL: 0
+;   	printf("\r\r\n DB 2.0\r\n");
+;PCODE: $0000034E VOL: 0
+;PCODE: $0000034F VOL: 0
+;PCODE: $00000350 VOL: 0
+;PCODE: $00000351 VOL: 0
+;PCODE: $00000352 VOL: 0
+;PCODE: $00000353 VOL: 0
+;PCODE: $00000354 VOL: 0
+;
+;	//start out in main program
+;   	db_cmd_running = 0;
+;PCODE: $00000355 VOL: 0
+;PCODE: $00000356 VOL: 0
+;
+;    //now jump to user supplied target program
+;    mymain() ;
+;PCODE: $00000357 VOL: 0
+;
+;    //mymain should NEVER return
+;    //But if it does...
+;    printf("Target Failed") ;
+;PCODE: $00000358 VOL: 0
+;PCODE: $00000359 VOL: 0
+;PCODE: $0000035A VOL: 0
+;PCODE: $0000035B VOL: 0
+;PCODE: $0000035C VOL: 0
+;PCODE: $0000035D VOL: 0
+;PCODE: $0000035E VOL: 0
+;    while(1);
+;PCODE: $0000035F VOL: 0
+;PCODE: $00000360 VOL: 0
+;PCODE: $00000361 VOL: 0
+;}
+;PCODE: $00000362 VOL: 0
+;PCODE: $00000363 VOL: 0
+;PCODE: $00000364 VOL: 0
+;
+;//allows user to insert a program with it's own main routine
+;#define main mymain
+;
+;//end of debugger
+;//following stuff is used if debugger is NULLIFIED
+;#else
+;
+;#define debug(id) do{ }while(0)
+;#define reportR(regnum)  do{ }while(0)
+;#define reportI(regnum)   do{ }while(0)
+;#define reportM(addr) do{ }while(0)
+;#define reportVhex(varname)  do{ }while(0)
+;#define reportVdec(varname)  do{ }while(0)
+;#define logInit(varname,logsize)  do{ }while(0)
+;#define logV(varname)  do{ }while(0)
+;
+;#endif
+;
+;//end of file
+;
+;
+;#include <stdio.h> // Standard Input/Output functions
+;#include <delay.h>
+;#include <string.h>
+;#include <stdlib.h>
+;#include <stdint.h>
+;
+;
+;//timeout values for each task
+;#define t1 250
+;#define t2 125
+;#define t3 60
+;#define begin {
+;#define end }
+;
+;//the three task subroutines
+;void task1(void);      //blink at 2 or 8 Hz
+;void task2(void);    //blink at 1 Hz
+;void task3(void);    //detect button and modify task 1 rate
+;
+;void initialize(void); //all the usual mcu stuff
+;
+;unsigned char time1, time2, time3;    //timeout counters
+;unsigned char tsk2c;                //task 2 counter to get to 1/2 second
+;unsigned char tsk3m;                //task 3 message to task 1
+;unsigned char led;                    //light states
+;char msg[20];                        //task 3 serial input
+;//**********************************************************
+;//timer 0 overflow ISR
+;interrupt [TIM0_COMPA] void timer0_compare(void)
+; 0000 0024 begin
+;PCODE: $00000365 VOL: 0
+;PCODE: $00000366 VOL: 0
+; 0000 0025   //Decrement the three times if they are not already zero
+; 0000 0026   if (time1>0)    --time1;
+;PCODE: $00000367 VOL: 0
+;PCODE: $00000368 VOL: 0
+;PCODE: $00000369 VOL: 0
+;PCODE: $0000036A VOL: 0
+; 0000 0027   if (time2>0)    --time2;
+;PCODE: $0000036B VOL: 0
+;PCODE: $0000036C VOL: 0
+;PCODE: $0000036D VOL: 0
+;PCODE: $0000036E VOL: 0
+;PCODE: $0000036F VOL: 0
+; 0000 0028   if (time3>0)    --time3;
+;PCODE: $00000370 VOL: 0
+;PCODE: $00000371 VOL: 0
+;PCODE: $00000372 VOL: 0
+;PCODE: $00000373 VOL: 0
+;PCODE: $00000374 VOL: 0
+; 0000 0029 end
+;PCODE: $00000375 VOL: 0
+;PCODE: $00000376 VOL: 0
+;PCODE: $00000377 VOL: 0
+;PCODE: $00000378 VOL: 0
+;
+;//**********************************************************
+;//Entry point and task scheduler loop
+;
+;char tmp=0;
+;void main(void)
+; 0000 0030 begin
+;PCODE: $00000379 VOL: 0
+;PCODE: $0000037A VOL: 0
+; 0000 0031 
+; 0000 0032   initialize();
+;PCODE: $0000037B VOL: 0
+; 0000 0033 
+; 0000 0034   ///*****
+; 0000 0035     ///*****
+; 0000 0036     DDRC.5=1;
+;PCODE: $0000037C VOL: 0
+;PCODE: $0000037D VOL: 0
+; 0000 0037     DDRC.4=1;
+;PCODE: $0000037E VOL: 0
+;PCODE: $0000037F VOL: 0
+; 0000 0038  ///*******
+; 0000 0039     PORTC.5=1;
+;PCODE: $00000380 VOL: 0
+;PCODE: $00000381 VOL: 0
+; 0000 003A     delay_ms(100);
+;PCODE: $00000382 VOL: 0
+;PCODE: $00000383 VOL: 0
+;PCODE: $00000384 VOL: 0
+; 0000 003B     PORTC.5=0;
+;PCODE: $00000385 VOL: 0
+;PCODE: $00000386 VOL: 0
+; 0000 003C ///********
+; 0000 003D 
+; 0000 003E   //main task scheduler loop
+; 0000 003F   logInit(tmp,8);
+;PCODE: $00000387 VOL: 0
+;PCODE: $00000388 VOL: 0
+;PCODE: $00000389 VOL: 0
+;PCODE: $0000038A VOL: 0
+;PCODE: $0000038B VOL: 0
+;PCODE: $0000038C VOL: 0
+;PCODE: $0000038D VOL: 0
+;PCODE: $0000038E VOL: 0
+;PCODE: $0000038F VOL: 0
+;PCODE: $00000390 VOL: 0
+;PCODE: $00000391 VOL: 0
+;PCODE: $00000392 VOL: 0
+;PCODE: $00000393 VOL: 0
+;PCODE: $00000394 VOL: 0
+;PCODE: $00000395 VOL: 0
+;PCODE: $00000396 VOL: 0
+;PCODE: $00000397 VOL: 0
+;PCODE: $00000398 VOL: 0
+;PCODE: $00000399 VOL: 0
+;PCODE: $0000039A VOL: 0
+;PCODE: $0000039B VOL: 0
+;PCODE: $0000039C VOL: 0
+; 0000 0040   while(1)
+;PCODE: $0000039D VOL: 0
+; 0000 0041   begin
+; 0000 0042    // if (time1==0)    task1();
+; 0000 0043    // if (time2==0)     task2();
+; 0000 0044   //  if (time3==0)    task3();
+; 0000 0045   tmp++;
+;PCODE: $0000039E VOL: 0
+; 0000 0046 
+; 0000 0047   reportVdec(tmp);
+;PCODE: $0000039F VOL: 0
+;PCODE: $000003A0 VOL: 0
+;PCODE: $000003A1 VOL: 0
+;PCODE: $000003A2 VOL: 0
+;PCODE: $000003A3 VOL: 0
+;PCODE: $000003A4 VOL: 0
+;PCODE: $000003A5 VOL: 0
+;PCODE: $000003A6 VOL: 0
+;PCODE: $000003A7 VOL: 0
+;PCODE: $000003A8 VOL: 0
+;PCODE: $000003A9 VOL: 0
+;PCODE: $000003AA VOL: 0
+;PCODE: $000003AB VOL: 0
+;PCODE: $000003AC VOL: 0
+;PCODE: $000003AD VOL: 0
+;PCODE: $000003AE VOL: 0
+;PCODE: $000003AF VOL: 0
+;PCODE: $000003B0 VOL: 0
+;PCODE: $000003B1 VOL: 0
+;PCODE: $000003B2 VOL: 0
+;PCODE: $000003B3 VOL: 0
+;PCODE: $000003B4 VOL: 0
+; 0000 0048 
+; 0000 0049       PORTC.5=1;
+;PCODE: $000003B5 VOL: 0
+;PCODE: $000003B6 VOL: 0
+; 0000 004A     delay_ms(500);
+;PCODE: $000003B7 VOL: 0
+;PCODE: $000003B8 VOL: 0
+;PCODE: $000003B9 VOL: 0
+; 0000 004B     PORTC.5=0;
+;PCODE: $000003BA VOL: 0
+;PCODE: $000003BB VOL: 0
+; 0000 004C      delay_ms(500);
+;PCODE: $000003BC VOL: 0
+;PCODE: $000003BD VOL: 0
+;PCODE: $000003BE VOL: 0
+; 0000 004D   //   debug(6);
+; 0000 004E   end
+;PCODE: $000003BF VOL: 0
+;PCODE: $000003C0 VOL: 0
+; 0000 004F end
+;PCODE: $000003C1 VOL: 0
+;PCODE: $000003C2 VOL: 0
+;
+;//**********************************************************
+;//Task subroutines
+;//Task 1
+;void task1(void)
+; 0000 0055 begin
+;PCODE: $000003C3 VOL: 0
+;PCODE: $000003C4 VOL: 0
+; 0000 0056   time1=t1;  //reset the task timer
+;PCODE: $000003C5 VOL: 0
+;PCODE: $000003C6 VOL: 0
+; 0000 0057   if (tsk3m != 0) time1 >>= 2;  //check for task 3 message
+;PCODE: $000003C7 VOL: 0
+;PCODE: $000003C8 VOL: 0
+;PCODE: $000003C9 VOL: 0
+;PCODE: $000003CA VOL: 0
+;PCODE: $000003CB VOL: 0
+;PCODE: $000003CC VOL: 0
+; 0000 0058 
+; 0000 0059   //toggle the zeros bit
+; 0000 005A   led = led ^ 0x01;
+;PCODE: $000003CD VOL: 0
+;PCODE: $000003CE VOL: 0
+;PCODE: $000003CF VOL: 0
+;PCODE: $000003D0 VOL: 0
+; 0000 005B   PORTB = led;
+;PCODE: $000003D1 VOL: 0
+;PCODE: $000003D2 VOL: 0
+; 0000 005C 
+; 0000 005D 
+; 0000 005E   PORTC.5=1;
+;PCODE: $000003D3 VOL: 0
+;PCODE: $000003D4 VOL: 0
+; 0000 005F end
+;PCODE: $000003D5 VOL: 0
+;PCODE: $000003D6 VOL: 0
+;
+;//*******************************
+;//Task 2
+;void task2(void)
+; 0000 0064 begin
+;PCODE: $000003D7 VOL: 0
+;PCODE: $000003D8 VOL: 0
+; 0000 0065   time2=t2;  //reset the task timer
+;PCODE: $000003D9 VOL: 0
+;PCODE: $000003DA VOL: 0
+; 0000 0066   if (--tsk2c == 0)  //have we waited 1/2 second?
+;PCODE: $000003DB VOL: 0
+;PCODE: $000003DC VOL: 0
+; 0000 0067   begin
+; 0000 0068       tsk2c = 4;        //reload the 1/2 sec counter
+;PCODE: $000003DD VOL: 0
+;PCODE: $000003DE VOL: 0
+; 0000 0069      //toggle the ones bit
+; 0000 006A       led = led ^ 0x02;
+;PCODE: $000003DF VOL: 0
+;PCODE: $000003E0 VOL: 0
+;PCODE: $000003E1 VOL: 0
+; 0000 006B       PORTB = led;
+;PCODE: $000003E2 VOL: 0
+;PCODE: $000003E3 VOL: 0
+; 0000 006C 
+; 0000 006D        PORTC.5=0;
+;PCODE: $000003E4 VOL: 0
+;PCODE: $000003E5 VOL: 0
+; 0000 006E   end
+; 0000 006F end
+;PCODE: $000003E6 VOL: 0
+;PCODE: $000003E7 VOL: 0
+;PCODE: $000003E8 VOL: 0
+;
+;//*******************************
+;//Task 3
+;void task3(void)
+; 0000 0074 begin
+;PCODE: $000003E9 VOL: 0
+;PCODE: $000003EA VOL: 0
+; 0000 0075   time3=t3;     //reset the task timer
+;PCODE: $000003EB VOL: 0
+;PCODE: $000003EC VOL: 0
+; 0000 0076   tsk3m = ~PINC & 0x01;  //generate the message for task 1
+;PCODE: $000003ED VOL: 0
+;PCODE: $000003EE VOL: 0
+;PCODE: $000003EF VOL: 0
+;PCODE: $000003F0 VOL: 0
+; 0000 0077   if (PINC.1==0)
+;PCODE: $000003F1 VOL: 0
+;PCODE: $000003F2 VOL: 0
+;PCODE: $000003F3 VOL: 0
+; 0000 0078   {
+; 0000 0079       #asm
+;PCODE: $000003F4 VOL: 0
+; 0000 007A           ldi r16, 0x55
+          ldi r16, 0x55
+;PCODE: $000003F5 VOL: 0
+; 0000 007B           mov r0, r16
+          mov r0, r16
+;PCODE: $000003F6 VOL: 0
+;PCODE: $000003F7 VOL: 0
+; 0000 007C       #endasm
+; 0000 007D 
+; 0000 007E         PORTC.5=1;
+;PCODE: $000003F8 VOL: 0
+;PCODE: $000003F9 VOL: 0
+; 0000 007F       debug(3);
+;PCODE: $000003FA VOL: 0
+;PCODE: $000003FB VOL: 0
+;PCODE: $000003FC VOL: 0
+;PCODE: $000003FD VOL: 0
+;PCODE: $000003FE VOL: 0
+;PCODE: $000003FF VOL: 0
+;PCODE: $00000400 VOL: 0
+;PCODE: $00000401 VOL: 0
+;PCODE: $00000402 VOL: 0
+;PCODE: $00000403 VOL: 0
+;PCODE: $00000404 VOL: 0
+;PCODE: $00000405 VOL: 0
+;PCODE: $00000406 VOL: 0
+;PCODE: $00000407 VOL: 0
+;PCODE: $00000408 VOL: 0
+;PCODE: $00000409 VOL: 0
+;PCODE: $0000040A VOL: 0
+;PCODE: $0000040B VOL: 0
+;PCODE: $0000040C VOL: 0
+;PCODE: $0000040D VOL: 0
+;PCODE: $0000040E VOL: 0
+;PCODE: $0000040F VOL: 0
+;PCODE: $00000410 VOL: 0
+;PCODE: $00000411 VOL: 0
+;PCODE: $00000412 VOL: 0
+;PCODE: $00000413 VOL: 0
+;PCODE: $00000414 VOL: 0
+;PCODE: $00000415 VOL: 0
+; 0000 0080   }
+; 0000 0081   if (PINC.2==0)
+;PCODE: $00000416 VOL: 0
+;PCODE: $00000417 VOL: 0
+;PCODE: $00000418 VOL: 0
+;PCODE: $00000419 VOL: 0
+; 0000 0082   { printf("Enter a number:");
+;PCODE: $0000041A VOL: 0
+;PCODE: $0000041B VOL: 0
+;PCODE: $0000041C VOL: 0
+;PCODE: $0000041D VOL: 0
+;PCODE: $0000041E VOL: 0
+;PCODE: $0000041F VOL: 0
+;PCODE: $00000420 VOL: 0
+; 0000 0083       scanf("%s", msg);
+;PCODE: $00000421 VOL: 0
+;PCODE: $00000422 VOL: 0
+;PCODE: $00000423 VOL: 0
+;PCODE: $00000424 VOL: 0
+;PCODE: $00000425 VOL: 0
+;PCODE: $00000426 VOL: 0
+;PCODE: $00000427 VOL: 0
+;PCODE: $00000428 VOL: 0
+;PCODE: $00000429 VOL: 0
+;PCODE: $0000042A VOL: 0
+; 0000 0084        printf("\n\r%s\n\r",msg);
+;PCODE: $0000042B VOL: 0
+;PCODE: $0000042C VOL: 0
+;PCODE: $0000042D VOL: 0
+;PCODE: $0000042E VOL: 0
+;PCODE: $0000042F VOL: 0
+;PCODE: $00000430 VOL: 0
+;PCODE: $00000431 VOL: 0
+;PCODE: $00000432 VOL: 0
+;PCODE: $00000433 VOL: 0
+;PCODE: $00000434 VOL: 0
+; 0000 0085   }
+; 0000 0086 
+; 0000 0087 end
+;PCODE: $00000435 VOL: 0
+;PCODE: $00000436 VOL: 0
+;PCODE: $00000437 VOL: 0
+;
+;//**********************************************************
+;//Set it all up
+;void initialize(void)
+; 0000 008C begin
+;PCODE: $00000438 VOL: 0
+;PCODE: $00000439 VOL: 0
+; 0000 008D 
+; 0000 008E     //variables to test local variable position on the data stack
+; 0000 008F     char tt1, tt2, tt3, tt4, tt5, tt6, tt7, tt8;
+; 0000 0090     //first 6 vars are in r16-21
+; 0000 0091       tt1=0x55;      //r16
+;PCODE: $0000043A VOL: 0
+;PCODE: $0000043B VOL: 0
+;	tt1 -> R17
+;	tt2 -> R16
+;	tt3 -> R19
+;	tt4 -> R18
+;	tt5 -> R21
+;	tt6 -> R20
+;	tt7 -> Y+7
+;	tt8 -> Y+6
+;PCODE: $0000043C VOL: 0
+;PCODE: $0000043D VOL: 0
+; 0000 0092       tt2=0xaa;      //r17
+;PCODE: $0000043E VOL: 0
+;PCODE: $0000043F VOL: 0
+; 0000 0093       tt3=3;      //r16
+;PCODE: $00000440 VOL: 0
+;PCODE: $00000441 VOL: 0
+; 0000 0094       tt4=4;      //r17
+;PCODE: $00000442 VOL: 0
+;PCODE: $00000443 VOL: 0
+; 0000 0095       tt5=5;      //r16
+;PCODE: $00000444 VOL: 0
+;PCODE: $00000445 VOL: 0
+; 0000 0096       tt6=6;      //r17
+;PCODE: $00000446 VOL: 0
+;PCODE: $00000447 VOL: 0
+; 0000 0097       //rest of the vars are on the stack
+; 0000 0098       //dstk+7 and dstk+6
+; 0000 0099       tt7=0x55;
+;PCODE: $00000448 VOL: 0
+;PCODE: $00000449 VOL: 0
+; 0000 009A       tt8=0xaa;
+;PCODE: $0000044A VOL: 0
+;PCODE: $0000044B VOL: 0
+; 0000 009B       //at this debug point,
+; 0000 009C       //issuing the command r16 should return 55
+; 0000 009D       debug(1);
+;PCODE: $0000044C VOL: 0
+;PCODE: $0000044D VOL: 0
+;PCODE: $0000044E VOL: 0
+;PCODE: $0000044F VOL: 0
+;PCODE: $00000450 VOL: 0
+;PCODE: $00000451 VOL: 0
+;PCODE: $00000452 VOL: 0
+;PCODE: $00000453 VOL: 0
+;PCODE: $00000454 VOL: 0
+;PCODE: $00000455 VOL: 0
+;PCODE: $00000456 VOL: 0
+;PCODE: $00000457 VOL: 0
+;PCODE: $00000458 VOL: 0
+;PCODE: $00000459 VOL: 0
+;PCODE: $0000045A VOL: 0
+;PCODE: $0000045B VOL: 0
+;PCODE: $0000045C VOL: 0
+;PCODE: $0000045D VOL: 0
+;PCODE: $0000045E VOL: 0
+;PCODE: $0000045F VOL: 0
+;PCODE: $00000460 VOL: 0
+;PCODE: $00000461 VOL: 0
+;PCODE: $00000462 VOL: 0
+;PCODE: $00000463 VOL: 0
+;PCODE: $00000464 VOL: 0
+;PCODE: $00000465 VOL: 0
+;PCODE: $00000466 VOL: 0
+;PCODE: $00000467 VOL: 0
+; 0000 009E 
+; 0000 009F     //set up the ports
+; 0000 00A0   DDRC=0x00;    // PORT C is an input
+;PCODE: $00000468 VOL: 0
+;PCODE: $00000469 VOL: 0
+; 0000 00A1   DDRB=0xff;    // PORT B is an output
+;PCODE: $0000046A VOL: 0
+;PCODE: $0000046B VOL: 0
+; 0000 00A2   PORTB=0;
+;PCODE: $0000046C VOL: 0
+;PCODE: $0000046D VOL: 0
+; 0000 00A3 
+; 0000 00A4 
+; 0000 00A5   //set up timer 0
+; 0000 00A6   TIMSK0=2;        //turn on timer 0 cmp match ISR
+;PCODE: $0000046E VOL: 0
+;PCODE: $0000046F VOL: 0
+; 0000 00A7   OCR0A = 250;      //set the compare re to 250 time ticks
+;PCODE: $00000470 VOL: 0
+;PCODE: $00000471 VOL: 0
+; 0000 00A8       //prescalar to 64 and turn on clear-on-match
+; 0000 00A9   TCCR0A=0b00001011;
+;PCODE: $00000472 VOL: 0
+;PCODE: $00000473 VOL: 0
+; 0000 00AA 
+; 0000 00AB   //init the LED status (all off)
+; 0000 00AC   led=0xff;
+;PCODE: $00000474 VOL: 0
+;PCODE: $00000475 VOL: 0
+; 0000 00AD 
+; 0000 00AE   //init the task timers
+; 0000 00AF   time1=t1;
+;PCODE: $00000476 VOL: 0
+;PCODE: $00000477 VOL: 0
+; 0000 00B0   time2=t2;
+;PCODE: $00000478 VOL: 0
+;PCODE: $00000479 VOL: 0
+; 0000 00B1   time3=t3;
+;PCODE: $0000047A VOL: 0
+;PCODE: $0000047B VOL: 0
+; 0000 00B2 
+; 0000 00B3   //init the task 2 state variable
+; 0000 00B4   //for four ticks
+; 0000 00B5   tsk2c=4;
+;PCODE: $0000047C VOL: 0
+;PCODE: $0000047D VOL: 0
+; 0000 00B6 
+; 0000 00B7   //init the task 3 message
+; 0000 00B8   //for no message
+; 0000 00B9   tsk3m=0;
+;PCODE: $0000047E VOL: 0
+; 0000 00BA 
+; 0000 00BB   //crank up the ISRs
+; 0000 00BC   #asm
+;PCODE: $0000047F VOL: 0
+; 0000 00BD       sei
+      sei
+;PCODE: $00000480 VOL: 0
+;PCODE: $00000481 VOL: 0
+; 0000 00BE   #endasm
+; 0000 00BF end
+;PCODE: $00000482 VOL: 0
+;PCODE: $00000483 VOL: 0
+;PCODE: $00000484 VOL: 0
+;PCODE: $00000485 VOL: 0
+;
+;

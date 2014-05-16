@@ -1,0 +1,79 @@
+RAM Allocation
+Variable                                                          Address   Size
+--------------------------------------------------------------------------------
+__ds1820_scratch_pad                                              0x039F       9
+lcd_buf                                                           0x03A8      15
+LcdCache                                                          0x03B7     504
+saved_state                                                       0x05AF       1
+symbol                                                            0x05B0       1
+SYS_TICK                                                          0x05B1       4
+TX_CNT                                                            0x05B5       4
+RX_CNT                                                            0x05B9       4
+RAM_settings                                                      0x05BD      12
+Usart0_TX_buf                                                     0x05C9     512
+Usart0_txBufTail                                                  0x07C9       2
+Usart0_txBufHead                                                  0x07CB       2
+Usart1_TX_buf                                                     0x07CD     512
+Usart1_txBufTail                                                  0x09CD       2
+Usart1_txBufHead                                                  0x09CF       2
+Usart0_RX_buf                                                     0x09D1     256
+Usart0_rxBufTail                                                  0x0AD1       2
+Usart0_rxBufHead                                                  0x0AD3       2
+Usart0_rxCount                                                    0x0AD5       2
+Usart1_RX_buf                                                     0x0AD7     256
+Usart1_rxBufTail                                                  0x0BD7       2
+Usart1_rxBufHead                                                  0x0BD9       2
+Usart1_rxCount                                                    0x0BDB       2
+WorkLog                                                           0x0BDD     512
+LogIndex                                                          0x0DDD       2
+buf                                                               0x0DDF     128
+argv                                                              0x0E5F      20
+Spi0_TX_buf                                                       0x0E73      64
+Spi0_txBufTail                                                    0x0EB3       2
+Spi0_txBufHead                                                    0x0EB5       2
+Spi0_RX_buf                                                       0x0EB7      64
+adc_result                                                        0x0EF7       2
+vref                                                              0x0EF9       2
+volt                                                              0x0EFB       2
+delta                                                             0x0EFD       2
+adc_tmp                                                           0x0EFF       2
+d                                                                 0x0F01       2
+avcc                                                              0x0F03       2
+adc_calib_cnt                                                     0x0F05       2
+t                                                                 0x0F07       6
+MasterOutFunc                                                     0x0F0D       2
+SlaveOutFunc                                                      0x0F0F       2
+ErrorOutFunc                                                      0x0F11       2
+i2c_Do                                                            0x0F13       1
+i2c_InBuff                                                        0x0F14       1
+i2c_OutBuff                                                       0x0F15       1
+i2c_SlaveIndex                                                    0x0F16       1
+i2c_Buffer                                                        0x0F17       3
+i2c_index                                                         0x0F1A       1
+i2c_ByteCount                                                     0x0F1B       1
+i2c_SlaveAddress                                                  0x0F1C       1
+i2c_PageAddress                                                   0x0F1D       2
+i2c_PageAddrIndex                                                 0x0F1F       1
+i2c_PageAddrCount                                                 0x0F20       1
+MainTimer                                                         0x0F21      64
+_seed                                                             0x0F61       4
+
+EEPROM Allocation
+Variable                                                          Address   Size
+--------------------------------------------------------------------------------
+EE_settings                                                       0x0000      12
+
+Register Allocation
+Variable                                                          Register  Size
+--------------------------------------------------------------------------------
+power_down                                                        R2.0      1bit
+addressing                                                        R2.1      1bit
+temp_control                                                      R5           1
+bias                                                              R4           1
+Vop                                                               R7           1
+disp_config                                                       R6           1
+LcdCacheIdx                                                       R8,R9        2
+argc                                                              R11          1
+i                                                                 R10          1
+flag                                                              R13          1
+TX_flag                                                           R12          1

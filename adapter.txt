@@ -1,0 +1,363 @@
+Upd-1 : 2.4.14
+Upd-2 : 12.4.14
+Upd-3 : 14.4.14
+Upd-4 : 15.4.14
+Upd-5 : 20.4.14
+Upd-6 : 7.5.14
+Upd-7 : 10.5.14
+
+Upd-9 : 16.5.14
+
+//добавить опрос датчика освещённости - динамическая подсветка экрана и 2 ур яркости vd1
+
+
+
+
+ТЗ на универсальный отладчик-эмулятор - тестер полупроводников(резисторов) и конденсаторов.
+
+1 -  Отлаживаемые интерфейсы i2c, 1Wire, SPI, Uart.
+    а - Связь с ПК через Uart, USB  -приоритетнее.
+    б - Ф-и для Uart - отправить данные, считать из буффера принятые.
+Софтовый ЮАРТ http://we.easyelectronics.ru/AVR/uart-programmnyy-na-atiny13a.html и http://we.easyelectronics.ru/Soft/soft_uart_x3-s-uverennym-priemom-i-polnym-dupleksom-dlya-lyubogo-mikrokontrollera-ispolzuya-odin-taymer.html
+
+    в - Ф-и для SPI - отправить-принять данные.
+(Программный http://we.easyelectronics.ru/Frankie/spi-programmnyy-pamyat-atmel-dataflash-at45db081d.html)
+      г - Ф-и для i2c  http://we.easyelectronics.ru/AVR/sniffer-emulyator-i2c-i-1-wire.html
+(Часть сниффера: отлов старт/стоп, данные+акк/накк
+Часть мастера: Команды для i2c мастер-режима могут быть такие:
+— Старт (Или повстарт)
+— Стоп
+— Записать байт. (Во втором байте — данные, которые нужно записать)
+— Прочитать байт, передать ACK
+— Прочитать байт, передать NACK
+
+Коды отчётов:
+— Передан start-condition
+— Передан stop-condition
+— Передали байт, нам ответили ACK
+— Передали байт, в ответ — NACK
+— Прочитали байт, сказали ACK
+— Прочитали байт, сказали NACK)
+
+д - Ф-и для 1Wire- Для работы с 1-Wire есть 5 команд:
+— Послать RESET импульс, и прочитать PRESENSE.
+— Прочитать байт
+— Передать байт
+— Подключить дополнительное питание на линию Dq
+— Отключить дополнительное питание.
+— принять/передать 1 тайм- слот
+
+После выполнения списка, отладчик может выдать вот такие коды:
+— Передали RESET, поймали PRESENSE импульс.
+— Передали RESET, но PRESENSE не было.
+— Байт прочитан
+— Байт передан
+— Дополнительное питание подключено
+— Дополнительное питание отключено
+
+2 - Тестер транзисторов, диодов, резисторов, капов.
+3 - Генератор меандра контролируемой частоты, осцилограф
+(http://r-rl.ru/news/tranzistornyj_tester/2012-12-28-9)
+4 - осцилограф?
+
+
+
+3 (К,Ж,З) выведеных светодиода (индикация разряда встроенного аккума-батарейки, а также происходящих событий на линиях/исправности деталей см.п.2)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void PARS_Handler(uint8_t argc, char *argv[])
+{
+char __flash *response = error;
+  uint8_t value = 0;
+  uint8_t mode = 0;
+  uint8_t i = 0;
+
+ uint8_t Interface_Num = 0;
+ uint32_t tmp = 0;
+ bool Tmp_param_1 = 0;
+ bool Tmp_param_2 = 0;
+
+  if (!strcmpf(argv[0], Set))
+  {
+    if (argc > 1){
+       value = PARS_StrToUchar(argv[1]);
+       if (value <= 7){
+         DDRX |= (1<<value);
+          response = ok;
+       }
+       else{
+          response = largeValue;
+       }
+    }
+  }
+
+
+if (!strcmpf(argv[0], Set))
+ {
+   if (argc > 1)
+  {
+     //////UART_0//////////////////////
+      if (!strcmpf(argv[1], Uart0) || !strcmpf(argv[1], Uart1))
+     {
+      if (!strcmpf(argv[1], Uart0)){Interface_Num = 0;}
+      if (!strcmpf(argv[1], Uart1)){Interface_Num = 1;}
+
+      if (argc > 2)    //Mode
+      {
+         if (!strcmpf(argv[2], Mode))
+         {
+          if (argc > 3)
+           {
+            tmp = PARS_StrToUchar(argv[3]);
+           if (tmp==1 || tmp==0)
+           {
+             RAM_settings.MODE_of_Uart[Interface_Num] = tmp;
+           // USART_Init(USART_0, tmp, EEsettings.BAUD[0]);
+            response = ok;
+           }
+           else{response = largeValue;}
+
+           i = 2; //go to next param "speed"
+         }
+        }
+
+        if (argc > 4)     //Speed
+        {
+          if (!strcmpf(argv[2+i], Speed)) //may be 3 or 5th param
+         {
+          if (argc > 5)
+          {
+            tmp = PARS_StrToUchar(argv[3+i]); //get Baud Rate
+           if (tmp <= MAX_BAUD_RATE)
+           {
+             RAM_settings.BAUD[Interface_Num] = tmp;
+            //USART_Init(USART_0, EE_settings.MODE_of_Uart[0], tmp);
+            response = ok;
+            i = 0;
+           }
+           else{response = largeValue; }
+         }
+        }
+       }
+
+      }
+     }
+
+ //////SPI//////////////////////
+      if (!strcmpf(argv[1], Spi))
+     {
+          i = 0;
+         if (!strcmpf(argv[2], Mode))
+         {
+            tmp = PARS_StrToUchar(argv[3]); //get mode
+           if (tmp==1 || tmp==0)
+           {
+            //SPI_Init(SPI_0, tmp, EE_settings.mode_of_Spi[0] & PHASE, EE_settings.mode_of_Spi[0] & POLARITY, EE_settings.prescaller_of_Spi[0]);
+            response = ok;
+           }
+           else{response = largeValue;}
+           i = 2; //go to next param "speed"
+         }
+
+          if (!strcmpf(argv[2+i], Speed)) //may be 3 or 5th param
+         {
+            tmp = PARS_StrToUchar(argv[3+i]);//get prescaller value
+           if (tmp <= MAX_SPI_SPEED)
+           {
+            //SPI_Init(SPI_0, EE_settings.mode_of_Spi[0] & MS_SLV, EE_settings.mode_of_Spi[0] & PHASE, EE_settings.mode_of_Spi[0] & POLARITY,tmp);
+            response = ok;
+            i += 2; //go to next param "PhaPol"
+           }
+           else{response = largeValue; }
+         }
+
+             if (!strcmpf(argv[2+i], PhaPol)) //may be 3 or 5 or 7th  param
+         {
+            tmp = PARS_StrToUchar(argv[3+i]);//get phase/polarity mode (0-3)
+           if (tmp>=0 || tmp <= 3)
+           {
+            switch(tmp){  //phase/polarity select
+             case 0:
+              Tmp_param_1 = 0; Tmp_param_2 = 0;
+             break;
+             case 1:
+              Tmp_param_1 = 0; Tmp_param_2 = 1;
+             break;
+             case 2:
+              Tmp_param_1 = 1; Tmp_param_2 = 0;
+             break;
+             case 3:
+              Tmp_param_1 = 1; Tmp_param_2 = 1;
+             break;
+             default:
+              Tmp_param_1 = 0; Tmp_param_2 = 0;
+             break;
+            }
+             SPI_Init(SPI_0, mode, Tmp_param_2 ,Tmp_param_1, EE_settings.prescaller_of_Spi[0]);
+             response = ok;
+            i = 0;
+            Tmp_param_1=0; Tmp_param_2=0;
+           }
+           else{response = wrongValue;}
+         }
+     }
+
+  }
+ }
+
+    if (!strcmpf(argv[0], boot))
+    {
+            #asm("call 0x1E00"); //Boot_reset "Goto bootloader"
+    }
+
+    if (!strcmpf(argv[0], reset))
+    {
+            #asm("jmp 0x0000"); //reset
+    }
+
+    if (!strcmpf(argv[0], dbg))
+    {
+      //  TIM2_ON();
+    }
+
+  USART_SendStrFl(USART_0,response);
+}
+
+/////////////////////////////////////////////////////////////
+
+
+
+
+USART_SendStr((char*)&dist); //convert dec to str
+
+
+/*
+USART_SendStr(SYSTEM_USART,"\r 1-2400 0.1 ");
+ltoa(calk_safe_baud(1, 24),str);
+USART_SendStr(USART_0,str); //convert dec to str
+
+USART_SendStr(SYSTEM_USART,"\r 0-9600 0.2 ");
+ltoa(calk_safe_baud(0, 96),str);
+USART_SendStr(USART_0,str); //convert dec to str
+
+USART_SendStr(SYSTEM_USART,"\r 1-9600 0.2 ");
+ltoa(calk_safe_baud(1, 96),str);
+USART_SendStr(USART_0,str); //convert dec to str
+
+USART_SendStr(SYSTEM_USART,"\r 0-14400 -0.8 ");
+ltoa(calk_safe_baud(0, 144),str);
+USART_SendStr(USART_0,str); //convert dec to str
+
+USART_SendStr(SYSTEM_USART,"\r 1-14400 0.6 ");
+ltoa(calk_safe_baud(1, 144),str);
+USART_SendStr(USART_0,str); //convert dec to str
+
+USART_SendStr(SYSTEM_USART,"\r 0-28800 2.1 ");
+ltoa(calk_safe_baud(0, 288),str);
+USART_SendStr(USART_0,str); //convert dec to str
+
+USART_SendStr(SYSTEM_USART,"\r 1-28800 -0.8 ");
+ltoa(calk_safe_baud(1, 288),str);
+USART_SendStr(USART_0,str); //convert dec to str
+
+USART_SendStr(SYSTEM_USART,"\r 1-38400 0.2 ");
+ltoa(calk_safe_baud(1, 384),str);
+USART_SendStr(USART_0,str); //convert dec to str
+
+USART_SendStr(SYSTEM_USART,"\r 0-57600 -3.5 ");
+ltoa(calk_safe_baud(0, 576),str);
+USART_SendStr(USART_0,str); //convert dec to str
+
+USART_SendStr(SYSTEM_USART,"\r 1-57600 2.1 ");
+ltoa(calk_safe_baud(1, 576),str);
+USART_SendStr(USART_0,str); //convert dec to str
+
+USART_SendStr(SYSTEM_USART,"\r 0-76800 -7 ");
+ltoa(calk_safe_baud(0, 768),str);
+USART_SendStr(USART_0,str); //convert dec to str
+
+USART_SendStr(SYSTEM_USART,"\r 1-76800 0.2 ");
+ltoa(calk_safe_baud(1, 768),str);
+USART_SendStr(USART_0,str); //convert dec to str
+
+USART_SendStr(SYSTEM_USART,"\r 0-115200 8.5 ");
+ltoa(calk_safe_baud(0, 1152),str);
+USART_SendStr(USART_0,str); //convert dec to str
+
+USART_SendStr(SYSTEM_USART,"\r 1-115200 -3.5 ");
+ltoa(calk_safe_baud(1, 1152),str);
+USART_SendStr(USART_0,str); //convert dec to str
+*/

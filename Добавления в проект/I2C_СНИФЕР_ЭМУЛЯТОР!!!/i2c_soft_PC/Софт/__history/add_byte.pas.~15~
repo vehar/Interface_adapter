@@ -1,0 +1,203 @@
+unit add_byte;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, math;
+
+type
+  TForm2 = class(TForm)
+    Label1: TLabel;
+    Label2: TLabel;
+    Label3: TLabel;
+    Label4: TLabel;
+    Edit1: TEdit;
+    Edit2: TEdit;
+    Edit3: TEdit;
+    Edit4: TEdit;
+    Button1: TButton;
+    Button2: TButton;
+    function IntToBin(v: byte): string;
+    function Bin2Int(v: string): word;
+    procedure Edit1Change(Sender: TObject);
+    procedure Edit2Change(Sender: TObject);
+    procedure Edit4Change(Sender: TObject);
+    procedure Edit3Change(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  Form2: TForm2;
+  Value: word;
+  allow_refresh: boolean=true;
+
+implementation
+
+{$R *.dfm}
+
+
+
+function TForm2.Bin2Int(v: string): word;
+var
+i: integer;
+tmp_Str: string;
+begin
+Result := 0;
+tmp_str := v;
+if Length(v)=0 then
+begin
+ Result := 256;
+ exit;
+end;
+
+while Length(tmp_str)<8 do tmp_str := tmp_str + '0';
+
+for I := 0 to 7 do
+begin
+ if tmp_str[i+1]='1' then Result := Result + Round(IntPower(2,i));
+
+ if (tmp_str[i+1]<>'0') or (tmp_str[i+1]<>'0') then
+  begin
+    Result := 256;
+    exit;
+  end; 
+end;
+end;
+
+procedure TForm2.Edit1Change(Sender: TObject);
+begin
+if not allow_refresh then exit;
+Edit1.Font.Color := clblack;
+allow_refresh := false;
+Value := StrToIntDef('$'+Edit1.Text, 256);
+ if value>255 then
+  begin
+   Edit2.Font.Color := clRed;
+   Edit3.Font.Color := clRed;
+   Edit4.Font.Color := clRed;
+   Edit2.Text := 'Ошибка';
+   Edit3.Text := 'Ошибка';
+   Edit4.Text := 'Ошибка';
+  end
+ else
+  begin
+   Edit2.Font.Color := clblack;
+   Edit3.Font.Color := clblack;
+   Edit4.Font.Color := clblack;
+   Edit2.Text := IntToStr(value);
+   Edit3.Text := IntToBin(value);
+   Edit4.Text := Char(Byte(value));
+  end;
+allow_refresh := true;
+end;
+
+procedure TForm2.Edit2Change(Sender: TObject);
+begin
+if not allow_refresh then exit;
+Edit2.Font.Color := clblack;
+allow_refresh := false;
+Value := StrToIntDef(Edit2.Text, 256);
+ if value>255 then
+  begin
+   Edit1.Font.Color := clRed;
+   Edit3.Font.Color := clRed;
+   Edit4.Font.Color := clRed;
+   Edit1.Text := 'Ошибка';
+   Edit3.Text := 'Ошибка';
+   Edit4.Text := 'Ошибка';
+  end
+ else
+  begin
+   Edit1.Font.Color := clblack;
+   Edit3.Font.Color := clblack;
+   Edit4.Font.Color := clblack;
+   Edit1.Text := IntToHex(value,2);
+   Edit3.Text := IntToBin(value);
+   Edit4.Text := Char(Byte(value));
+  end;
+allow_refresh := true;
+end;
+
+procedure TForm2.Edit3Change(Sender: TObject);
+begin
+if not allow_refresh then exit;
+Edit3.Font.Color := clblack;
+allow_refresh := false;
+value := Bin2Int(Edit3.Text);
+
+ if value=256 then
+  begin
+   Edit1.Font.Color := clRed;
+   Edit2.Font.Color := clRed;
+   Edit4.Font.Color := clRed;
+   Edit1.Text := 'Ошибка';
+   Edit2.Text := 'Ошибка';
+   Edit4.Text := 'Ошибка';
+  end
+ else
+  begin
+   Edit1.Font.Color := clblack;
+   Edit2.Font.Color := clblack;
+   Edit4.Font.Color := clblack;
+   Edit1.Text := IntToHex(value,2);
+   Edit2.Text := IntToStr(value);
+   Edit4.Text := Char(Byte(value));
+  end;
+allow_refresh := true;
+end;
+
+procedure TForm2.Edit4Change(Sender: TObject);
+begin
+if not allow_refresh then exit;
+Edit4.Font.Color := clblack;
+allow_refresh := false;
+if Length(Edit4.Text)>0 then
+ Value := Byte(Edit4.Text[1])
+else
+ Value := 256;
+
+ if value=256 then
+  begin
+   Edit1.Font.Color := clRed;
+   Edit2.Font.Color := clRed;
+   Edit3.Font.Color := clRed;
+   Edit1.Text := 'Ошибка';
+   Edit2.Text := 'Ошибка';
+   Edit3.Text := 'Ошибка';
+  end
+ else
+  begin
+   Edit1.Font.Color := clblack;
+   Edit2.Font.Color := clblack;
+   Edit3.Font.Color := clblack;
+   Edit1.Text := IntToHex(value,2);
+   Edit2.Text := IntToStr(value);
+   Edit3.Text := IntToBin(value);
+  end;
+allow_refresh := true;
+end;
+
+function TForm2.IntToBin(v: byte): string;
+var
+i: integer;
+tmp: byte;
+begin
+Result := '';
+
+tmp:=v;
+for I := 0 to 7 do
+ begin
+  if tmp and $80 = $80 then
+   Result := Result + '1'
+  else
+   Result := Result + '0';
+
+  tmp := tmp shl 1;
+ end;
+end;
+
+end.

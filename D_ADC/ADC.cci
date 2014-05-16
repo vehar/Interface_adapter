@@ -1,0 +1,6 @@
+VERSION:3 SOURCE_TIMESTAMP:44AA5F25
+NODE:I LEVEL:0 LINE:1 "C:\Users\abc\Dropbox\ADAPTER_CV_PROJ_v7 - current\D_ADC\ADC.h"
+NODE:F LEVEL:0 LINE:3 "ADC_init(void)"
+NODE:F LEVEL:0 LINE:11 "adc_use(void)"
+NODE:F LEVEL:0 LINE:18 "adc_calibrate(void)"
+NODE:F LEVEL:0 LINE:38 "adc_get_volt(void)"

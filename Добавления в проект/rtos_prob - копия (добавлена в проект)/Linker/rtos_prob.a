@@ -1,0 +1,177 @@
+;
+;#include <mega128.h>
+;PCODE: $00000000 VOL: 0
+	#ifndef __SLEEP_DEFINED__
+;PCODE: $00000001 VOL: 0
+	#define __SLEEP_DEFINED__
+;PCODE: $00000002 VOL: 0
+	.EQU __se_bit=0x20
+;PCODE: $00000003 VOL: 0
+	.EQU __sm_mask=0x1C
+;PCODE: $00000004 VOL: 0
+	.EQU __sm_powerdown=0x10
+;PCODE: $00000005 VOL: 0
+	.EQU __sm_powersave=0x18
+;PCODE: $00000006 VOL: 0
+	.EQU __sm_standby=0x14
+;PCODE: $00000007 VOL: 0
+	.EQU __sm_ext_standby=0x1C
+;PCODE: $00000008 VOL: 0
+	.EQU __sm_adc_noise_red=0x08
+;PCODE: $00000009 VOL: 0
+	.SET power_ctrl_reg=mcucr
+;PCODE: $0000000A VOL: 0
+	#endif
+;PCODE: $0000000B VOL: 0
+;PCODE: $0000000C VOL: 0
+;#include <delay.h>
+;#include <string.h>
+;#include <stdlib.h>
+;#include <stdio.h>
+;#include <stdint.h>
+;#include <io.h>
+;
+;#include "RTOS/HAL.h"
+;#include "RTOS/EERTOS.h"
+;#include "RTOS/EERTOSHAL.h"
+;
+;//RTOS Interrupt
+;// Timer2 overflow interrupt service routine
+;interrupt [RTOS_ISR] void timer2_comp_isr(void)
+; 0000 0011 {
+
+	.CSEG
+;PCODE: $0000000D VOL: 0
+;PCODE: $0000000E VOL: 0
+; 0000 0012  //DDRB.4^=1;
+; 0000 0013  TimerService();
+;PCODE: $0000000F VOL: 0
+; 0000 0014 }
+;PCODE: $00000010 VOL: 0
+;PCODE: $00000011 VOL: 0
+;PCODE: $00000012 VOL: 0
+;
+;// Прототипы задач ============================================================
+;void Task1 (void);
+;void Task2 (void);
+;void Task3 (void);
+;void Task4 (void);
+;
+;void Task5 (void);
+;void Task6 (void);
+;//============================================================================
+;//Область задач
+;//============================================================================
+;
+;void Task1 (void)
+; 0000 0023 {
+;PCODE: $00000013 VOL: 0
+;PCODE: $00000014 VOL: 0
+; 0000 0024 SetTimerTask(Task2,500);
+;PCODE: $00000015 VOL: 0
+;PCODE: $00000016 VOL: 0
+;PCODE: $00000017 VOL: 0
+;PCODE: $00000018 VOL: 0
+;PCODE: $00000019 VOL: 0
+; 0000 0025 LED_PORT  |=1<<LED1;
+;PCODE: $0000001A VOL: 0
+;PCODE: $0000001B VOL: 0
+; 0000 0026 }
+;PCODE: $0000001C VOL: 0
+;PCODE: $0000001D VOL: 0
+;
+;void Task2 (void)
+; 0000 0029 {
+;PCODE: $0000001E VOL: 0
+;PCODE: $0000001F VOL: 0
+; 0000 002A SetTimerTask(Task1,500);
+;PCODE: $00000020 VOL: 0
+;PCODE: $00000021 VOL: 0
+;PCODE: $00000022 VOL: 0
+;PCODE: $00000023 VOL: 0
+;PCODE: $00000024 VOL: 0
+; 0000 002B LED_PORT  &= ~(1<<LED1);
+;PCODE: $00000025 VOL: 0
+;PCODE: $00000026 VOL: 0
+; 0000 002C }
+;PCODE: $00000027 VOL: 0
+;PCODE: $00000028 VOL: 0
+;
+;void Task3 (void)
+; 0000 002F {
+;PCODE: $00000029 VOL: 0
+;PCODE: $0000002A VOL: 0
+; 0000 0030 SetTimerTask(Task4,1000);
+;PCODE: $0000002B VOL: 0
+;PCODE: $0000002C VOL: 0
+;PCODE: $0000002D VOL: 0
+;PCODE: $0000002E VOL: 0
+;PCODE: $0000002F VOL: 0
+; 0000 0031 LED_PORT  |= (1<<LED2);
+;PCODE: $00000030 VOL: 0
+;PCODE: $00000031 VOL: 0
+; 0000 0032 }
+;PCODE: $00000032 VOL: 0
+;PCODE: $00000033 VOL: 0
+;void Task4 (void)
+; 0000 0034 {
+;PCODE: $00000034 VOL: 0
+;PCODE: $00000035 VOL: 0
+; 0000 0035 SetTimerTask(Task3,1000);
+;PCODE: $00000036 VOL: 0
+;PCODE: $00000037 VOL: 0
+;PCODE: $00000038 VOL: 0
+;PCODE: $00000039 VOL: 0
+;PCODE: $0000003A VOL: 0
+; 0000 0036 LED_PORT  &=~ (1<<LED2);
+;PCODE: $0000003B VOL: 0
+;PCODE: $0000003C VOL: 0
+; 0000 0037 }
+;PCODE: $0000003D VOL: 0
+;PCODE: $0000003E VOL: 0
+;
+;
+;
+;
+;
+;// Declare your global variables here
+;
+;void main(void)
+; 0000 0040 {
+;PCODE: $0000003F VOL: 0
+; 0000 0041 InitAll();			// Инициализируем периферию
+;PCODE: $00000040 VOL: 0
+; 0000 0042 InitRTOS();			// Инициализируем ядро
+;PCODE: $00000041 VOL: 0
+; 0000 0043 RunRTOS();			// Старт ядра.
+;PCODE: $00000042 VOL: 0
+; 0000 0044 
+; 0000 0045 // Запуск фоновых задач.
+; 0000 0046 SetTask(Task1);     //290uS (50/50) and (10/10)   но при 1/1 таск 1 лагает
+;PCODE: $00000043 VOL: 0
+;PCODE: $00000044 VOL: 0
+;PCODE: $00000045 VOL: 0
+; 0000 0047 SetTask(Task3);    //290us
+;PCODE: $00000046 VOL: 0
+;PCODE: $00000047 VOL: 0
+;PCODE: $00000048 VOL: 0
+; 0000 0048 
+; 0000 0049   //SetTask(Task5);    //при добавлении задачи 285us высок ур 11мс, а низк - 2.5(!)
+; 0000 004A 
+; 0000 004B while(1) 		// Главный цикл диспетчера
+;PCODE: $00000049 VOL: 0
+; 0000 004C {
+; 0000 004D //wdt_reset();	// Сброс собачьего таймера
+; 0000 004E TaskManager();	// Вызов диспетчера
+;PCODE: $0000004A VOL: 0
+; 0000 004F }
+;PCODE: $0000004B VOL: 0
+;PCODE: $0000004C VOL: 0
+; 0000 0050 }
+;PCODE: $0000004D VOL: 0
+;PCODE: $0000004E VOL: 0
+;PCODE: $0000004F VOL: 0
+;//290uS (50/50) and (10/10)   но при 1/1 таск 1 лагает:
+;// (1 мс низк 10.1 высок волнистый и инверсия фал таск 1 и 2)
+;//при кол-ве задач  6 время задержки выполнения каждой по прежнему ~285uS
+;

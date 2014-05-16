@@ -1,0 +1,11 @@
+VERSION:3 SOURCE_TIMESTAMP:444E951D
+NODE:I LEVEL:0 LINE:14 "C:\Users\abc\Dropbox\ADAPTER_CV_PROJ_v7 - current\D_i2c\I2C.h"
+NODE:F LEVEL:0 LINE:25 "hard_twi_init(void)"
+NODE:F LEVEL:0 LINE:46 "hard_twi_start(void)"
+NODE:F LEVEL:0 LINE:52 "hard_twi_write_byte(unsigned char byte)"
+NODE:F LEVEL:0 LINE:58 "hard_twi_read_byte(void)"
+NODE:F LEVEL:0 LINE:64 "hard_twi_read_last_byte(void)"
+NODE:F LEVEL:0 LINE:70 "hard_twi_stop(void)"
+NODE:F LEVEL:0 LINE:74 "hard_twi_read_ACK(void)"
+NODE:F LEVEL:0 LINE:81 "hard_twi_read_NACK(void)"
+NODE:F LEVEL:0 LINE:88 "hard_twi_get_status(void)"

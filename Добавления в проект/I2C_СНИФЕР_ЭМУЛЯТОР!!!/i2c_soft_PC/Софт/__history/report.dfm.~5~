@@ -1,0 +1,35 @@
+object Form3: TForm3
+  Left = 0
+  Top = 0
+  BorderIcons = [biSystemMenu]
+  BorderStyle = bsSingle
+  Caption = #1054#1090#1095#1105#1090':'
+  ClientHeight = 306
+  ClientWidth = 251
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  PixelsPerInch = 96
+  TextHeight = 13
+  object ListBox1: TListBox
+    Left = 8
+    Top = 8
+    Width = 233
+    Height = 289
+    ItemHeight = 13
+    TabOrder = 0
+    OnClick = ListBox1Click
+  end
+  object GroupBox1: TGroupBox
+    Left = 8
+    Top = 306
+    Width = 233
+    Height = 95
+    Caption = 'GroupBox1'
+    TabOrder = 1
+  end
+end

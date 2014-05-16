@@ -1,0 +1,21 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Mega32Debugger", "Mega32Debugger.vbproj", "{35B173AC-FC1D-4F26-BB1E-C9ED487311B1}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{35B173AC-FC1D-4F26-BB1E-C9ED487311B1}.Debug.ActiveCfg = Debug|.NET
+		{35B173AC-FC1D-4F26-BB1E-C9ED487311B1}.Debug.Build.0 = Debug|.NET
+		{35B173AC-FC1D-4F26-BB1E-C9ED487311B1}.Release.ActiveCfg = Release|.NET
+		{35B173AC-FC1D-4F26-BB1E-C9ED487311B1}.Release.Build.0 = Release|.NET
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

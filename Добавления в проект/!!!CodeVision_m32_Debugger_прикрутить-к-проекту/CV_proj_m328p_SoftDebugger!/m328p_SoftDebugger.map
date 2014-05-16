@@ -1,0 +1,37 @@
+RAM Allocation
+Variable                                                          Address   Size
+--------------------------------------------------------------------------------
+db_break_id                                                       0x0300       1
+db_t0temp                                                         0x0301       1
+db_t1temp                                                         0x0302       1
+db_t2temp                                                         0x0303       1
+db_swstk                                                          0x0304       2
+db_hwstk                                                          0x0306       2
+db_regs                                                           0x0308      32
+db_sreg                                                           0x0328       1
+db_cmd_running                                                    0x0329       1
+db_logcount                                                       0x032A       2
+db_logMax                                                         0x032C       1
+db_logname                                                        0x032D      16
+db_temp                                                           0x033D       1
+db_temp1                                                          0x033E       1
+db_temp2                                                          0x033F       1
+db_temp3                                                          0x0340       2
+db_temp4                                                          0x0342       2
+msg                                                               0x0344      20
+_seed                                                             0x0358       4
+
+EEPROM Allocation
+Variable                                                          Address   Size
+--------------------------------------------------------------------------------
+
+Register Allocation
+Variable                                                          Register  Size
+--------------------------------------------------------------------------------
+time1                                                             R4           1
+time2                                                             R3           1
+time3                                                             R6           1
+tsk2c                                                             R5           1
+tsk3m                                                             R8           1
+led                                                               R7           1
+tmp                                                               R10          1

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<xs:schema id="debugger" elementFormDefault="qualified" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+	<xs:element name="debugger" type="debugType"></xs:element>
+	<xs:complexType name="regType">
+		<xs:complexContent>
+			<xs:restriction base="xs:anyType">
+				<xs:sequence>
+					<xs:element name="name" type="xs:string" />
+				</xs:sequence>
+				<xs:attribute name="address" type="xs:integer" msdata:ReadOnly="true" />
+			</xs:restriction>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="bitType">
+		<xs:sequence>
+			<xs:element name="name" type="xs:string" />
+		</xs:sequence>
+		<xs:attribute name="bit" type="xs:string" />
+	</xs:complexType>
+	<xs:complexType name="ioType">
+		<xs:sequence>
+			<xs:element name="register" type="regType" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="debugType">
+		<xs:complexContent>
+			<xs:restriction base="xs:anyType">
+				<xs:sequence>
+					<xs:element name="commPort" type="xs:int" />
+					<xs:element name="ioRegisters" type="ioType" />
+				</xs:sequence>
+			</xs:restriction>
+		</xs:complexContent>
+	</xs:complexType>
+</xs:schema>

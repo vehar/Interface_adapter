@@ -1,0 +1,20 @@
+
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MegaLoad .NET", "MegaLoad .NET.csproj", "{F929D44C-27E3-4388-A2F6-617E3362E626}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F929D44C-27E3-4388-A2F6-617E3362E626}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F929D44C-27E3-4388-A2F6-617E3362E626}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F929D44C-27E3-4388-A2F6-617E3362E626}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F929D44C-27E3-4388-A2F6-617E3362E626}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

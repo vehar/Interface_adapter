@@ -1,0 +1,52 @@
+CodeVision 1.24.6 Debugger for Atmel Mega32 Microcontrollers PC Interface
+Version 1.1
+William Goodrich - Cornell University
+
+1. Introduction  
+Refer to the program or ECE 476 web site for background information on the 
+purpose of this program.  The GForge site containing the source code and all
+documentation is located at: https://gforge.cis.cornell.edu/projects/mega32debug/.
+
+2. Installation Instructions
+This program does not require any files beyond the executable.  The config file is
+automatically generated if it does not exist.
+
+3. Getting Started
+The code for the CodeVision 1.24.6 Debugger for Atmel Mega32 microcontrollers must
+be downloaded and loaded on the mcu.  More in-depth instructions for this program are
+available at http://instruct1.cit.cornell.edu/courses/ee476/RTOS/Debugger/index.html
+The MCU must be in debug mode to enable the program to establish a connection and
+communicate with the mcu.  A serial connection must be established between the mcu
+and the computer running this program.  If the connection does not use the default 
+port 1 then port must be changed using the Setup-Communication command at the top of
+the screen.  The test connection button can be used to check if a connection can be
+established. The BAUD RATE is 19200!
+
+4. Read From MCU
+The program is now setup to start reading from the MCU.  The commands in the group
+Read Data From MCU read from the MCU.  The command In Map File reads all data storage
+used in the loaded map file.  If no map file is loaded then a dialog will be displayed
+to select one.  The command All Registers reads the information on both the data and 
+I/O registers from the mcu.  All Memory reads the information on all memory on the mcu.
+Each command always retrieves the data displayed under MCU Info.
+
+5. Write To MCU
+The list view on the right contains all the data storage information.  The first column
+contains the register name or memory address.  If the value listed in this column is 
+double-clicked then a message box appears where a new value for the register/memory 
+address can be entered.  The values should be entered in hex.  The program ensures that
+the values are valid.
+
+6. Loading MAP File
+The map file can also be selected using the command File-Open Map File.
+
+7. MCU Commands
+Functions of the buttons listed under the group Other Commands:
+Run Target - Exits the debugger and returns to running the target
+Stop Target - Attempts (if set enabled in debugger.c) to stop the target and enter debug mode
+Reset MCU - Reset
+
+8. Additional Features
+The information for the data registers, I/O registers, MCU info, and memory used in
+the map file can be printed out using File-Print. The names of all I/O registers can
+be changed using Setup-I/O Register.

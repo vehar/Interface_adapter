@@ -1,0 +1,199 @@
+XL
+H 2 areas E global symbols
+M main.c
+S push_xgsetF0FC Ref0000
+S _read_program_memory Ref0000
+S _write_page Ref0000
+S _enableRWW Ref0000
+S pop_xgsetF0FC Ref0000
+S _fill_temp_buffer Ref0000
+A text size 1B0 flags 0
+dbfile main.c
+dbfile C:\DATA\MegaLoad\ATMegaXXX\main.c
+dbfunc e GetPageNumber 0 fV
+dbsym r PageAddressHigh A c
+dbline FFFFFFFF 4
+dbline 380 4
+dbline 381 4
+dbline 383 8
+dbline 384 16
+dbline 387 22
+dbline FFFFFFFE 24
+dbline 0 24
+dbfunc e WriteFlashPage 2A fc
+dbsym l FlashCheckSum 0 c
+dbsym r CheckSum C c
+dbsym r Right A c
+dbsym r Left E c
+dbsym r TempInt 16 i
+dbsym r i 14 i
+dbline FFFFFFFF 30
+dbline 38E 30
+dbline 3A4 30
+dbline 3A5 34
+dbline 3A9 36
+dbline 3AA 3C
+dbline 3AB 3C
+dbline 3AC 40
+dbline 3AD 44
+dbline 3AE 54
+dbline 3AF 5A
+dbline 3B0 62
+dbline 3A9 62
+dbline 3A9 66
+dbline 3B2 6E
+dbline 3B2 76
+dbline 3B4 7A
+dbline 3B5 88
+dbline 3B6 96
+dbline 3B8 9A
+dbline 3B9 A0
+dbline 3BA A0
+dbline 3BB B6
+dbline 3BC D2
+dbline 3B8 D2
+dbline 3B8 D6
+dbline 3BD DE
+dbline 3BD E4
+dbline 3BF E8
+dbline FFFFFFFE EA
+dbline 0 EA
+dbfunc e RxChar F0 fc
+dbsym r TimeOut 10 i
+dbline FFFFFFFF F0
+dbline 425 F0
+dbline 426 F0
+dbline 429 F6
+dbline 42A F6
+dbline 42B F8
+dbline 42C FC
+dbline 42D 100
+dbline 42D 118
+dbline 42E 11A
+dbline 428 11A
+dbline 430 122
+dbline FFFFFFFE 126
+dbline 0 126
+dbfunc e TxChar 128 fV
+dbsym r ch 10 c
+dbline FFFFFFFF 128
+dbline 436 128
+dbline 437 12A
+dbline 437 12C
+dbline 439 134
+dbline FFFFFFFE 138
+dbline 0 138
+dbfunc e main 13A fV
+dbline FFFFFFFF 13A
+dbline 448 13A
+dbline 449 13A
+dbline 44C 13E
+dbline 44D 144
+dbline 44E 14A
+dbline 455 150
+dbline 456 152
+dbline 457 156
+dbline 458 15C
+dbline 459 15C
+dbline 45A 160
+dbline 45B 164
+dbline 45C 168
+dbline 45D 16C
+dbline 45F 170
+dbline 460 172
+dbline 463 178
+dbline 464 178
+dbline 465 17A
+dbline 467 17C
+dbline 467 18C
+dbline 469 18E
+dbline 469 194
+dbline 46A 19A
+dbline 46B 19E
+dbline 462 19E
+dbline 473 1A0
+dbline 476 1A0
+dbline 47A 1A4
+dbline 47B 1A8
+dbline 47D 1AA
+dbline FFFFFFFE 1AE
+dbline 0 1AE
+S _main Def013A
+S _GetPageNumber Def0000
+S _RxChar Def00F0
+S _TxChar Def0128
+S _WriteFlashPage Def002A
+A bss size 104 flags 20
+dbfile C:\DATA\MegaLoad\ATMegaXXX\main.c
+dbsym e RealPageAddress 0 i
+dbsym e PageAddress 2 i
+dbsym e PageBuffer 4 A[256:256]c
+S _RealPageAddress Def0000
+S _PageBuffer Def0004
+S _PageAddress Def0002
+T 00 00 AA 92 BA 92 75 D0 A0 2E 73 D0 3A 2C 20 2E
+R 00 00 00 00
+T 0E 00 30 92 01 00 20 92 00 00 32 2C 22 24 30 92
+R 00 00 00 00 00 04 01 00 00 08 01 00
+T 1C 00 03 00 20 92 02 00 AB BE B9 90 A9 90 08 95
+R 00 00 00 00 00 02 01 00 00 06 01 00
+T 2A 00 0E 94 00 00 21 97 00 24 08 82 CC 24 44 27
+R 00 00 00 00 12 04 00 00
+T 38 00 55 27 15 C0 59 D0 A0 2E 57 D0 E0 2E 2E 2C
+R 00 00 00 00
+T 46 00 33 24 32 2C 22 24 6A 2D 77 27 62 0D 73 1D
+R 00 00 00 00
+T 54 00 2A 2C 20 0E C2 0C 9A 01 8B 01 0E 94 00 00
+R 00 00 00 00 12 0E 05 00
+T 62 00 4E 5F 5F 4F 40 30 E1 E0 5E 07 38 F3 40 D0
+R 00 00 00 00
+T 70 00 E0 2E C0 16 11 F0 00 27 38 C0 23 E0 00 91
+R 00 00 00 00
+T 7E 00 02 00 10 91 03 00 0E 94 00 00 25 E0 00 91
+R 00 00 00 00 00 02 01 00 00 06 01 00 12 0A 02 00
+T 8C 00 02 00 10 91 03 00 0E 94 00 00
+R 00 00 00 00 00 02 01 00 00 06 01 00 12 0A 02 00
+T 96 00 0E 94 00 00 44 27 55 27 1B C0 22 27 00 91
+R 00 00 00 00 12 04 03 00
+T A4 00 02 00 10 91 03 00 04 0F 15 1F 0E 94 00 00
+R 00 00 00 00 00 02 01 00 00 06 01 00 12 0E 01 00
+T B2 00 78 01 B7 01 CB 01 80 70 1C 01 23 2C 33 24
+R 00 00 00 00
+T C0 00 CB 01 90 70 82 0D 93 1D 28 80 33 24 28 0E
+R 00 00 00 00
+T CE 00 39 1E 28 82 4E 5F 5F 4F 40 30 E1 E0 5E 07
+R 00 00 00 00
+T DC 00 08 F3 08 80 C0 14 11 F0 00 27 01 C0 01 E0
+R 00 00 00 00
+T EA 00 21 96 0C 94 00 00
+R 00 00 00 00 12 06 04 00
+T F0 00 00 27 11 27 12 C0 A8 95 0E 5F 1F 4F 01 50
+R 00 00 00 00
+T FE 00 10 40 8A EF 9F EF A0 E0 B0 E0 18 01 44 24
+R 00 00 00 00
+T 0C 01 55 24 82 15 93 05 A4 05 B5 05 0C F4 04 C0
+R 00 00 00 00
+T 1A 01 20 90 C0 00 27 FE EA CF 00 91 C6 00 08 95
+R 00 00 00 00
+T 28 01 01 C0 A8 95 20 90 C0 00 25 FE FB CF 00 93
+R 00 00 00 00
+T 36 01 C6 00 08 95
+R 00 00 00 00
+T 3A 01 81 E0 8E B9 80 E1 80 93 C4 00 88 E1 80 93
+R 00 00 00 00
+T 48 01 C1 00 86 E8 80 93 C2 00 CF DF 0E E3 E9 DF
+R 00 00 00 00
+T 56 01 CC DF 0C 33 11 F5 04 E5 E4 DF 01 E9 E2 DF
+R 00 00 00 00
+T 64 01 01 E7 E0 DF 03 E6 DE DF 04 E3 DC DF BF DF
+R 00 00 00 00
+T 72 01 01 E2 D9 DF 13 C0 A8 95 42 DF 80 91 00 00
+R 00 00 00 00 00 0E 01 00
+T 80 01 90 91 01 00 8F 3F EF EF 9E 07 09 F4 09 C0
+R 00 00 00 00 00 04 01 00
+T 8E 01 4D DF 00 23 19 F0 01 E2 C8 DF 02 C0 00 E4
+R 00 00 00 00
+T 9C 01 C5 DF EC CF 22 24 2B BE 81 E0 85 BF 25 BE
+R 00 00 00 00
+T AA 01 0C 94 00 00 08 95
+R 00 00 00 00

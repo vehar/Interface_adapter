@@ -1,0 +1,5 @@
+VERSION:3 SOURCE_TIMESTAMP:44AA5DD4
+NODE:I LEVEL:0 LINE:1 "adapter.h"
+NODE:I LEVEL:0 LINE:3 "D_usart\usart.h"
+NODE:I LEVEL:0 LINE:6 "C:\Users\abc\Dropbox\ADAPTER_CV_PROJ_v7 - current\D_Globals\global_variables.h"
+NODE:F LEVEL:0 LINE:8 "adc_isr(void)"

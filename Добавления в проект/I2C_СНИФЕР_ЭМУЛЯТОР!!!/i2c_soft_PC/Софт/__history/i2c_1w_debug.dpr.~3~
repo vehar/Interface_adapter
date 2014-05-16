@@ -1,0 +1,15 @@
+program i2c_1w_debug;
+
+uses
+  Forms,
+  form_0 in 'form_0.pas' {Form1},
+  add_byte in 'add_byte.pas' {Form2};
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.CreateForm(TForm2, Form2);
+  Application.CreateForm(TForm1, Form1);
+  Application.Run;
+end.

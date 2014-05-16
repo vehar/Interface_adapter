@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2010.11.30 17:00:13.046.pas,D:\Мои документы\Borland Studio Projects\Unit1.pas=F:\d. Проекты и исследования\I2C debugger\Софт\form_0.pas</Transaction>
+    <Transaction>2010.11.30 17:00:13.046.dfm,D:\Мои документы\Borland Studio Projects\Unit1.dfm=F:\d. Проекты и исследования\I2C debugger\Софт\form_0.dfm</Transaction>
+    <Transaction>2010.11.30 17:00:27.531.bdsproj,D:\Мои документы\Borland Studio Projects\Project1.bdsproj=F:\d. Проекты и исследования\I2C debugger\Софт\i2c_1w_debug.bdsproj</Transaction>
+    <Transaction>2010.12.03 14:06:40.281.pas,F:\d. Проекты и исследования\I2C debugger\Софт\Unit2.pas=F:\d. Проекты и исследования\I2C debugger\Софт\add_byte.pas</Transaction>
+    <Transaction>2010.12.03 14:06:40.281.dfm,F:\d. Проекты и исследования\I2C debugger\Софт\Unit2.dfm=F:\d. Проекты и исследования\I2C debugger\Софт\add_byte.dfm</Transaction>
+    <Transaction>2010.12.03 17:09:01.359.pas,F:\d. Проекты и исследования\I2C debugger\Софт\Unit3.pas=F:\d. Проекты и исследования\I2C debugger\Софт\report.pas</Transaction>
+    <Transaction>2010.12.03 17:09:01.359.dfm,F:\d. Проекты и исследования\I2C debugger\Софт\Unit3.dfm=F:\d. Проекты и исследования\I2C debugger\Софт\report.dfm</Transaction>
+  </Transactions>
+</BorlandProject>

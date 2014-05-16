@@ -1,0 +1,13 @@
+RAM Allocation
+Variable                                                          Address   Size
+--------------------------------------------------------------------------------
+
+EEPROM Allocation
+Variable                                                          Address   Size
+--------------------------------------------------------------------------------
+
+Register Allocation
+Variable                                                          Register  Size
+--------------------------------------------------------------------------------
+PageAddress                                                       R4,R5        2
+RealPageAddress                                                   R6,R7        2

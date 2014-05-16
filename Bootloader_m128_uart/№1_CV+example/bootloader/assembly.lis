@@ -1,0 +1,151 @@
+                                .text
+                                
+                ;*********************************************************
+                ; Place a 1 for the processor you want use
+                ;*********************************************************
+                
+ 0000           MEGA8    = 0
+ 0000           MEGA16   = 0  
+ 0000           MEGA64   = 0  
+ 0000           MEGA128  = 0  
+ 0000           MEGA32   = 0  
+ 0000           MEGA162  = 0  
+ 0000           MEGA169  = 0  
+ 0000           MEGA8515 = 0  
+ 0000           MEGA8535 = 0  
+ 0000           MEGA163  = 0  
+ 0000           MEGA323  = 0  
+ 0000           MEGA48   = 0  
+ 0000           MEGA88   = 0  
+ 0000           MEGA168  = 0  
+ 0000           MEGA165  = 0  
+ 0000           MEGA3250 = 0  
+ 0000           MEGA6450 = 0  
+ 0000           MEGA3290 = 0  
+ 0000           MEGA6490 = 0  
+ 0000           MEGA406  = 0  
+ 0000           MEGA640  = 0  
+ 0000           MEGA1280 = 0  
+ 0000           MEGA2560 = 0  
+ 0000           MCAN128  = 0  
+ 0000           MEGA164	 = 0  
+ 0000           MEGA328	 = 0  
+ 0000           MEGA324	 = 0  
+ 0000           MEGA325	 = 0  
+ 0000           MEGA644	 = 0  
+ 0000           MEGA645	 = 0  
+ 0000           MEGA1281 = 0  
+ 0001           MEGA2561 = 1 
+ 0000           MEGA404	 = 0  
+ 0000           MUSB1286 = 0  
+ 0000           MUSB1287 = 0  
+ 0000           MUSB162	 = 0  
+ 0000           MUSB646	 = 0  
+ 0000           MUSB647	 = 0  
+ 0000           MUSB82	 = 0  
+ 0000           MMCAN32	 = 0  
+ 0000           MMCAN64	 = 0  
+ 0000           MEGA329  = 0
+ 0000           MEGA649  = 0
+ 0000           MEGA256  = 0
+ 0000           
+ 0000           ;*********************************************************
+ 0000           ; For a bootloader that fit in 256k without EEprom & Lockbits
+ 0000           ;*********************************************************
+ 0000           
+ 0000           SMALL256 = 0
+ 0000           
+ 0000           ;*********************************************************
+ 0000           ;*********************************************************
+ 0000           ;*********************************************************
+ 0000           ;*********************************************************
+ 0000           ; DO NOT CHANGE ANYTHING BELOW THIS LINE !!!!!!!
+ 0000           ;*********************************************************
+ 0000           ;*********************************************************
+ 0000           ;*********************************************************
+ 0000           ;*********************************************************
+ 0000           
+                .if MEGA64 | MEGA128 | MEGA1280
+                    SPMCR = 0x68
+                .elif MEGA324 | MEGA644
+                    SPMCR = 0x37
+                .else
+ 0057               SPMCR = 0x57
+                .endif
+                
+                ;-----------------------------------------
+                
+                ; void write_page (unsigned int adr, unsigned char function);
+                ; bits 8:15 adr addresses the page...(must setup RAMPZ beforehand!!!)
+ 0000           _write_page::
+ 0000 20D0          XCALL __WAIT_SPMEN__
+ 0002 F801          movw    r30, r16        ;move address to z pointer (R31 = ZH, R30 = ZL)
+ 0004 20935700      STS     SPMCR, R18      ;argument 2 decides function
+ 0008 E895          SPM                     ;perform pagewrite
+ 000A 0895          RET
+ 000C           
+ 000C           ;-----------------------------------------
+ 000C           
+ 000C           ; void fill_temp_buffer (unsigned int data, unsigned int adr);
+ 000C           ; bits 7:1 in adr addresses the word in the page... (2=first word, 4=second word etc..)
+ 000C           _fill_temp_buffer::
+ 000C 1AD0          XCALL __WAIT_SPMEN__
+ 000E F901          movw    r30, r18        ;move adress to z pointer (R31=ZH R30=ZL)
+ 0010 0801          movw    r0, r16         ;move data to reg 0 and 1
+ 0012 31E0          LDI     R19, 0x01
+ 0014 30935700      STS     SPMCR, R19
+ 0018 E895          SPM                     ;Store program memory
+ 001A 0895          RET      
+ 001C                   
+ 001C           ;-----------------------------------------      
+ 001C           
+                .if SMALL256
+                .else
+                ;unsigned int read_program_memory (unsigned int adr ,unsigned char cmd);
+ 001C           _read_program_memory::
+ 001C F801          movw    r30, r16        ;move adress to z pointer
+ 001E 20FD          SBRC    R18, 0          ;read lockbits? (second argument = 0x09)
+ 0020 20935700      STS     SPMCR, R18      ;if so, place second argument in SPMEN register
+                .if MEGA128 | MEGA2560 | MEGA2561 | MEGA1280 | MCAN128 | MEGA256 | MEGA1281
+ 0024 0791          ELPM    r16, Z+         ;read LSB
+ 0026 1691          ELPM    r17, Z          ;read MSB
+                .else
+                    LPM     r16, Z+
+                    LPM     r17, Z
+                .endif
+ 0028 0895          RET
+                .endif
+                
+                ;-----------------------------------------
+                
+                .if SMALL256
+                .else
+                ;void write_lock_bits (unsigned char val);
+ 002A           _write_lock_bits::
+ 002A 002E           MOV     R0, R16   
+ 002C 19E0           LDI     R17, 0x09     
+ 002E 10935700       STS     SPMCR, R17
+ 0032 E895           SPM                ;write lockbits
+ 0034 0895           RET
+                .endif
+                
+                ;-----------------------------------------
+                        
+ 0036           _enableRWW::
+ 0036 05D0              XCALL __WAIT_SPMEN__
+ 0038 B1E1          LDI R27,0x11
+ 003A B0935700      STS SPMCR,R27
+ 003E E895          SPM
+ 0040 0895          RET   
+ 0042                   
+ 0042           ;-----------------------------------------           
+ 0042           
+ 0042           __WAIT_SPMEN__:
+ 0042 B0915700      LDS     R27,SPMCR       ; load SPMCR to R27
+ 0046 B0FD          SBRC    R27,0           ; check SPMEN flag
+ 0048 FCCF          RJMP    __WAIT_SPMEN__  ; wait for SPMEN flag cleared        
+ 004A 0895          RET
+ 004C                   
+ 004C           ;-----------------------------------------
+ 004C           
+ 004C           

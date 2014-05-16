@@ -1,0 +1,21 @@
+XL
+H 1 areas 5 global symbols
+M assembly.s
+A text size 4C flags 0
+S _read_program_memory Def001C
+S _write_page Def0000
+S _write_lock_bits Def002A
+S _enableRWW Def0036
+S _fill_temp_buffer Def000C
+T 00 00 20 D0 F8 01 20 93 57 00 E8 95 08 95 1A D0
+R 00 00 00 00
+T 0E 00 F9 01 08 01 31 E0 30 93 57 00 E8 95 08 95
+R 00 00 00 00
+T 1C 00 F8 01 20 FD 20 93 57 00 07 91 16 91 08 95
+R 00 00 00 00
+T 2A 00 00 2E 19 E0 10 93 57 00 E8 95 08 95 05 D0
+R 00 00 00 00
+T 38 00 B1 E1 B0 93 57 00 E8 95 08 95 B0 91 57 00
+R 00 00 00 00
+T 46 00 B0 FD FC CF 08 95
+R 00 00 00 00

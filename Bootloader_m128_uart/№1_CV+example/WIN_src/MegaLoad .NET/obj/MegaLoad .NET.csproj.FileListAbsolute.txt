@@ -1,0 +1,5 @@
+E:\Съемный диск (I)\AVR0\Примеры\Загрузчики\№1_CV+example\WIN_src\MegaLoad .NET\obj\Debug\ResolveAssemblyReference.cache
+E:\Съемный диск (I)\AVR0\Примеры\Загрузчики\№1_CV+example\WIN_src\MegaLoad .NET\obj\Debug\MegaLoad_.NET.AboutForm.resources
+E:\Съемный диск (I)\AVR0\Примеры\Загрузчики\№1_CV+example\WIN_src\MegaLoad .NET\obj\Debug\MegaLoad_.NET.MegaLoadForm.resources
+E:\Съемный диск (I)\AVR0\Примеры\Загрузчики\№1_CV+example\WIN_src\MegaLoad .NET\obj\Debug\MegaLoad_.NET.MonitorForm.resources
+E:\Съемный диск (I)\AVR0\Примеры\Загрузчики\№1_CV+example\WIN_src\MegaLoad .NET\obj\Debug\MegaLoad .NET.csproj.GenerateResource.Cache

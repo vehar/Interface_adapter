@@ -1,0 +1,1554 @@
+;//*****************************************************************************
+;//* BootLoader 7.4
+;//*
+;//* Devices supported at this time and report Ok, from users
+;//* ATMega8
+;//* ATMega16
+;//* ATMega32
+;//* ATMega64
+;//* ATMega128
+;//* ATMega162
+;//* ATMega169
+;//* ATMega8515
+;//* ATMega8535
+;//* ATMega88
+;//* ATMega1280
+;//* ATMega2560
+;//* ATMCAN128
+;//* ATMega164/324/644
+;//* ATMega324
+;//* ATMega324P
+;//* ATMega2561
+;//* ATMega164
+;//* ATMCAN32
+;//* ATMega328
+;//*
+;//* Everything is AS IS without any warranty of any kind.
+;//*
+;//* Note:
+;//* -----
+;//* I can't write bootloader of all the MCU it's not my primary job and I don't
+;//* make $$$ with that
+;//*
+;//* If you make new #define please let me know I will update the bootloader
+;//* file it will help other AVR users
+;//*
+;//* bibi@MicroSyl.com
+;//*****************************************************************************
+;
+;
+;//*****************************************************************************
+;//*****************************************************************************
+;// IF YOU MAKE NEW DEFINE THAT IS WORKING PLEASE LET ME KNOW TO UPDATE MEGALOAD
+;// This software is free, so I can't pass all my time writting new bootloader
+;// for new MCU. I'm shure that you can help me and help ALL MEGALOAD USERS
+;//*****************************************************************************
+;//*****************************************************************************
+;
+;
+;//*****************************************************************************
+;//
+;// To setup the bootloader for your project you must
+;// remove the comment below to fit with your hardware
+;// recompile it using ICCAVR setup for bootloader
+;//
+;// Flash, EEprom, Lockbit Programming take a bootloader of 512 word
+;//
+;// if you chose the SMALL256 you will only be able to program the flash without
+;// any communication and flash verification.  You will need a bootloader size
+;// of 256 word
+;//
+;//*****************************************************************************
+;// MCU selection
+;//
+;// *************************************
+;// *->Do the same thing in assembly.s<-*
+;// *************************************
+;//
+;//*****************************************************************************
+;
+;//#define MEGATYPE  Mega8
+;//#define MEGATYPE Mega16  //Tested
+;//#define MEGATYPE Mega64
+;//#define MEGATYPE Mega128
+;//#define MEGATYPE Mega32
+;//#define MEGATYPE Mega162
+;//#define MEGATYPE Mega169
+;//#define MEGATYPE Mega8515
+;//#define MEGATYPE Mega8535
+;//#define MEGATYPE Mega163
+;//#define MEGATYPE Mega323
+;//#define MEGATYPE Mega48
+;//#define MEGATYPE Mega88
+;//#define MEGATYPE Mega168
+;//#define MEGATYPE Mega165
+;//#define MEGATYPE Mega3250
+;//#define MEGATYPE Mega6450
+;//#define MEGATYPE Mega3290
+;//#define MEGATYPE Mega6490
+;//#define MEGATYPE Mega406
+;//#define MEGATYPE Mega640
+;#define MEGATYPE Mega128
+;//#define MEGATYPE Mega1280
+;//#define MEGATYPE Mega2560
+;//#define MEGATYPE MCAN128
+;//#define MEGATYPE Mega164
+;//#define MEGATYPE Mega328
+;//#define MEGATYPE Mega324
+;//#define MEGATYPE Mega325
+;//#define MEGATYPE Mega644
+;//#define MEGATYPE Mega645
+;//#define MEGATYPE Mega1281
+;//#define MEGATYPE Mega2561
+;//#define MEGATYPE Mega404
+;//#define MEGATYPE MUSB1286
+;//#define MEGATYPE MUSB1287
+;//#define MEGATYPE MUSB162
+;//#define MEGATYPE MUSB646
+;//#define MEGATYPE MUSB647
+;//#define MEGATYPE MUSB82
+;//#define MEGATYPE MCAN32
+;//#define MEGATYPE MCAN64
+;//#define MEGATYPE Mega329
+;//#define MEGATYPE Mega649
+;//#define MEGATYPE Mega256
+;
+;//*****************************************************************************
+;// MCU Frequency
+;//*****************************************************************************
+;#define XTAL        16000000
+;
+;//*****************************************************************************
+;// Bootload on UART x
+;//*****************************************************************************
+;#define UART        0
+;//#define UART       1
+;//#define UART       2
+;//#define UART       3
+;
+;//*****************************************************************************
+;// BaudRate
+;//*****************************************************************************
+;#define BAUDRATE     56000
+;
+;//*****************************************************************************
+;// EEprom programming
+;// enable EEprom programing via bootloader
+;//*****************************************************************************
+;//#define EEPROM
+;
+;//*****************************************************************************
+;// LockBit programming
+;// enable LOCKBIT programing via bootloader
+;//*****************************************************************************
+;//#define LOCKBIT
+;
+;//*****************************************************************************
+;// Small 256 Bootloader without eeprom programming, lockbit programming
+;// and no data verification
+;//*****************************************************************************
+;#define SMALL256
+;
+;//*****************************************************************************
+;// RS485
+;// if you use RS485 half duplex for bootloader
+;// make the appropriate change for RX/TX transceiver switch
+;//*****************************************************************************
+;//#define RS485DDR  DDRB
+;//#define RS485PORT PORTB
+;//#define RS485TXE  0x08
+;
+;//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+;//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+;//                 DO NOT CHANGE ANYTHING BELOW THIS LINE
+;//               IF YOU DON'T REALLY KNOW WHAT YOU ARE DOING
+;//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+;//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+;
+;#define WDR() #asm("wdr")
+;
+;#define Mega8           'A'
+;#define Mega16          'B'
+;#define Mega64          'C'
+;#define Mega128         'D'
+;#define Mega32          'E'
+;#define Mega162         'F'
+;#define Mega169         'G'
+;#define Mega8515        'H'
+;#define Mega8535        'I'
+;#define Mega163         'J'
+;#define Mega323         'K'
+;#define Mega48          'L'
+;#define Mega88          'M'
+;#define Mega168         'N'
+;
+;#define Mega165         0x80
+;#define Mega3250        0x81
+;#define Mega6450        0x82
+;#define Mega3290        0x83
+;#define Mega6490        0x84
+;#define Mega406         0x85
+;#define Mega640         0x86
+;#define Mega1280        0x87
+;#define Mega2560        0x88
+;#define MCAN128         0x89
+;#define Mega164					0x8a
+;#define Mega328					0x8b
+;#define Mega324					0x8c
+;#define Mega325					0x8d
+;#define Mega644					0x8e
+;#define Mega645					0x8f
+;#define Mega1281				0x90
+;#define Mega2561				0x91
+;#define Mega404					0x92
+;#define MUSB1286				0x93
+;#define MUSB1287				0x94
+;#define MUSB162					0x95
+;#define MUSB646					0x96
+;#define MUSB647					0x97
+;#define MUSB82					0x98
+;#define MCAN32					0x9a
+;#define MCAN64					0x9b
+;#define Mega329					0x9c
+;#define Mega649					0x9d
+;#define Mega256					0x9e
+;
+;#define Flash1k         'g'
+;#define Flash2k         'h'
+;#define Flash4k         'i'
+;#define Flash8k         'l'
+;#define Flash16k        'm'
+;#define Flash32k        'n'
+;#define Flash64k        'o'
+;#define Flash128k       'p'
+;#define Flash256k       'q'
+;#define Flash40k        'r'
+;
+;#define EEprom64        '.'
+;#define EEprom128       '/'
+;#define EEprom256       '0'
+;#define EEprom512       '1'
+;#define EEprom1024      '2'
+;#define EEprom2048      '3'
+;#define EEprom4096      '4'
+;
+;#define Boot128         'a'
+;#define Boot256         'b'
+;#define Boot512         'c'
+;#define Boot1024        'd'
+;#define Boot2048        'e'
+;#define Boot4096        'f'
+;
+;#define Page32          'Q'
+;#define Page64          'R'
+;#define Page128         'S'
+;#define Page256         'T'
+;#define Page512         'V'
+;
+;#if !(defined MEGATYPE) && !(defined MCU)
+;  #error "Processor Type is Undefined"
+;#endif
+;
+;#ifdef EEPROM
+;  #define  BootSize       Boot1024
+;#endif
+;
+;#ifndef EEPROM
+;  #define  BootSize       Boot512
+;#endif
+;
+;#if (MEGATYPE == Mega8)
+;  #include "iom8v.h"
+;  #define  DeviceID       Mega8
+;  #define  FlashSize      Flash8k
+;  #define  PageSize       Page64
+;  #define  EEpromSize     EEprom512
+;  #define  PageByte       64
+;  #define  NSHIFTPAGE     6
+;  #define  INTVECREG      GICR
+;  #define  PULLUPPORT     PORTD
+;  #define  PULLUPPIN      0x01
+;#endif
+;
+;#if (MEGATYPE == Mega16)
+; // #include "iom16v.h"
+;   #include <mega16.h>
+;  #define  DeviceID       Mega16
+;  #define  FlashSize      Flash16k
+;  #define  PageSize       Page128
+;  #define  EEpromSize     EEprom512
+;  #define  PageByte       128
+;  #define  NSHIFTPAGE     7
+;  #define  INTVECREG      GICR
+;  #define  PULLUPPORT     PORTD
+;  #define  PULLUPPIN      0x01
+;#endif
+;
+;#if (MEGATYPE == Mega64)
+;  #include "iom64v.h"
+;  #define  DeviceID       Mega64
+;  #define  FlashSize      Flash64k
+;  #define  PageSize       Page256
+;  #define  EEpromSize     EEprom2048
+;  #define  PageByte       256
+;  #define  NSHIFTPAGE     8
+;  #define  INTVECREG      MCUCR
+;  #if (UART == 0)
+;    #define PULLUPPORT      PORTE
+;    #define PULLUPPIN       0x01
+;  #endif
+;
+;  #if (UART == 1)
+;    #define PULLUPPORT      PORTD
+;    #define PULLUPPIN       0x04
+;  #endif
+;#endif
+;
+;#if (MEGATYPE == Mega128)
+; // #include "iom128v.h"
+; #include <mega128.h>
+;PCODE: $00000000 VOL: 0
+	#ifndef __SLEEP_DEFINED__
+;PCODE: $00000001 VOL: 0
+	#define __SLEEP_DEFINED__
+;PCODE: $00000002 VOL: 0
+	.EQU __se_bit=0x20
+;PCODE: $00000003 VOL: 0
+	.EQU __sm_mask=0x1C
+;PCODE: $00000004 VOL: 0
+	.EQU __sm_powerdown=0x10
+;PCODE: $00000005 VOL: 0
+	.EQU __sm_powersave=0x18
+;PCODE: $00000006 VOL: 0
+	.EQU __sm_standby=0x14
+;PCODE: $00000007 VOL: 0
+	.EQU __sm_ext_standby=0x1C
+;PCODE: $00000008 VOL: 0
+	.EQU __sm_adc_noise_red=0x08
+;PCODE: $00000009 VOL: 0
+	.SET power_ctrl_reg=mcucr
+;PCODE: $0000000A VOL: 0
+	#endif
+;PCODE: $0000000B VOL: 0
+;PCODE: $0000000C VOL: 0
+;  #define  DeviceID       Mega128
+;  #define  FlashSize      Flash128k
+;  #define  PageSize       Page256
+;  #define  EEpromSize     EEprom4096
+;  #define  PageByte       256
+;  #define  NSHIFTPAGE     8
+;  #define  INTVECREG      MCUCR
+;  #define  RAMPZ_FLAG
+;  #define  USARTn
+;  #if (UART == 0)
+;    #define PULLUPPORT      PORTE
+;    #define PULLUPPIN       0x01
+;  #endif
+;
+;  #if (UART == 1)
+;    #define PULLUPPORT      PORTD
+;    #define PULLUPPIN       0x04
+;  #endif
+;#endif
+;
+;#if (MEGATYPE == Mega32)
+;  #include "iom32v.h"
+;  #define  DeviceID       Mega32
+;  #define  FlashSize      Flash32k
+;  #define  PageSize       Page128
+;  #define  EEpromSize     EEprom1024
+;  #define  PageByte       128
+;  #define  NSHIFTPAGE     7
+;  #define  INTVECREG      GICR
+;  #define  PULLUPPORT     PORTD
+;  #define  PULLUPPIN      0x01
+;#endif
+;
+;#if (MEGATYPE == Mega162)
+;  #include "iom162v.h"
+;  #define  DeviceID       Mega162
+;  #define  FlashSize      Flash16k
+;  #define  PageSize       Page128
+;  #define  EEpromSize     EEprom512
+;  #define  PageByte       128
+;  #define  NSHIFTPAGE     7
+;  #define  INTVECREG      GICR
+;  #if (UART == 0)
+;    #define PULLUPPORT      PORTD
+;    #define PULLUPPIN       0x01
+;  #endif
+;
+;  #if (UART == 1)
+;    #define PULLUPPORT      PORTB
+;    #define PULLUPPIN       0x04
+;  #endif
+;#endif
+;
+;#if (MEGATYPE == Mega169)
+;  #include "iom169v.h"
+;  #define  DeviceID       Mega169
+;  #define  FlashSize      Flash16k
+;  #define  PageSize       Page128
+;  #define  EEpromSize     EEprom512
+;  #define  PageByte       128
+;  #define  NSHIFTPAGE     7
+;  #define  INTVECREG      MCUCR
+;  #define  PULLUPPORT     PORTE
+;  #define  PULLUPPIN      0x01
+;#endif
+;
+;#if (MEGATYPE == Mega8515)
+;  #include "iom8515v.h"
+;  #define  DeviceID       Mega8515
+;  #define  FlashSize      Flash8k
+;  #define  PageSize       Page64
+;  #define  EEpromSize     EEprom512
+;  #define  PageByte       64
+;  #define  NSHIFTPAGE     6
+;  #define  INTVECREG      GICR
+;  #define  PULLUPPORT     PORTD
+;  #define  PULLUPPIN      0x01
+;#endif
+;
+;#if (MEGATYPE == Mega8535)
+;  #include "iom8515v.h"
+;  #define  DeviceID       Mega8535
+;  #define  FlashSize      Flash8k
+;  #define  PageSize       Page64
+;  #define  EEpromSize     EEprom512
+;  #define  PageByte       64
+;  #define  NSHIFTPAGE     6
+;  #define  INTVECREG      GICR
+;  #define  PULLUPPORT     PORTD
+;  #define  PULLUPPIN      0x01
+;#endif
+;
+;#if (MEGATYPE == Mega163)
+; #error "This MCU had not been define"
+;#endif
+;
+;#if (MEGATYPE == Mega323)
+; #error "This MCU had not been define"
+;#endif
+;
+;#if (MEGATYPE == Mega48)
+;  #include "iom48v.h"
+;  #define  DeviceID       Mega48
+;  #define  FlashSize      Flash4k
+;  #define  PageSize       Page64
+;  #define  EEpromSize     EEprom256
+;  #define  PageByte       64
+;  #define  NSHIFTPAGE     7
+;  #define  INTVECREG      MCUCR
+;  #define  PULLUPPORT     PORTD
+;  #define  PULLUPPIN      0x01
+;#endif
+;
+;#if (MEGATYPE == Mega88)
+;  #include "iom88v.h"
+;  #define  DeviceID       Mega88
+;  #define  FlashSize      Flash8k
+;  #define  PageSize       Page64
+;  #define  EEpromSize     EEprom512
+;  #define  PageByte       64
+;  #define  NSHIFTPAGE     6
+;  #define  INTVECREG      MCUCR
+;  #define  PULLUPPORT     PORTD
+;  #define  PULLUPPIN      0x01
+;#endif
+;
+;#if (MEGATYPE == Mega168)
+;  #include "iom168v.h"
+;  #define  DeviceID       Mega168
+;  #define  FlashSize      Flash16k
+;  #define  PageSize       Page128
+;  #define  EEpromSize     EEprom512
+;  #define  PageByte       128
+;  #define  NSHIFTPAGE     7
+;  #define  INTVECREG      MCUCR
+;  #define  PULLUPPORT     PORTD
+;  #define  PULLUPPIN      0x01
+;#endif
+;
+;#if (MEGATYPE == Mega165)
+;  #include "iom165v.h"
+;  #define  DeviceID       Mega165
+;  #define  FlashSize      Flash16k
+;  #define  PageSize       Page128
+;  #define  EEpromSize     EEprom512
+;  #define  PageByte       128
+;  #define  NSHIFTPAGE     7
+;  #define  INTVECREG      MCUCR
+;  #define  PULLUPPORT     PORTE
+;  #define  PULLUPPIN      0x01
+;#endif
+;
+;#if (MEGATYPE == Mega3250)
+;  #include "iom325v.h"
+;  #define  DeviceID       Mega3250
+;  #define  FlashSize      Flash32k
+;  #define  PageSize       Page128
+;  #define  EEpromSize     EEprom1024
+;  #define  PageByte       128
+;  #define  NSHIFTPAGE     7
+;  #define  INTVECREG      MCUCR
+;  #define  PULLUPPORT     PORTE
+;  #define  PULLUPPIN      0x01
+;#endif
+;
+;#if (MEGATYPE == Mega6450)
+;  #include "iom645v.h"
+;  #define  DeviceID       Mega6450
+;  #define  FlashSize      Flash64k
+;  #define  PageSize       Page128
+;  #define  EEpromSize     EEprom2048
+;  #define  PageByte       256
+;  #define  NSHIFTPAGE     8
+;  #define  INTVECREG      MCUCR
+;  #define  PULLUPPORT     PORTE
+;  #define  PULLUPPIN      0x01
+;#endif
+;
+;#if (MEGATYPE == Mega3290)
+; #error "This MCU had not been define"
+;#endif
+;
+;#if (MEGATYPE == Mega6490)
+; #error "This MCU had not been define"
+;#endif
+;
+;#if (MEGATYPE == Mega406)
+; #error "This MCU had not been define"
+;#endif
+;
+;#if (MEGATYPE == Mega640)
+;  #include "iom640v.h"
+;  #define  DeviceID       Mega640
+;  #define  FlashSize      Flash64k
+;  #define  PageSize       Page256
+;  #define  EEpromSize     EEprom4096
+;  #define  PageByte       256
+;  #define  NSHIFTPAGE     8
+;  #define  INTVECREG      MCUCR
+;  #if (UART == 0)
+;    #define PULLUPPORT      PORTE
+;    #define PULLUPPIN       0x01
+;  #endif
+;
+;  #if (UART == 1)
+;    #define PULLUPPORT      PORTD
+;    #define PULLUPPIN       0x04
+;  #endif
+;
+;  #if (UART == 2)
+;   #define PULLUPPORT      PORTH
+;   #define PULLUPPIN       0x01
+;  #endif
+;
+;  #if (UART == 3)
+;    #define PULLUPPORT      PORTJ
+;    #define PULLUPPIN       0x01
+;  #endif
+;#endif
+;
+;#if (MEGATYPE == Mega1280)
+;  #include "iom1280v.h"
+;  #define  DeviceID       Mega1280
+;  #define  FlashSize      Flash128k
+;  #define  PageSize       Page256
+;  #define  EEpromSize     EEprom4096
+;  #define  PageByte       256
+;  #define  NSHIFTPAGE     8
+;  #define  INTVECREG      MCUCR
+;
+;  #if (UART == 0)
+;    #define PULLUPPORT      PORTE
+;    #define PULLUPPIN       0x01
+;  #endif
+;
+;  #if (UART == 1)
+;    #define PULLUPPORT      PORTD
+;    #define PULLUPPIN       0x04
+;  #endif
+;
+;  #if (UART == 2)
+;    #define PULLUPPORT      PORTH
+;    #define PULLUPPIN       0x01
+;  #endif
+;
+;  #if (UART == 3)
+;    #define PULLUPPORT      PORTJ
+;    #define PULLUPPIN       0x01
+;  #endif
+;#endif
+;
+;#if (MEGATYPE == Mega2560)
+;  #include "iom256v.h"
+;  #define  DeviceID       Mega2560
+;  #define  FlashSize      Flash256k
+;  #define  PageSize       Page256
+;  #define  EEpromSize     EEprom4096
+;  #define  PageByte       256
+;  #define  NSHIFTPAGE     8
+;  #define  INTVECREG      MCUCR
+;  #define  RAMPZ_FLAG
+;
+;
+;  #if (UART == 0)
+;    #define PULLUPPORT      PORTE
+;    #define PULLUPPIN       0x01
+;  #endif
+;
+;  #if (UART == 1)
+;    #define PULLUPPORT      PORTD
+;    #define PULLUPPIN       0x04
+;  #endif
+;
+;  #if (UART == 2)
+;    #define PULLUPPORT      PORTH
+;    #define PULLUPPIN       0x01
+;  #endif
+;
+;  #if (UART == 3)
+;    #define PULLUPPORT      PORTJ
+;    #define PULLUPPIN       0x01
+;  #endif
+;#endif
+;
+;#if (MEGATYPE == MCAN128)
+;  #include "ioCAN128v.h"
+;  #define  DeviceID       MCAN128
+;  #define  FlashSize      Flash128k
+;  #define  PageSize       Page256
+;  #define  EEpromSize     EEprom4096
+;  #define  PageByte       256
+;  #define  NSHIFTPAGE     8
+;  #define  INTVECREG      MCUCR
+;  #define  RAMPZ_FLAG
+;
+;  #if (UART == 0)
+;    #define PULLUPPORT      PORTE
+;    #define PULLUPPIN       0x01
+;  #endif
+;
+;  #if (UART == 1)
+;    #define PULLUPPORT      PORTD
+;    #define PULLUPPIN       0x04
+;  #endif
+;#endif
+;
+;#if (MEGATYPE == Mega164)
+;  #include "iom164pv.h"
+;  #define  DeviceID       Mega164
+;  #define  FlashSize      Flash16k
+;  #define  PageSize       Page128
+;  #define  EEpromSize     EEprom512
+;  #define  PageByte       128
+;  #define  NSHIFTPAGE     7
+;  #define  INTVECREG      MCUCR
+;  #define  PULLUPPORT     PORTD
+;  #define  PULLUPPIN      0x01
+;#endif
+;
+;#if(MEGATYPE == Mega324)
+;#include "iom324v.h"
+;#define  DeviceID  					Mega324
+;#define  FlashSize      		Flash32k
+;#define  PageSize       		Page128
+;#define  EEpromSize     		EEprom1024
+;#define  PageBye       			128
+;#define  NSHIFTPAGE     		7
+;#define  INTVECREG      		MCUCR
+;#if (UART == 0)
+;  #define PULLUPPORT      	PORTD
+;  #define PULLUPPIN       	0x01
+;#endif
+;#endif
+;
+;#if (MEGATYPE == Mega325)
+; #error "This MCU had not been define"
+;#endif
+;
+;#if(MEGATYPE == Mega644)
+;	#include "iom644v.h"
+;	#define DeviceID          Mega644
+;	#define FlashSize         Flash64k
+;	#define PageSize          Page256
+;	#define EEpromSize        EEprom2048
+;	#define PageByte          256
+;	#define NSHIFTPAGE      	8
+;	#define INTVECREG        	MCUCR
+;	#define PULLUPPORT    		PORTD
+;	#define PULLUPPIN        	0x01
+;#endif
+;
+;#if (MEGATYPE == Mega328)
+;  #include "iom328pv.h"
+;  #define  DeviceID       Mega328
+;  #define  FlashSize      Flash32k
+;  #define  PageSize       Page128
+;  #define  EEpromSize     EEprom1024
+;  #define  PageByte       128
+;  #define  NSHIFTPAGE     7
+;  #define  INTVECREG      MCUCR
+;  #define  PULLUPPORT     PORTD
+;  #define  PULLUPPIN      0x01
+;#endif
+;
+;#if (MEGATYPE == Mega645)
+; #error "This MCU had not been define"
+;#endif
+;
+;#if (MEGATYPE == Mega1281)
+; #error "This MCU had not been define"
+;#endif
+;
+;#if (MEGATYPE == Mega2561)
+;  #include "Mega2561.h"
+;  #define  DeviceID       Mega2561
+;  #define  FlashSize      Flash256k
+;  #define  PageSize       Page256
+;  #define  EEpromSize     EEprom4096
+;  #define  PageByte       256
+;  #define  NSHIFTPAGE     8
+;  #define  INTVECREG      MCUCR
+;  #define  IVCE           0
+;  #define  RAMPZ_FLAG
+;
+;
+;  #if (UART == 0)
+;    #define PULLUPPORT      PORTE
+;    #define PULLUPPIN       0x01
+;  #endif
+;
+;  #if (UART == 1)
+;    #define PULLUPPORT      PORTD
+;    #define PULLUPPIN       0x04
+;  #endif
+;
+;#endif
+;
+;#if (MEGATYPE == Mega404)
+; #error "This MCU had not been define"
+;#endif
+;
+;#if (MEGATYPE == MUSB1286)
+; #error "This MCU had not been define"
+;#endif
+;
+;#if (MEGATYPE == MUSB1287)
+; #error "This MCU had not been define"
+;#endif
+;
+;#if (MEGATYPE == MUSB162)
+; #error "This MCU had not been define"
+;#endif
+;
+;#if (MEGATYPE == MUSB646)
+; #error "This MCU had not been define"
+;#endif
+;
+;#if (MEGATYPE == MUSB647)
+; #error "This MCU had not been define"
+;#endif
+;
+;#if (MEGATYPE == MUSB82)
+; #error "This MCU had not been define"
+;#endif
+;
+;#if (MEGATYPE == MCAN32)
+;  #include "ioCAN32v.h"
+;  #define  DeviceID       MCAN32
+;  #define  FlashSize      Flash32k
+;  #define  PageSize       Page256
+;  #define  EEpromSize     EEprom1024
+;  #define  PageByte       256
+;  #define  NSHIFTPAGE     8
+;  #define  INTVECREG      MCUCR
+;  #define  RAMPZ_FLAG
+;#endif
+;
+;#if (MEGATYPE == MCAN64)
+; #error "This MCU had not been define"
+;#endif
+;
+;#if (MEGATYPE == Mega329)
+; #error "This MCU had not been define"
+;#endif
+;
+;#if (MEGATYPE == Mega649)
+; #error "This MCU had not been define"
+;#endif
+;
+;#if (MEGATYPE == Mega256)
+;  #include "iom256v.h"
+;  #define  DeviceID       Mega256
+;  #define  FlashSize      Flash256k
+;  #define  PageSize       Page256
+;  #define  EEpromSize     EEprom4096
+;  #define  PageByte       256
+;  #define  NSHIFTPAGE     8
+;  #define  INTVECREG      MCUCR
+;  #define  RAMPZ_FLAG
+;
+;
+;  #if (UART == 0)
+;    #define PULLUPPORT      PORTE
+;    #define PULLUPPIN       0x01
+;  #endif
+;
+;  #if (UART == 1)
+;    #define PULLUPPORT      PORTD
+;    #define PULLUPPIN       0x04
+;  #endif
+;
+;  #if (UART == 2)
+;    #define PULLUPPORT      PORTH
+;    #define PULLUPPIN       0x01
+;  #endif
+;
+;  #if (UART == 3)
+;    #define PULLUPPORT      PORTJ
+;    #define PULLUPPIN       0x01
+;  #endif
+;#endif
+;
+;
+;// Serial Port defenition
+;
+;#if !(defined MEGATYPE) && !(defined MCU)
+;  #error "Processor Type is Undefined"
+;#endif
+;
+;#if (UART == 0) && !(defined USARTn)
+; #define  _UCSRA          UCSRA
+; #define  _UCSRB         	UCSRB
+; #define  _UCSRC         	UCSRC
+; #define  _UBRRL          UBRRL
+; #define  _UBRRH          UBRRH
+; #define  _UDR            UDR
+; #define  _TXC						TXC
+;#endif
+;
+;#if (UART == 0) && (defined USARTn)
+; #define  _UCSRA          UCSR0A
+; #define  _UCSRB         UCSR0B
+; #define  _UCSRC         UCSR0C
+; #define  _UBRRL          UBRR0L
+; #define  _UBRRH          UBRR0H
+; #define  _UDR            UDR0
+; #define  _TXC			TXC0
+;#endif
+;
+;#if (UART == 1)
+; #define  _UCSRA          UCSR1A
+; #define  _UCSRB         	UCSR1B
+; #define  _UCSRC         	UCSR1C
+; #define  _UBRRL          UBRR1L
+; #define  _UBRRH          UBRR1H
+; #define  _UDR            UDR1
+; #define  _TXC						TXC1
+;#endif
+;
+;#if (UART == 2)
+; #define  _UCSRA          UCSR2A
+; #define  _UCSRB         	UCSR2B
+; #define  _UCSRC         	UCSR2C
+; #define  _UBRRL          UBRR2L
+; #define  _UBRRH          UBRR2H
+; #define  _UDR            UDR2
+; #define  _TXC						TX2
+;#endif
+;
+;#if (UART == 3)
+; #define  _UCSRA          UCSR3A
+; #define  _UCSRB         	UCSR3B
+; #define  _UCSRC         	UCSR3C
+; #define  _UBRRL          UBRR3L
+; #define  _UBRRH          UBRR3H
+; #define  _UDR            UDR3
+; #define  _TXC						TXC3
+;#endif
+;
+;#define  FALSE          0
+;#define  TRUE           1
+;
+;#ifdef SMALL256
+; #undef EEPROM
+; #undef LOCKBIT
+;#endif
+;
+;
+;/*****************************************************************************/
+;/*                          I N C L U D E                                    */
+;/*****************************************************************************/
+;
+;/*****************************************************************************/
+;/*                        P R O T O T Y P E                                  */
+;/*****************************************************************************/
+;
+;void GetPageNumber(void);
+;char WriteFlashPage(void);
+;
+;unsigned char RxChar(void);
+;void TxChar(unsigned char ch);
+;
+;#ifdef EEPROM
+;void EEpromLoad(void);
+;void EEPROMwrite(int location, unsigned char byte);
+;unsigned char EEPROMread( int location);
+;void LockBit(void);
+;#endif
+;
+;void main(void);
+;
+;/*****************************************************************************/
+;/*                G L O B A L    V A R I A B L E S                           */
+;/*****************************************************************************/
+;//unsigned char PageBuffer[PageByte];
+;unsigned int PageAddress;
+;unsigned int RealPageAddress;
+;
+;#if ((MEGATYPE == Mega64) || (MEGATYPE == Mega128))
+; #asm(".EQU SPMCR = 0x68")
+;PCODE: $0000000D VOL: 0
+	.EQU SPMCR = 0x68
+;PCODE: $0000000E VOL: 0
+;#elif((MEGATYPE == Mega324) || (MEGATYPE == Mega644))
+; #asm(".EQU SPMCR = 0x37")
+;#else
+; #asm(".EQU SPMCR = 0x57")
+;#endif
+;
+;#pragma warn-
+;#pragma used+
+;void WAIT_SPMEN(void)
+; 0000 0383 {
+
+	.CSEG
+;PCODE: $0000000F VOL: 0
+;PCODE: $00000010 VOL: 0
+; 0000 0384 #asm
+;PCODE: $00000011 VOL: 0
+; 0000 0385         LDS     R30,SPMCR       ; load SPMCR to R27
+        LDS     R30,SPMCR       ; load SPMCR to R27
+;PCODE: $00000012 VOL: 0
+; 0000 0386         SBRC    R30,0          ; check SPMEN flag
+        SBRC    R30,0          ; check SPMEN flag
+;PCODE: $00000013 VOL: 0
+; 0000 0387         RJMP    _WAIT_SPMEN     ; wait for SPMEN flag cleared
+        RJMP    _WAIT_SPMEN     ; wait for SPMEN flag cleared
+;PCODE: $00000014 VOL: 0
+;PCODE: $00000015 VOL: 0
+; 0000 0388 #endasm
+; 0000 0389 }
+;PCODE: $00000016 VOL: 0
+;PCODE: $00000017 VOL: 0
+;void write_page (unsigned int adr, unsigned char function)
+; 0000 038B //; bits 8:15 adr addresses the page...(must setup RAMPZ beforehand!!!)
+; 0000 038C {
+;PCODE: $00000018 VOL: 0
+;PCODE: $00000019 VOL: 0
+; 0000 038D #asm
+;	adr -> Y+1
+;	function -> Y+0
+;PCODE: $0000001A VOL: 0
+; 0000 038E         CALL _WAIT_SPMEN
+        CALL _WAIT_SPMEN
+;PCODE: $0000001B VOL: 0
+; 0000 038F         LDD R30,Y+1
+        LDD R30,Y+1
+;PCODE: $0000001C VOL: 0
+; 0000 0390         LDD R31,Y+2         ;move address to z pointer (R31=ZH R30=ZL)
+        LDD R31,Y+2         ;move address to z pointer (R31=ZH R30=ZL)
+;PCODE: $0000001D VOL: 0
+; 0000 0391         LDD R26,Y+0
+        LDD R26,Y+0
+;PCODE: $0000001E VOL: 0
+; 0000 0392         STS SPMCR,R26       ;argument 2 decides function
+        STS SPMCR,R26       ;argument 2 decides function
+;PCODE: $0000001F VOL: 0
+; 0000 0393         SPM                 ;perform pagewrite
+        SPM                 ;perform pagewrite
+;PCODE: $00000020 VOL: 0
+;PCODE: $00000021 VOL: 0
+; 0000 0394 #endasm
+; 0000 0395 }
+;PCODE: $00000022 VOL: 0
+;PCODE: $00000023 VOL: 0
+;PCODE: $00000024 VOL: 0
+;void fill_temp_buffer (unsigned int data, unsigned int adr)
+; 0000 0397 {
+;PCODE: $00000025 VOL: 0
+;PCODE: $00000026 VOL: 0
+; 0000 0398 //; bits 7:1 in adr addresses the word in the page... (2=first word, 4=second word etc..)
+; 0000 0399 #asm
+;	data -> Y+2
+;	adr -> Y+0
+;PCODE: $00000027 VOL: 0
+; 0000 039A         CALL _WAIT_SPMEN
+        CALL _WAIT_SPMEN
+;PCODE: $00000028 VOL: 0
+; 0000 039B         LDD R31,Y+1
+        LDD R31,Y+1
+;PCODE: $00000029 VOL: 0
+; 0000 039C         LDD R30,Y+0         ;move adress to z pointer (R31=ZH R30=ZL)
+        LDD R30,Y+0         ;move adress to z pointer (R31=ZH R30=ZL)
+;PCODE: $0000002A VOL: 0
+; 0000 039D         LDD R1,Y+3
+        LDD R1,Y+3
+;PCODE: $0000002B VOL: 0
+; 0000 039E         LDD R0,Y+2          ;move data to reg 0 and 1
+        LDD R0,Y+2          ;move data to reg 0 and 1
+;PCODE: $0000002C VOL: 0
+; 0000 039F         LDI R26,0x01
+        LDI R26,0x01
+;PCODE: $0000002D VOL: 0
+; 0000 03A0         STS SPMCR,R26
+        STS SPMCR,R26
+;PCODE: $0000002E VOL: 0
+; 0000 03A1         SPM            ;Store program memory
+        SPM            ;Store program memory
+;PCODE: $0000002F VOL: 0
+;PCODE: $00000030 VOL: 0
+; 0000 03A2 #endasm
+; 0000 03A3 }
+;PCODE: $00000031 VOL: 0
+;PCODE: $00000032 VOL: 0
+;PCODE: $00000033 VOL: 0
+;unsigned int read_program_memory (unsigned int adr ,unsigned char cmd)
+; 0000 03A5 {
+;PCODE: $00000034 VOL: 0
+;PCODE: $00000035 VOL: 0
+; 0000 03A6 #asm
+;	adr -> Y+1
+;	cmd -> Y+0
+;PCODE: $00000036 VOL: 0
+; 0000 03A7         LDD R31,Y+2         ;R31=ZH R30=ZL
+        LDD R31,Y+2         ;R31=ZH R30=ZL
+;PCODE: $00000037 VOL: 0
+; 0000 03A8         LDD R30,Y+1         ;move adress to z pointer
+        LDD R30,Y+1         ;move adress to z pointer
+;PCODE: $00000038 VOL: 0
+; 0000 03A9         LDD R26,Y+0
+        LDD R26,Y+0
+;PCODE: $00000039 VOL: 0
+; 0000 03AA         SBRC R26,0          ;read lockbits? (second argument=0x09)
+        SBRC R26,0          ;read lockbits? (second argument=0x09)
+;PCODE: $0000003A VOL: 0
+; 0000 03AB         STS SPMCR,R26       ;if so, place second argument in SPMEN register
+        STS SPMCR,R26       ;if so, place second argument in SPMEN register
+;PCODE: $0000003B VOL: 0
+;PCODE: $0000003C VOL: 0
+; 0000 03AC #endasm
+; 0000 03AD 
+; 0000 03AE #ifdef RAMPZ_FLAG
+; 0000 03AF  #asm
+;PCODE: $0000003D VOL: 0
+; 0000 03B0         ELPM    r26, Z+         ;read LSB
+        ELPM    r26, Z+         ;read LSB
+;PCODE: $0000003E VOL: 0
+; 0000 03B1         ELPM    r27, Z          ;read MSB
+        ELPM    r27, Z          ;read MSB
+;PCODE: $0000003F VOL: 0
+;PCODE: $00000040 VOL: 0
+; 0000 03B2  #endasm
+; 0000 03B3 #else
+; 0000 03B4  #asm
+; 0000 03B5         LPM     r26, Z+
+; 0000 03B6         LPM     r27, Z
+; 0000 03B7  #endasm
+; 0000 03B8 #endif
+; 0000 03B9 #asm
+;PCODE: $00000041 VOL: 0
+; 0000 03BA         MOVW R30,R26
+        MOVW R30,R26
+;PCODE: $00000042 VOL: 0
+;PCODE: $00000043 VOL: 0
+; 0000 03BB #endasm
+; 0000 03BC }
+;PCODE: $00000044 VOL: 0
+;PCODE: $00000045 VOL: 0
+;PCODE: $00000046 VOL: 0
+;#ifdef LOCKBIT
+;void write_lock_bits (unsigned char val)
+;{
+;#asm
+;        LD  R0,Y
+;        LDI R30,0x09
+;        STS SPMCR,R30
+;        SPM                ;write lockbits
+;#endasm
+;}
+;#endif
+;void enableRWW(void)
+; 0000 03C9 {
+;PCODE: $00000047 VOL: 0
+;PCODE: $00000048 VOL: 0
+; 0000 03CA #asm
+;PCODE: $00000049 VOL: 0
+; 0000 03CB         CALL _WAIT_SPMEN
+        CALL _WAIT_SPMEN
+;PCODE: $0000004A VOL: 0
+; 0000 03CC         LDI R27,0x11
+        LDI R27,0x11
+;PCODE: $0000004B VOL: 0
+; 0000 03CD         STS SPMCR,R27
+        STS SPMCR,R27
+;PCODE: $0000004C VOL: 0
+; 0000 03CE         SPM
+        SPM
+;PCODE: $0000004D VOL: 0
+;PCODE: $0000004E VOL: 0
+; 0000 03CF #endasm
+; 0000 03D0 }
+;PCODE: $0000004F VOL: 0
+;PCODE: $00000050 VOL: 0
+;#pragma used-
+;#pragma warn+
+;
+;/*****************************************************************************/
+;
+;void GetPageNumber(void)
+; 0000 03D7 {
+;PCODE: $00000051 VOL: 0
+;PCODE: $00000052 VOL: 0
+; 0000 03D8   unsigned char PageAddressHigh = RxChar();
+; 0000 03D9 
+; 0000 03DA   RealPageAddress = (((unsigned int)PageAddressHigh << 8) + RxChar());
+;PCODE: $00000053 VOL: 0
+;	PageAddressHigh -> R17
+;PCODE: $00000054 VOL: 0
+;PCODE: $00000055 VOL: 0
+;PCODE: $00000056 VOL: 0
+;PCODE: $00000057 VOL: 0
+;PCODE: $00000058 VOL: 0
+;PCODE: $00000059 VOL: 0
+;PCODE: $0000005A VOL: 0
+;PCODE: $0000005B VOL: 0
+;PCODE: $0000005C VOL: 0
+;PCODE: $0000005D VOL: 0
+;PCODE: $0000005E VOL: 0
+; 0000 03DB   PageAddress = RealPageAddress << NSHIFTPAGE;
+;PCODE: $0000005F VOL: 0
+;PCODE: $00000060 VOL: 0
+;PCODE: $00000061 VOL: 0
+; 0000 03DC 
+; 0000 03DD   #ifdef RAMPZ_FLAG
+; 0000 03DE   RAMPZ = PageAddressHigh;
+;PCODE: $00000062 VOL: 0
+;PCODE: $00000063 VOL: 0
+; 0000 03DF   #endif
+; 0000 03E0 }
+;PCODE: $00000064 VOL: 0
+;PCODE: $00000065 VOL: 0
+;PCODE: $00000066 VOL: 0
+;
+;/*****************************************************************************/
+;
+;char WriteFlashPage(void)
+; 0000 03E5 {
+;PCODE: $00000067 VOL: 0
+;PCODE: $00000068 VOL: 0
+; 0000 03E6 	#ifdef SMALL256
+; 0000 03E7   //-------------
+; 0000 03E8   unsigned int i;
+; 0000 03E9   unsigned int TempInt;
+; 0000 03EA 
+; 0000 03EB   for (i=0;i<PageByte;i+=2)
+;PCODE: $00000069 VOL: 0
+;	i -> R16,R17
+;	TempInt -> R18,R19
+;PCODE: $0000006A VOL: 0
+;PCODE: $0000006B VOL: 0
+;PCODE: $0000006C VOL: 0
+;PCODE: $0000006D VOL: 0
+;PCODE: $0000006E VOL: 0
+;PCODE: $0000006F VOL: 0
+;PCODE: $00000070 VOL: 0
+;PCODE: $00000071 VOL: 0
+;PCODE: $00000072 VOL: 0
+; 0000 03EC   {
+; 0000 03ED   	TempInt = RxChar();
+;PCODE: $00000073 VOL: 0
+;PCODE: $00000074 VOL: 0
+;PCODE: $00000075 VOL: 0
+; 0000 03EE   	TempInt |= ((unsigned int)RxChar()<<8);
+;PCODE: $00000076 VOL: 0
+;PCODE: $00000077 VOL: 0
+;PCODE: $00000078 VOL: 0
+;PCODE: $00000079 VOL: 0
+; 0000 03EF   	fill_temp_buffer(TempInt,i);    //call asm routine.
+;PCODE: $0000007A VOL: 0
+;PCODE: $0000007B VOL: 0
+;PCODE: $0000007C VOL: 0
+; 0000 03F0   }
+;PCODE: $0000007D VOL: 0
+;PCODE: $0000007E VOL: 0
+;PCODE: $0000007F VOL: 0
+;PCODE: $00000080 VOL: 0
+;PCODE: $00000081 VOL: 0
+; 0000 03F1   write_page(PageAddress,0x03);     //Perform page ERASE
+;PCODE: $00000082 VOL: 0
+;PCODE: $00000083 VOL: 0
+;PCODE: $00000084 VOL: 0
+;PCODE: $00000085 VOL: 0
+; 0000 03F2   write_page(PageAddress,0x05);     //Perform page write
+;PCODE: $00000086 VOL: 0
+;PCODE: $00000087 VOL: 0
+;PCODE: $00000088 VOL: 0
+;PCODE: $00000089 VOL: 0
+; 0000 03F3   enableRWW();
+;PCODE: $0000008A VOL: 0
+; 0000 03F4   i = RxChar();
+;PCODE: $0000008B VOL: 0
+;PCODE: $0000008C VOL: 0
+;PCODE: $0000008D VOL: 0
+; 0000 03F5   return 1;
+;PCODE: $0000008E VOL: 0
+;PCODE: $0000008F VOL: 0
+;PCODE: $00000090 VOL: 0
+;PCODE: $00000091 VOL: 0
+; 0000 03F6 
+; 0000 03F7   #else //--------------
+; 0000 03F8 
+; 0000 03F9   unsigned int i;
+; 0000 03FA   unsigned int TempInt;
+; 0000 03FB   unsigned char FlashCheckSum = 0;
+; 0000 03FC   unsigned char CheckSum = 0;
+; 0000 03FD   unsigned char Left;
+; 0000 03FE   unsigned char Right;
+; 0000 03FF 
+; 0000 0400   for (i=0;i<PageByte;i+=2)
+; 0000 0401   {
+; 0000 0402    Right = RxChar();
+; 0000 0403    Left = RxChar();
+; 0000 0404    TempInt = (unsigned int)Right + ((unsigned int)Left<<8);
+; 0000 0405    CheckSum += (Right + Left);
+; 0000 0406    fill_temp_buffer(TempInt,i);      //call asm routine.
+; 0000 0407   }
+; 0000 0408 
+; 0000 0409   if (CheckSum != RxChar()) return 0;
+; 0000 040A 
+; 0000 040B   write_page(PageAddress,0x03);     //Perform page ERASE
+; 0000 040C   write_page(PageAddress,0x05);     //Perform page write
+; 0000 040D   enableRWW();
+; 0000 040E   for (i=0;i<PageByte;i+=2)
+; 0000 040F   {
+; 0000 0410     TempInt = read_program_memory(PageAddress + i,0x00);
+; 0000 0411     FlashCheckSum += (char)(TempInt & 0x00ff) + (char)(TempInt >> 8);
+; 0000 0412   }
+; 0000 0413   if (CheckSum != FlashCheckSum) return 0;
+; 0000 0414 
+; 0000 0415   return 1;
+; 0000 0416 
+; 0000 0417   #endif
+; 0000 0418 }
+;PCODE: $00000092 VOL: 0
+;
+;/*****************************************************************************/
+;/* EEprom Programing Code                                                    */
+;/*****************************************************************************/
+;#ifdef EEPROM
+;void EEpromLoad()
+;{
+;  unsigned char ByteAddressHigh;
+;  unsigned char ByteAddressLow;
+;  unsigned int ByteAddress;
+;  unsigned char Data;
+;  unsigned char LocalCheckSum;
+;  unsigned char CheckSum;
+;
+;  TxChar(')');
+;  TxChar('!');
+;  while (1)
+;  {
+;  	WDR();
+;    LocalCheckSum = 0;
+;
+;    ByteAddressHigh = RxChar();
+;    LocalCheckSum += ByteAddressHigh;
+;
+;    ByteAddressLow = RxChar();
+;    LocalCheckSum += ByteAddressLow;
+;
+;    ByteAddress = (ByteAddressHigh<<8)+ByteAddressLow;
+;
+;    if (ByteAddress == 0xffff) return;
+;
+;    Data = RxChar();
+;    LocalCheckSum += Data;
+;
+;    CheckSum = RxChar();
+;
+;    if (CheckSum == LocalCheckSum)
+;    {
+;      EEPROMwrite(ByteAddress, Data);
+;      if (EEPROMread(ByteAddress) == Data) TxChar('!');
+;      else TxChar('@');
+;    }
+;    else
+;    {
+;      TxChar('@');
+;    }
+;  }
+;}
+;#endif
+;
+;/*****************************************************************************/
+;
+;#ifdef EEPROM
+;void EEPROMwrite( int location, unsigned char byte)
+;{
+;  while (EECR & 0x02) WDR();        // Wait until any earlier write is done
+;  EEAR = location;
+;  EEDR = byte;
+;  EECR |= 0x04;                     // Set MASTER WRITE enable
+;  EECR |= 0x02;                     // Set WRITE strobe
+;}
+;#endif
+;
+;/*****************************************************************************/
+;
+;#ifdef EEPROM
+;unsigned char EEPROMread( int location)
+;{
+;  while (EECR & 0x02) WDR();
+;  EEAR = location;
+;  EECR |= 0x01;                     // Set READ strobe
+;  return (EEDR);                    // Return byte
+;}
+;#endif
+;
+;/*****************************************************************************/
+;/* LockBit Code                                                              */
+;/*****************************************************************************/
+;#ifdef LOCKBIT
+;void LockBit(void)
+;{
+;  unsigned char Byte;
+;
+;  TxChar('%');
+;
+;  Byte = RxChar();
+;
+;  if (Byte == ~RxChar()) write_lock_bits(~Byte);
+;}
+;#endif
+;
+;/*****************************************************************************/
+;/* Serial Port Code                                                          */
+;/*****************************************************************************/
+;
+;/*****************************************************************************/
+;
+;unsigned char RxChar(void)
+; 0000 047B {
+;PCODE: $00000093 VOL: 0
+;PCODE: $00000094 VOL: 0
+; 0000 047C 	unsigned int TimeOut = 0;
+; 0000 047D 
+; 0000 047E 	while(!(_UCSRA & 0x80))
+;PCODE: $00000095 VOL: 0
+;PCODE: $00000096 VOL: 0
+;	TimeOut -> R16,R17
+;PCODE: $00000097 VOL: 0
+;PCODE: $00000098 VOL: 0
+;PCODE: $00000099 VOL: 0
+;PCODE: $0000009A VOL: 0
+;PCODE: $0000009B VOL: 0
+;PCODE: $0000009C VOL: 0
+; 0000 047F 	{
+; 0000 0480 		WDR();
+;PCODE: $0000009D VOL: 0
+	wdr
+;PCODE: $0000009E VOL: 0
+; 0000 0481 		TimeOut += 2;
+;PCODE: $0000009F VOL: 0
+;PCODE: $000000A0 VOL: 0
+; 0000 0482 		TimeOut -= 1;
+;PCODE: $000000A1 VOL: 0
+;PCODE: $000000A2 VOL: 0
+; 0000 0483 		if (TimeOut > 65530) break;
+;PCODE: $000000A3 VOL: 0
+;PCODE: $000000A4 VOL: 0
+;PCODE: $000000A5 VOL: 0
+;PCODE: $000000A6 VOL: 0
+; 0000 0484 	}
+;PCODE: $000000A7 VOL: 0
+;PCODE: $000000A8 VOL: 0
+;PCODE: $000000A9 VOL: 0
+; 0000 0485 
+; 0000 0486   return _UDR;
+;PCODE: $000000AA VOL: 0
+;PCODE: $000000AB VOL: 0
+;PCODE: $000000AC VOL: 0
+; 0000 0487 }
+;PCODE: $000000AD VOL: 0
+;
+;/*****************************************************************************/
+;
+;void TxChar(unsigned char ch)
+; 0000 048C {
+;PCODE: $000000AE VOL: 0
+;PCODE: $000000AF VOL: 0
+; 0000 048D   while(!(_UCSRA & 0x20)) WDR();      // wait for empty transmit buffer
+;	ch -> Y+0
+;PCODE: $000000B0 VOL: 0
+;PCODE: $000000B1 VOL: 0
+;PCODE: $000000B2 VOL: 0
+;PCODE: $000000B3 VOL: 0
+;PCODE: $000000B4 VOL: 0
+	wdr
+;PCODE: $000000B5 VOL: 0
+; 0000 048E   #ifndef RS485DDR
+; 0000 048F   _UDR = ch;                         // write char
+;PCODE: $000000B6 VOL: 0
+;PCODE: $000000B7 VOL: 0
+;PCODE: $000000B8 VOL: 0
+;PCODE: $000000B9 VOL: 0
+; 0000 0490   #endif
+; 0000 0491 
+; 0000 0492   #ifdef RS485DDR
+; 0000 0493   RS485PORT |= RS485TXE;            // RS485 in TX mode
+; 0000 0494   _UDR = ch;                        // write char
+; 0000 0495   while(!(_UCSRA & 0x40)) WDR();    // Wait for char to be cue off
+; 0000 0496   _UCSRA |= 0x40;                   // Clear flag
+; 0000 0497   RS485PORT &= ~RS485TXE;           // RS485 in RX mode
+; 0000 0498   #endif
+; 0000 0499 }
+;PCODE: $000000BA VOL: 0
+;PCODE: $000000BB VOL: 0
+;PCODE: $000000BC VOL: 0
+;
+;/*****************************************************************************/
+;
+;void main(void)
+; 0000 049E {
+;PCODE: $000000BD VOL: 0
+; 0000 049F   PULLUPPORT = PULLUPPIN;           // Pull up on RX line
+;PCODE: $000000BE VOL: 0
+;PCODE: $000000BF VOL: 0
+; 0000 04A0 
+; 0000 04A1     _UCSRA |= 2; //doubled speed
+;PCODE: $000000C0 VOL: 0
+;PCODE: $000000C1 VOL: 0
+; 0000 04A2   //_UBRRH = ((XTAL / (16UL * BAUDRATE)) - 1)>>8;
+; 0000 04A3  	_UBRRL = 32;//(XTAL / (16UL * BAUDRATE)) - 1;      //set baud rate;   //57600
+;PCODE: $000000C2 VOL: 0
+;PCODE: $000000C3 VOL: 0
+; 0000 04A4 	_UCSRB = 0x18;                     // Rx enable Tx Enable
+;PCODE: $000000C4 VOL: 0
+;PCODE: $000000C5 VOL: 0
+; 0000 04A5 	_UCSRC = 0x06;                     // Asyn,NoParity,1StopBit,8Bit
+;PCODE: $000000C6 VOL: 0
+;PCODE: $000000C7 VOL: 0
+; 0000 04A6 
+; 0000 04A7 	#ifdef RS485DDR
+; 0000 04A8 	RS485DDR |= RS485TXE;             // RS485 Tranceiver switch pin as output
+; 0000 04A9 	RS485PORT &= ~RS485TXE;           // RS485 in Rx mode
+; 0000 04AA 	#endif
+; 0000 04AB 
+; 0000 04AC 	RxChar();
+;PCODE: $000000C8 VOL: 0
+; 0000 04AD 	TxChar('>');
+;PCODE: $000000C9 VOL: 0
+;PCODE: $000000CA VOL: 0
+;PCODE: $000000CB VOL: 0
+; 0000 04AE 	if (RxChar() == '<')
+;PCODE: $000000CC VOL: 0
+;PCODE: $000000CD VOL: 0
+;PCODE: $000000CE VOL: 0
+; 0000 04AF 	{
+; 0000 04B0 	    TxChar(PageSize);
+;PCODE: $000000CF VOL: 0
+;PCODE: $000000D0 VOL: 0
+;PCODE: $000000D1 VOL: 0
+; 0000 04B1 		TxChar(DeviceID);
+;PCODE: $000000D2 VOL: 0
+;PCODE: $000000D3 VOL: 0
+;PCODE: $000000D4 VOL: 0
+; 0000 04B2     	TxChar(FlashSize);
+;PCODE: $000000D5 VOL: 0
+;PCODE: $000000D6 VOL: 0
+;PCODE: $000000D7 VOL: 0
+; 0000 04B3   	    TxChar(BootSize);
+;PCODE: $000000D8 VOL: 0
+;PCODE: $000000D9 VOL: 0
+;PCODE: $000000DA VOL: 0
+; 0000 04B4   	    TxChar(EEpromSize);
+;PCODE: $000000DB VOL: 0
+;PCODE: $000000DC VOL: 0
+;PCODE: $000000DD VOL: 0
+; 0000 04B5 
+; 0000 04B6   	RxChar();
+;PCODE: $000000DE VOL: 0
+; 0000 04B7   	TxChar('!');
+;PCODE: $000000DF VOL: 0
+;PCODE: $000000E0 VOL: 0
+;PCODE: $000000E1 VOL: 0
+; 0000 04B8 
+; 0000 04B9 		while (1)
+;PCODE: $000000E2 VOL: 0
+; 0000 04BA 		{
+; 0000 04BB 		 WDR();
+;PCODE: $000000E3 VOL: 0
+	wdr
+;PCODE: $000000E4 VOL: 0
+; 0000 04BC 		 GetPageNumber();
+;PCODE: $000000E5 VOL: 0
+; 0000 04BD 		 if (RealPageAddress == 0xffff) break;
+;PCODE: $000000E6 VOL: 0
+;PCODE: $000000E7 VOL: 0
+;PCODE: $000000E8 VOL: 0
+;PCODE: $000000E9 VOL: 0
+; 0000 04BE 
+; 0000 04BF 		 if (WriteFlashPage()){TxChar('!');}
+;PCODE: $000000EA VOL: 0
+;PCODE: $000000EB VOL: 0
+;PCODE: $000000EC VOL: 0
+;PCODE: $000000ED VOL: 0
+;PCODE: $000000EE VOL: 0
+;PCODE: $000000EF VOL: 0
+;PCODE: $000000F0 VOL: 0
+; 0000 04C0 		 else  break; //TxChar('@');
+;PCODE: $000000F1 VOL: 0
+;PCODE: $000000F2 VOL: 0
+;PCODE: $000000F3 VOL: 0
+; 0000 04C1 		}
+;PCODE: $000000F4 VOL: 0
+;PCODE: $000000F5 VOL: 0
+;PCODE: $000000F6 VOL: 0
+; 0000 04C2 
+; 0000 04C3 		#ifdef EEPROM
+; 0000 04C4 		EEpromLoad();
+; 0000 04C5 		#endif
+; 0000 04C6 		#ifdef LOCKBIT
+; 0000 04C7 		LockBit();
+; 0000 04C8 		#endif
+; 0000 04C9 	}
+; 0000 04CA 
+; 0000 04CB   #ifdef RAMPZ_FLAG
+; 0000 04CC   RAMPZ = 0;
+;PCODE: $000000F7 VOL: 0
+;PCODE: $000000F8 VOL: 0
+;PCODE: $000000F9 VOL: 0
+; 0000 04CD   #endif
+; 0000 04CE 
+; 0000 04CF   #ifdef INTVECREG
+; 0000 04D0      INTVECREG = (1<<0);
+;PCODE: $000000FA VOL: 0
+;PCODE: $000000FB VOL: 0
+; 0000 04D1      INTVECREG = 0x00;
+;PCODE: $000000FC VOL: 0
+;PCODE: $000000FD VOL: 0
+; 0000 04D2   #endif
+; 0000 04D3 
+; 0000 04D4   #asm("jmp 0x0000");                // Run application code
+;PCODE: $000000FE VOL: 0
+	jmp 0x0000
+;PCODE: $000000FF VOL: 0
+; 0000 04D5 }
+;PCODE: $00000100 VOL: 0
+;PCODE: $00000101 VOL: 0
+;PCODE: $00000102 VOL: 0

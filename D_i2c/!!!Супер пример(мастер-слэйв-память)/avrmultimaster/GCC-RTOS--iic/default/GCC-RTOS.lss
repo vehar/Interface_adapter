@@ -1,0 +1,1608 @@
+
+GCC-RTOS.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         000007f0  00000000  00000000  00000094  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .data         00000006  00800060  000007f0  00000884  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .bss          000000c9  00800066  00800066  0000088a  2**0
+                  ALLOC
+  3 .debug_aranges 000000c0  00000000  00000000  0000088a  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  4 .debug_pubnames 000002c7  00000000  00000000  0000094a  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  5 .debug_info   000009dd  00000000  00000000  00000c11  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_abbrev 00000430  00000000  00000000  000015ee  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_line   00000a46  00000000  00000000  00001a1e  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_frame  000001c0  00000000  00000000  00002464  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_str    0000033e  00000000  00000000  00002624  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_loc    00000110  00000000  00000000  00002962  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	0c 94 2a 00 	jmp	0x54	; 0x54 <__ctors_end>
+   4:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+   8:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+   c:	0c 94 e9 00 	jmp	0x1d2	; 0x1d2 <__vector_3>
+  10:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  14:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  18:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  1c:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  20:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  24:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  28:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  2c:	0c 94 ae 00 	jmp	0x15c	; 0x15c <__vector_11>
+  30:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  34:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  38:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  3c:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  40:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  44:	0c 94 e7 01 	jmp	0x3ce	; 0x3ce <__vector_17>
+  48:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  4c:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+  50:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
+
+00000054 <__ctors_end>:
+  54:	11 24       	eor	r1, r1
+  56:	1f be       	out	0x3f, r1	; 63
+  58:	cf e5       	ldi	r28, 0x5F	; 95
+  5a:	d4 e0       	ldi	r29, 0x04	; 4
+  5c:	de bf       	out	0x3e, r29	; 62
+  5e:	cd bf       	out	0x3d, r28	; 61
+
+00000060 <__do_copy_data>:
+  60:	10 e0       	ldi	r17, 0x00	; 0
+  62:	a0 e6       	ldi	r26, 0x60	; 96
+  64:	b0 e0       	ldi	r27, 0x00	; 0
+  66:	e0 ef       	ldi	r30, 0xF0	; 240
+  68:	f7 e0       	ldi	r31, 0x07	; 7
+  6a:	02 c0       	rjmp	.+4      	; 0x70 <.do_copy_data_start>
+
+0000006c <.do_copy_data_loop>:
+  6c:	05 90       	lpm	r0, Z+
+  6e:	0d 92       	st	X+, r0
+
+00000070 <.do_copy_data_start>:
+  70:	a6 36       	cpi	r26, 0x66	; 102
+  72:	b1 07       	cpc	r27, r17
+  74:	d9 f7       	brne	.-10     	; 0x6c <.do_copy_data_loop>
+
+00000076 <__do_clear_bss>:
+  76:	11 e0       	ldi	r17, 0x01	; 1
+  78:	a6 e6       	ldi	r26, 0x66	; 102
+  7a:	b0 e0       	ldi	r27, 0x00	; 0
+  7c:	01 c0       	rjmp	.+2      	; 0x80 <.do_clear_bss_start>
+
+0000007e <.do_clear_bss_loop>:
+  7e:	1d 92       	st	X+, r1
+
+00000080 <.do_clear_bss_start>:
+  80:	af 32       	cpi	r26, 0x2F	; 47
+  82:	b1 07       	cpc	r27, r17
+  84:	e1 f7       	brne	.-8      	; 0x7e <.do_clear_bss_loop>
+  86:	0e 94 52 00 	call	0xa4	; 0xa4 <main>
+  8a:	0c 94 f6 03 	jmp	0x7ec	; 0x7ec <_exit>
+
+0000008e <__bad_interrupt>:
+  8e:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
+
+00000092 <SlaveControl>:
+
+
+// Если словили свой адрес и приняли данные
+void SlaveControl(void)
+{
+i2c_Do &= i2c_Free;				// Освобождаем шину
+  92:	80 91 2e 01 	lds	r24, 0x012E
+  96:	8f 7b       	andi	r24, 0xBF	; 191
+  98:	80 93 2e 01 	sts	0x012E, r24
+UDR = i2c_InBuff[0];			// Выгружаем принятый байт
+  9c:	80 91 2d 01 	lds	r24, 0x012D
+  a0:	8c b9       	out	0x0c, r24	; 12
+}
+  a2:	08 95       	ret
+
+000000a4 <main>:
+*/
+
+//==============================================================================
+int main(void)
+{
+InitAll();						// Инициализируем периферию
+  a4:	0e 94 d1 01 	call	0x3a2	; 0x3a2 <InitAll>
+Init_i2c();						// Запускаем и конфигурируем i2c
+  a8:	0e 94 9a 03 	call	0x734	; 0x734 <Init_i2c>
+Init_Slave_i2c(&SlaveControl);	// Настраиваем событие выхода при сработке как Slave
+  ac:	89 e4       	ldi	r24, 0x49	; 73
+  ae:	90 e0       	ldi	r25, 0x00	; 0
+  b0:	0e 94 a5 03 	call	0x74a	; 0x74a <Init_Slave_i2c>
+WorkIndex=0;					// Лог с начала
+WorkLog[WorkIndex]=1;			// Записываем метку старта
+WorkIndex++;					
+*/
+
+InitRTOS();			// Инициализируем ядро
+  b4:	0e 94 0d 01 	call	0x21a	; 0x21a <InitRTOS>
+RunRTOS();			// Старт ядра. 
+  b8:	0e 94 dd 01 	call	0x3ba	; 0x3ba <RunRTOS>
+    milliseconds can be achieved.
+ */
+void
+_delay_loop_2(uint16_t __count)
+{
+	__asm__ volatile (
+  bc:	80 ed       	ldi	r24, 0xD0	; 208
+  be:	97 e0       	ldi	r25, 0x07	; 7
+  c0:	01 97       	sbiw	r24, 0x01	; 1
+  c2:	f1 f7       	brne	.-4      	; 0xc0 <main+0x1c>
+_delay_ms(1);		// Небольшая выдержка, чтобы второй контроллер успел встать на адресацию
+
+
+while(1) 		// Главный цикл диспетчера
+{
+wdt_reset();	// Сброс собачьего таймера
+  c4:	a8 95       	wdr
+TaskManager();	// Вызов диспетчера
+  c6:	0e 94 8e 01 	call	0x31c	; 0x31c <TaskManager>
+  ca:	fc cf       	rjmp	.-8      	; 0xc4 <main+0x20>
+
+000000cc <SendedAddrToSlave>:
+
+
+// Выход из автомата IIC
+void SendedAddrToSlave(void)
+{
+i2c_Do &= i2c_Free;							// Освобождаем шину
+  cc:	80 91 2e 01 	lds	r24, 0x012E
+  d0:	8f 7b       	andi	r24, 0xBF	; 191
+  d2:	80 93 2e 01 	sts	0x012E, r24
+
+
+if(i2c_Do & (i2c_ERR_NA|i2c_ERR_BF))		// Если адресат нас не услышал или был сбой на линии
+  d6:	81 71       	andi	r24, 0x11	; 17
+  d8:	31 f0       	breq	.+12     	; 0xe6 <SendedAddrToSlave+0x1a>
+	{										
+	SetTimerTask(SendAddrToSlave,20);		// Повторить попытку
+  da:	84 e7       	ldi	r24, 0x74	; 116
+  dc:	90 e0       	ldi	r25, 0x00	; 0
+  de:	64 e1       	ldi	r22, 0x14	; 20
+  e0:	70 e0       	ldi	r23, 0x00	; 0
+  e2:	0e 94 4b 01 	call	0x296	; 0x296 <SetTimerTask>
+  e6:	08 95       	ret
+
+000000e8 <SendAddrToSlave>:
+
+
+// Обращение к SLAVE контроллеру
+void SendAddrToSlave(void)
+{
+if (i2c_Do & i2c_Busy)						// Если передатчик занят
+  e8:	80 91 2e 01 	lds	r24, 0x012E
+  ec:	86 ff       	sbrs	r24, 6
+  ee:	06 c0       	rjmp	.+12     	; 0xfc <SendAddrToSlave+0x14>
+		{
+		SetTimerTask(SendAddrToSlave,100);	// То повторить через 100мс
+  f0:	84 e7       	ldi	r24, 0x74	; 116
+  f2:	90 e0       	ldi	r25, 0x00	; 0
+  f4:	64 e6       	ldi	r22, 0x64	; 100
+  f6:	70 e0       	ldi	r23, 0x00	; 0
+  f8:	0e 94 4b 01 	call	0x296	; 0x296 <SetTimerTask>
+		}
+
+i2c_index = 0;								// Сброс индекса
+  fc:	10 92 21 01 	sts	0x0121, r1
+i2c_ByteCount = 2;							// Шлем два байта
+ 100:	82 e0       	ldi	r24, 0x02	; 2
+ 102:	80 93 2b 01 	sts	0x012B, r24
+
+i2c_SlaveAddress = 0xB0;					// Адрес контроллера 0xB0
+ 106:	80 eb       	ldi	r24, 0xB0	; 176
+ 108:	80 93 25 01 	sts	0x0125, r24
+
+i2c_Buffer[0] = 0x00;						// Те самые два байта, что мы шлем подчиненному
+ 10c:	10 92 22 01 	sts	0x0122, r1
+i2c_Buffer[1] = 0xFF;
+ 110:	8f ef       	ldi	r24, 0xFF	; 255
+ 112:	80 93 23 01 	sts	0x0123, r24
+
+i2c_Do = i2c_sawp;							// Режим = простая запись, адрес+два байта данных
+
+MasterOutFunc = &SendedAddrToSlave;			// Точка выхода из автомата если все хорошо
+ 116:	86 e6       	ldi	r24, 0x66	; 102
+ 118:	90 e0       	ldi	r25, 0x00	; 0
+ 11a:	90 93 61 00 	sts	0x0061, r25
+ 11e:	80 93 60 00 	sts	0x0060, r24
+ErrorOutFunc = &SendedAddrToSlave;			// И если все плохо. 
+ 122:	90 93 65 00 	sts	0x0065, r25
+ 126:	80 93 64 00 	sts	0x0064, r24
+
+TWCR = 1<<TWSTA|0<<TWSTO|1<<TWINT|0<<TWEA|1<<TWEN|1<<TWIE;		// Поехали!
+ 12a:	85 ea       	ldi	r24, 0xA5	; 165
+ 12c:	86 bf       	out	0x36, r24	; 54
+
+i2c_Do |= i2c_Busy;												// Шина занята!
+ 12e:	84 e4       	ldi	r24, 0x44	; 68
+ 130:	80 93 2e 01 	sts	0x012E, r24
+}
+ 134:	08 95       	ret
+
+00000136 <Writed2EEP>:
+}
+
+// Точка выхода из автомата по записи в ЕЕПРОМ
+void Writed2EEP(void)
+{
+i2c_Do &= i2c_Free;											// Освобождаем шину
+ 136:	80 91 2e 01 	lds	r24, 0x012E
+ 13a:	8f 7b       	andi	r24, 0xBF	; 191
+ 13c:	80 93 2e 01 	sts	0x012E, r24
+
+if(i2c_Do & (i2c_ERR_NA|i2c_ERR_BF))						// Если запись не удалась
+ 140:	81 71       	andi	r24, 0x11	; 17
+ 142:	39 f0       	breq	.+14     	; 0x152 <Writed2EEP+0x1c>
+	{
+	SetTimerTask(StartWrite2EPP,20);						// повторяем попытку
+ 144:	87 ed       	ldi	r24, 0xD7	; 215
+ 146:	90 e0       	ldi	r25, 0x00	; 0
+ 148:	64 e1       	ldi	r22, 0x14	; 20
+ 14a:	70 e0       	ldi	r23, 0x00	; 0
+ 14c:	0e 94 4b 01 	call	0x296	; 0x296 <SetTimerTask>
+ 150:	08 95       	ret
+	}
+else
+	{
+	SetTask(SendAddrToSlave);								// Если все ок, то идем на следующий
+ 152:	84 e7       	ldi	r24, 0x74	; 116
+ 154:	90 e0       	ldi	r25, 0x00	; 0
+ 156:	0e 94 26 01 	call	0x24c	; 0x24c <SetTask>
+ 15a:	08 95       	ret
+
+0000015c <__vector_11>:
+TimerService();						// Прерывание ядра диспетчера
+}
+//..........................................................................
+
+ISR(USART_RXC_vect)
+{
+ 15c:	1f 92       	push	r1
+ 15e:	0f 92       	push	r0
+ 160:	0f b6       	in	r0, 0x3f	; 63
+ 162:	0f 92       	push	r0
+ 164:	11 24       	eor	r1, r1
+ 166:	2f 93       	push	r18
+ 168:	3f 93       	push	r19
+ 16a:	4f 93       	push	r20
+ 16c:	5f 93       	push	r21
+ 16e:	6f 93       	push	r22
+ 170:	7f 93       	push	r23
+ 172:	8f 93       	push	r24
+ 174:	9f 93       	push	r25
+ 176:	af 93       	push	r26
+ 178:	bf 93       	push	r27
+ 17a:	ef 93       	push	r30
+ 17c:	ff 93       	push	r31
+UART_RX = UDR;						// Сгребаем принятый байт в буфер
+ 17e:	8c b1       	in	r24, 0x0c	; 12
+ 180:	80 93 20 01 	sts	0x0120, r24
+SetTask(StartWrite2EPP);			// Запускаем процесс записи в ЕЕПРОМ.
+ 184:	87 ed       	ldi	r24, 0xD7	; 215
+ 186:	90 e0       	ldi	r25, 0x00	; 0
+ 188:	0e 94 26 01 	call	0x24c	; 0x24c <SetTask>
+}
+ 18c:	ff 91       	pop	r31
+ 18e:	ef 91       	pop	r30
+ 190:	bf 91       	pop	r27
+ 192:	af 91       	pop	r26
+ 194:	9f 91       	pop	r25
+ 196:	8f 91       	pop	r24
+ 198:	7f 91       	pop	r23
+ 19a:	6f 91       	pop	r22
+ 19c:	5f 91       	pop	r21
+ 19e:	4f 91       	pop	r20
+ 1a0:	3f 91       	pop	r19
+ 1a2:	2f 91       	pop	r18
+ 1a4:	0f 90       	pop	r0
+ 1a6:	0f be       	out	0x3f, r0	; 63
+ 1a8:	0f 90       	pop	r0
+ 1aa:	1f 90       	pop	r1
+ 1ac:	18 95       	reti
+
+000001ae <StartWrite2EPP>:
+//============================================================================
+
+// Записываем в ЕЕПРОМ байт. 
+void StartWrite2EPP(void)
+{
+if (!i2c_eep_WriteByte(0xA0,0x00FF,UART_RX,&Writed2EEP))	// Если байт незаписался
+ 1ae:	80 ea       	ldi	r24, 0xA0	; 160
+ 1b0:	6f ef       	ldi	r22, 0xFF	; 255
+ 1b2:	70 e0       	ldi	r23, 0x00	; 0
+ 1b4:	40 91 20 01 	lds	r20, 0x0120
+ 1b8:	2b e9       	ldi	r18, 0x9B	; 155
+ 1ba:	30 e0       	ldi	r19, 0x00	; 0
+ 1bc:	0e 94 ae 03 	call	0x75c	; 0x75c <i2c_eep_WriteByte>
+ 1c0:	88 23       	and	r24, r24
+ 1c2:	31 f4       	brne	.+12     	; 0x1d0 <StartWrite2EPP+0x22>
+	{
+	SetTimerTask(StartWrite2EPP,50);						// Повторить попытку через 50мс
+ 1c4:	87 ed       	ldi	r24, 0xD7	; 215
+ 1c6:	90 e0       	ldi	r25, 0x00	; 0
+ 1c8:	62 e3       	ldi	r22, 0x32	; 50
+ 1ca:	70 e0       	ldi	r23, 0x00	; 0
+ 1cc:	0e 94 4b 01 	call	0x296	; 0x296 <SetTimerTask>
+ 1d0:	08 95       	ret
+
+000001d2 <__vector_3>:
+u08 UART_RX;
+
+
+//RTOS Interrupt
+ISR(RTOS_ISR)
+{
+ 1d2:	1f 92       	push	r1
+ 1d4:	0f 92       	push	r0
+ 1d6:	0f b6       	in	r0, 0x3f	; 63
+ 1d8:	0f 92       	push	r0
+ 1da:	11 24       	eor	r1, r1
+ 1dc:	2f 93       	push	r18
+ 1de:	3f 93       	push	r19
+ 1e0:	4f 93       	push	r20
+ 1e2:	5f 93       	push	r21
+ 1e4:	6f 93       	push	r22
+ 1e6:	7f 93       	push	r23
+ 1e8:	8f 93       	push	r24
+ 1ea:	9f 93       	push	r25
+ 1ec:	af 93       	push	r26
+ 1ee:	bf 93       	push	r27
+ 1f0:	ef 93       	push	r30
+ 1f2:	ff 93       	push	r31
+TimerService();						// Прерывание ядра диспетчера
+ 1f4:	0e 94 ab 01 	call	0x356	; 0x356 <TimerService>
+}
+ 1f8:	ff 91       	pop	r31
+ 1fa:	ef 91       	pop	r30
+ 1fc:	bf 91       	pop	r27
+ 1fe:	af 91       	pop	r26
+ 200:	9f 91       	pop	r25
+ 202:	8f 91       	pop	r24
+ 204:	7f 91       	pop	r23
+ 206:	6f 91       	pop	r22
+ 208:	5f 91       	pop	r21
+ 20a:	4f 91       	pop	r20
+ 20c:	3f 91       	pop	r19
+ 20e:	2f 91       	pop	r18
+ 210:	0f 90       	pop	r0
+ 212:	0f be       	out	0x3f, r0	; 63
+ 214:	0f 90       	pop	r0
+ 216:	1f 90       	pop	r1
+ 218:	18 95       	reti
+
+0000021a <InitRTOS>:
+						MainTimer[MainTimerQueueSize+1];	// Очередь таймеров
+
+
+// RTOS Подготовка. Очистка очередей
+inline void InitRTOS(void)
+{
+ 21a:	e6 e6       	ldi	r30, 0x66	; 102
+ 21c:	f0 e0       	ldi	r31, 0x00	; 0
+u08	index;
+
+for(index=0;index!=TaskQueueSize+1;index++)	// Во все позиции записываем Idle
+	{
+	TaskQueue[index] = Idle;
+ 21e:	85 e2       	ldi	r24, 0x25	; 37
+ 220:	91 e0       	ldi	r25, 0x01	; 1
+ 222:	81 93       	st	Z+, r24
+ 224:	91 93       	st	Z+, r25
+// RTOS Подготовка. Очистка очередей
+inline void InitRTOS(void)
+{
+u08	index;
+
+for(index=0;index!=TaskQueueSize+1;index++)	// Во все позиции записываем Idle
+ 226:	20 e0       	ldi	r18, 0x00	; 0
+ 228:	e4 3a       	cpi	r30, 0xA4	; 164
+ 22a:	f2 07       	cpc	r31, r18
+ 22c:	d1 f7       	brne	.-12     	; 0x222 <InitRTOS+0x8>
+ 22e:	e4 ea       	ldi	r30, 0xA4	; 164
+ 230:	f0 e0       	ldi	r31, 0x00	; 0
+	}
+
+
+for(index=0;index!=MainTimerQueueSize+1;index++) // Обнуляем все таймеры.
+	{
+	MainTimer[index].GoToTask = Idle;
+ 232:	28 2f       	mov	r18, r24
+ 234:	89 2f       	mov	r24, r25
+ 236:	20 83       	st	Z, r18
+ 238:	81 83       	std	Z+1, r24	; 0x01
+	MainTimer[index].Time = 0;
+ 23a:	13 82       	std	Z+3, r1	; 0x03
+ 23c:	12 82       	std	Z+2, r1	; 0x02
+ 23e:	34 96       	adiw	r30, 0x04	; 4
+	{
+	TaskQueue[index] = Idle;
+	}
+
+
+for(index=0;index!=MainTimerQueueSize+1;index++) // Обнуляем все таймеры.
+ 240:	91 e0       	ldi	r25, 0x01	; 1
+ 242:	e0 32       	cpi	r30, 0x20	; 32
+ 244:	f9 07       	cpc	r31, r25
+ 246:	b9 f7       	brne	.-18     	; 0x236 <InitRTOS+0x1c>
+	{
+	MainTimer[index].GoToTask = Idle;
+	MainTimer[index].Time = 0;
+	}
+}
+ 248:	08 95       	ret
+
+0000024a <Idle>:
+
+//Пустая процедура - простой ядра. 
+inline void  Idle(void)
+{
+
+}
+ 24a:	08 95       	ret
+
+0000024c <SetTask>:
+
+
+// Функция установки задачи в очередь. Передаваемый параметр - указатель на функцию
+// Отдаваемое значение - код ошибки.
+void SetTask(TPTR TS)
+{
+ 24c:	ac 01       	movw	r20, r24
+
+u08		index = 0;
+u08		nointerrupted = 0;
+
+if (STATUS_REG & (1<<Interrupt_Flag))  // Если прерывания разрешены, то запрещаем их.
+ 24e:	0f b6       	in	r0, 0x3f	; 63
+ 250:	07 fe       	sbrs	r0, 7
+ 252:	0c c0       	rjmp	.+24     	; 0x26c <SetTask+0x20>
+	{
+	Disable_Interrupt
+ 254:	f8 94       	cli
+ 256:	21 e0       	ldi	r18, 0x01	; 1
+ 258:	0a c0       	rjmp	.+20     	; 0x26e <SetTask+0x22>
+ 25a:	31 96       	adiw	r30, 0x01	; 1
+ 25c:	12 96       	adiw	r26, 0x02	; 2
+	}
+
+while(TaskQueue[index]!=Idle) 			// Прочесываем очередь задач на предмет свободной ячейки
+	{									// с значением Idle - конец очереди.
+	index++;
+	if (index==TaskQueueSize+1) 		// Если очередь переполнена то выходим не солоно хлебавши
+ 25e:	ef 31       	cpi	r30, 0x1F	; 31
+ 260:	f1 05       	cpc	r31, r1
+ 262:	49 f4       	brne	.+18     	; 0x276 <SetTask+0x2a>
+		{
+		if (nointerrupted)	Enable_Interrupt 	// Если мы не в прерывании, то разрешаем прерывания
+ 264:	22 23       	and	r18, r18
+ 266:	b1 f0       	breq	.+44     	; 0x294 <SetTask+0x48>
+ 268:	78 94       	sei
+ 26a:	08 95       	ret
+ 26c:	20 e0       	ldi	r18, 0x00	; 0
+ 26e:	a6 e6       	ldi	r26, 0x66	; 102
+ 270:	b0 e0       	ldi	r27, 0x00	; 0
+ 272:	e0 e0       	ldi	r30, 0x00	; 0
+ 274:	f0 e0       	ldi	r31, 0x00	; 0
+	{
+	Disable_Interrupt
+	nointerrupted = 1;					// И ставим флаг, что мы не в прерывании. 
+	}
+
+while(TaskQueue[index]!=Idle) 			// Прочесываем очередь задач на предмет свободной ячейки
+ 276:	8d 91       	ld	r24, X+
+ 278:	9c 91       	ld	r25, X
+ 27a:	11 97       	sbiw	r26, 0x01	; 1
+ 27c:	85 52       	subi	r24, 0x25	; 37
+ 27e:	91 40       	sbci	r25, 0x01	; 1
+ 280:	61 f7       	brne	.-40     	; 0x25a <SetTask+0xe>
+		if (nointerrupted)	Enable_Interrupt 	// Если мы не в прерывании, то разрешаем прерывания
+		return;									// Раньше функция возвращала код ошибки - очередь переполнена. Пока убрал.
+		}
+	}
+												// Если нашли свободное место, то
+TaskQueue[index] = TS;							// Записываем в очередь задачу
+ 282:	ee 0f       	add	r30, r30
+ 284:	ff 1f       	adc	r31, r31
+ 286:	ea 59       	subi	r30, 0x9A	; 154
+ 288:	ff 4f       	sbci	r31, 0xFF	; 255
+ 28a:	51 83       	std	Z+1, r21	; 0x01
+ 28c:	40 83       	st	Z, r20
+if (nointerrupted) Enable_Interrupt				// И включаем прерывания если не в обработчике прерывания.
+ 28e:	22 23       	and	r18, r18
+ 290:	09 f0       	breq	.+2      	; 0x294 <SetTask+0x48>
+ 292:	78 94       	sei
+ 294:	08 95       	ret
+
+00000296 <SetTimerTask>:
+
+
+//Функция установки задачи по таймеру. Передаваемые параметры - указатель на функцию, 
+// Время выдержки в тиках системного таймера. Возвращет код ошибки.
+void SetTimerTask(TPTR TS, u16 NewTime)
+{
+ 296:	cf 93       	push	r28
+ 298:	df 93       	push	r29
+ 29a:	ac 01       	movw	r20, r24
+u08		index = 0;
+u08		nointerrupted = 0;
+u08		Idle_i = 0;
+
+if (STATUS_REG & (1<<Interrupt_Flag)) 			// Проверка запрета прерывания, аналогично функции выше
+ 29c:	0f b6       	in	r0, 0x3f	; 63
+ 29e:	07 fc       	sbrc	r0, 7
+ 2a0:	02 c0       	rjmp	.+4      	; 0x2a6 <SetTimerTask+0x10>
+ 2a2:	20 e0       	ldi	r18, 0x00	; 0
+ 2a4:	02 c0       	rjmp	.+4      	; 0x2aa <SetTimerTask+0x14>
+	{
+	Disable_Interrupt
+ 2a6:	f8 94       	cli
+ 2a8:	21 e0       	ldi	r18, 0x01	; 1
+ 2aa:	c4 ea       	ldi	r28, 0xA4	; 164
+ 2ac:	d0 e0       	ldi	r29, 0x00	; 0
+ 2ae:	de 01       	movw	r26, r28
+ 2b0:	e0 e0       	ldi	r30, 0x00	; 0
+ 2b2:	f0 e0       	ldi	r31, 0x00	; 0
+	}
+
+
+for(index=0;index!=MainTimerQueueSize+1;++index)	//Прочесываем очередь таймеров
+	{
+	if(MainTimer[index].GoToTask == TS)				// Если уже есть запись с таким адресом
+ 2b4:	8d 91       	ld	r24, X+
+ 2b6:	9c 91       	ld	r25, X
+ 2b8:	11 97       	sbiw	r26, 0x01	; 1
+ 2ba:	84 17       	cp	r24, r20
+ 2bc:	95 07       	cpc	r25, r21
+ 2be:	61 f4       	brne	.+24     	; 0x2d8 <SetTimerTask+0x42>
+		{
+		MainTimer[index].Time = NewTime;			// Перезаписываем ей выдержку
+ 2c0:	ee 0f       	add	r30, r30
+ 2c2:	ff 1f       	adc	r31, r31
+ 2c4:	ee 0f       	add	r30, r30
+ 2c6:	ff 1f       	adc	r31, r31
+ 2c8:	ec 55       	subi	r30, 0x5C	; 92
+ 2ca:	ff 4f       	sbci	r31, 0xFF	; 255
+ 2cc:	73 83       	std	Z+3, r23	; 0x03
+ 2ce:	62 83       	std	Z+2, r22	; 0x02
+		if (nointerrupted) 	Enable_Interrupt		// Разрешаем прерывания если не были запрещены.
+ 2d0:	22 23       	and	r18, r18
+ 2d2:	09 f1       	breq	.+66     	; 0x316 <SetTimerTask+0x80>
+ 2d4:	78 94       	sei
+ 2d6:	1f c0       	rjmp	.+62     	; 0x316 <SetTimerTask+0x80>
+ 2d8:	31 96       	adiw	r30, 0x01	; 1
+ 2da:	14 96       	adiw	r26, 0x04	; 4
+	Disable_Interrupt
+	nointerrupted = 1;
+	}
+
+
+for(index=0;index!=MainTimerQueueSize+1;++index)	//Прочесываем очередь таймеров
+ 2dc:	ef 31       	cpi	r30, 0x1F	; 31
+ 2de:	f1 05       	cpc	r31, r1
+ 2e0:	49 f7       	brne	.-46     	; 0x2b4 <SetTimerTask+0x1e>
+ 2e2:	e0 e0       	ldi	r30, 0x00	; 0
+ 2e4:	f0 e0       	ldi	r31, 0x00	; 0
+	}
+	
+
+for(index=0;index!=MainTimerQueueSize+1;++index)	// Если не находим похожий таймер, то ищем любой пустой	
+	{
+	if (MainTimer[index].GoToTask == Idle)		
+ 2e6:	88 81       	ld	r24, Y
+ 2e8:	99 81       	ldd	r25, Y+1	; 0x01
+ 2ea:	85 52       	subi	r24, 0x25	; 37
+ 2ec:	91 40       	sbci	r25, 0x01	; 1
+ 2ee:	71 f4       	brne	.+28     	; 0x30c <SetTimerTask+0x76>
+		{
+		MainTimer[index].GoToTask = TS;			// Заполняем поле перехода задачи
+ 2f0:	ee 0f       	add	r30, r30
+ 2f2:	ff 1f       	adc	r31, r31
+ 2f4:	ee 0f       	add	r30, r30
+ 2f6:	ff 1f       	adc	r31, r31
+ 2f8:	ec 55       	subi	r30, 0x5C	; 92
+ 2fa:	ff 4f       	sbci	r31, 0xFF	; 255
+ 2fc:	51 83       	std	Z+1, r21	; 0x01
+ 2fe:	40 83       	st	Z, r20
+		MainTimer[index].Time = NewTime;		// И поле выдержки времени
+ 300:	73 83       	std	Z+3, r23	; 0x03
+ 302:	62 83       	std	Z+2, r22	; 0x02
+		if (nointerrupted) 	Enable_Interrupt	// Разрешаем прерывания
+ 304:	22 23       	and	r18, r18
+ 306:	39 f0       	breq	.+14     	; 0x316 <SetTimerTask+0x80>
+ 308:	78 94       	sei
+ 30a:	05 c0       	rjmp	.+10     	; 0x316 <SetTimerTask+0x80>
+ 30c:	31 96       	adiw	r30, 0x01	; 1
+ 30e:	24 96       	adiw	r28, 0x04	; 4
+			}
+		}
+	}
+	
+
+for(index=0;index!=MainTimerQueueSize+1;++index)	// Если не находим похожий таймер, то ищем любой пустой	
+ 310:	ef 31       	cpi	r30, 0x1F	; 31
+ 312:	f1 05       	cpc	r31, r1
+ 314:	41 f7       	brne	.-48     	; 0x2e6 <SetTimerTask+0x50>
+		if (nointerrupted) 	Enable_Interrupt	// Разрешаем прерывания
+		return;									// Выход. 
+		}
+		
+	}												// тут можно сделать return c кодом ошибки - нет свободных таймеров
+}
+ 316:	df 91       	pop	r29
+ 318:	cf 91       	pop	r28
+ 31a:	08 95       	ret
+
+0000031c <TaskManager>:
+inline void TaskManager(void)
+{
+u08		index=0;
+TPTR	GoToTask = Idle;		// Инициализируем переменные
+
+Disable_Interrupt				// Запрещаем прерывания!!!
+ 31c:	f8 94       	cli
+GoToTask = TaskQueue[0];		// Хватаем первое значение из очереди
+ 31e:	20 91 66 00 	lds	r18, 0x0066
+ 322:	30 91 67 00 	lds	r19, 0x0067
+
+if (GoToTask==Idle) 			// Если там пусто
+ 326:	81 e0       	ldi	r24, 0x01	; 1
+ 328:	25 32       	cpi	r18, 0x25	; 37
+ 32a:	38 07       	cpc	r19, r24
+ 32c:	11 f4       	brne	.+4      	; 0x332 <TaskManager+0x16>
+	{
+	Enable_Interrupt			// Разрешаем прерывания
+ 32e:	78 94       	sei
+ 330:	08 95       	ret
+ 332:	e6 e6       	ldi	r30, 0x66	; 102
+ 334:	f0 e0       	ldi	r31, 0x00	; 0
+	}
+else
+	{
+	for(index=0;index!=TaskQueueSize;index++)	// В противном случае сдвигаем всю очередь
+		{
+		TaskQueue[index]=TaskQueue[index+1];
+ 336:	82 81       	ldd	r24, Z+2	; 0x02
+ 338:	93 81       	ldd	r25, Z+3	; 0x03
+ 33a:	81 93       	st	Z+, r24
+ 33c:	91 93       	st	Z+, r25
+	Enable_Interrupt			// Разрешаем прерывания
+	(Idle)(); 					// Переходим на обработку пустого цикла
+	}
+else
+	{
+	for(index=0;index!=TaskQueueSize;index++)	// В противном случае сдвигаем всю очередь
+ 33e:	80 e0       	ldi	r24, 0x00	; 0
+ 340:	e2 3a       	cpi	r30, 0xA2	; 162
+ 342:	f8 07       	cpc	r31, r24
+ 344:	c1 f7       	brne	.-16     	; 0x336 <TaskManager+0x1a>
+		{
+		TaskQueue[index]=TaskQueue[index+1];
+		}
+
+	TaskQueue[TaskQueueSize]= Idle;				// В последнюю запись пихаем затычку
+ 346:	85 e2       	ldi	r24, 0x25	; 37
+ 348:	91 e0       	ldi	r25, 0x01	; 1
+ 34a:	91 83       	std	Z+1, r25	; 0x01
+ 34c:	80 83       	st	Z, r24
+
+	Enable_Interrupt							// Разрешаем прерывания
+ 34e:	78 94       	sei
+	(GoToTask)();								// Переходим к задаче
+ 350:	f9 01       	movw	r30, r18
+ 352:	09 95       	icall
+ 354:	08 95       	ret
+
+00000356 <TimerService>:
+To DO: Привести к возможности загружать произвольную очередь таймеров. Тогда можно будет создавать их целую прорву. 
+А также использовать эту функцию произвольным образом. 
+В этом случае не забыть добавить проверку прерывания. 
+*/
+inline void TimerService(void)
+{
+ 356:	0f 93       	push	r16
+ 358:	1f 93       	push	r17
+ 35a:	cf 93       	push	r28
+ 35c:	df 93       	push	r29
+ 35e:	c4 ea       	ldi	r28, 0xA4	; 164
+ 360:	d0 e0       	ldi	r29, 0x00	; 0
+u08 index;
+
+for(index=0;index!=MainTimerQueueSize+1;index++)		// Прочесываем очередь таймеров
+	{
+	if(MainTimer[index].GoToTask == Idle) continue;		// Если нашли пустышку - щелкаем следующую итерацию
+ 362:	05 e2       	ldi	r16, 0x25	; 37
+ 364:	11 e0       	ldi	r17, 0x01	; 1
+ 366:	88 81       	ld	r24, Y
+ 368:	99 81       	ldd	r25, Y+1	; 0x01
+ 36a:	21 e0       	ldi	r18, 0x01	; 1
+ 36c:	85 32       	cpi	r24, 0x25	; 37
+ 36e:	92 07       	cpc	r25, r18
+ 370:	71 f0       	breq	.+28     	; 0x38e <TimerService+0x38>
+
+	if(MainTimer[index].Time !=1)						// Если таймер не выщелкал, то щелкаем еще раз. 
+ 372:	2a 81       	ldd	r18, Y+2	; 0x02
+ 374:	3b 81       	ldd	r19, Y+3	; 0x03
+ 376:	21 30       	cpi	r18, 0x01	; 1
+ 378:	31 05       	cpc	r19, r1
+ 37a:	29 f0       	breq	.+10     	; 0x386 <TimerService+0x30>
+		{												// To Do: Вычислить по тактам, что лучше !=1 или !=0. 
+		MainTimer[index].Time --;						// Уменьшаем число в ячейке если не конец.
+ 37c:	21 50       	subi	r18, 0x01	; 1
+ 37e:	30 40       	sbci	r19, 0x00	; 0
+ 380:	3b 83       	std	Y+3, r19	; 0x03
+ 382:	2a 83       	std	Y+2, r18	; 0x02
+ 384:	04 c0       	rjmp	.+8      	; 0x38e <TimerService+0x38>
+		}
+	else
+		{
+		SetTask(MainTimer[index].GoToTask);				// Дощелкали до нуля? Пихаем в очередь задачу
+ 386:	0e 94 26 01 	call	0x24c	; 0x24c <SetTask>
+		MainTimer[index].GoToTask = Idle;				// А в ячейку пишем затычку
+ 38a:	19 83       	std	Y+1, r17	; 0x01
+ 38c:	08 83       	st	Y, r16
+ 38e:	24 96       	adiw	r28, 0x04	; 4
+*/
+inline void TimerService(void)
+{
+u08 index;
+
+for(index=0;index!=MainTimerQueueSize+1;index++)		// Прочесываем очередь таймеров
+ 390:	81 e0       	ldi	r24, 0x01	; 1
+ 392:	c0 32       	cpi	r28, 0x20	; 32
+ 394:	d8 07       	cpc	r29, r24
+ 396:	39 f7       	brne	.-50     	; 0x366 <TimerService+0x10>
+		{
+		SetTask(MainTimer[index].GoToTask);				// Дощелкали до нуля? Пихаем в очередь задачу
+		MainTimer[index].GoToTask = Idle;				// А в ячейку пишем затычку
+		}
+	}
+}
+ 398:	df 91       	pop	r29
+ 39a:	cf 91       	pop	r28
+ 39c:	1f 91       	pop	r17
+ 39e:	0f 91       	pop	r16
+ 3a0:	08 95       	ret
+
+000003a2 <InitAll>:
+
+inline void InitAll(void)
+{
+
+//InitUSART
+UBRRL = LO(bauddivider);
+ 3a2:	89 e1       	ldi	r24, 0x19	; 25
+ 3a4:	89 b9       	out	0x09, r24	; 9
+UBRRH = HI(bauddivider);
+ 3a6:	10 bc       	out	0x20, r1	; 32
+UCSRA = 0;
+ 3a8:	1b b8       	out	0x0b, r1	; 11
+UCSRB = 1<<RXEN|1<<TXEN|1<<RXCIE|0<<TXCIE|0<<UDRIE;
+ 3aa:	88 e9       	ldi	r24, 0x98	; 152
+ 3ac:	8a b9       	out	0x0a, r24	; 10
+UCSRC = 1<<URSEL|1<<UCSZ0|1<<UCSZ1;
+ 3ae:	86 e8       	ldi	r24, 0x86	; 134
+ 3b0:	80 bd       	out	0x20, r24	; 32
+
+//InitPort
+PORTB = 0x00;
+ 3b2:	18 ba       	out	0x18, r1	; 24
+DDRB = 1;
+ 3b4:	81 e0       	ldi	r24, 0x01	; 1
+ 3b6:	87 bb       	out	0x17, r24	; 23
+//Init Interrupts
+
+
+//Init Timers
+
+}
+ 3b8:	08 95       	ret
+
+000003ba <RunRTOS>:
+#include <EERTOSHAL.h>
+
+//RTOS Запуск системного таймера
+inline void RunRTOS (void)
+{
+TCCR2 = 1<<WGM21|4<<CS20; 				// Freq = CK/64 - Установить режим и предделитель
+ 3ba:	8c e0       	ldi	r24, 0x0C	; 12
+ 3bc:	85 bd       	out	0x25, r24	; 37
+										// Автосброс после достижения регистра сравнения
+TCNT2 = 0;								// Установить начальное значение счётчиков
+ 3be:	14 bc       	out	0x24, r1	; 36
+OCR2  = LO(TimerDivider); 				// Установить значение в регистр сравнения
+ 3c0:	8d e7       	ldi	r24, 0x7D	; 125
+ 3c2:	83 bd       	out	0x23, r24	; 35
+TIMSK |= 1<<OCIE2;						// Разрешаем прерывание RTOS - запуск ОС
+ 3c4:	89 b7       	in	r24, 0x39	; 57
+ 3c6:	80 68       	ori	r24, 0x80	; 128
+ 3c8:	89 bf       	out	0x39, r24	; 57
+
+sei();
+ 3ca:	78 94       	sei
+}
+ 3cc:	08 95       	ret
+
+000003ce <__vector_17>:
+u08 	WorkLog[100];						// Лог пишем сюда
+u08		WorkIndex=0;						// Индекс лога
+*/
+
+ISR(TWI_vect)								// Прерывание TWI Тут наше все.
+{
+ 3ce:	1f 92       	push	r1
+ 3d0:	0f 92       	push	r0
+ 3d2:	0f b6       	in	r0, 0x3f	; 63
+ 3d4:	0f 92       	push	r0
+ 3d6:	11 24       	eor	r1, r1
+ 3d8:	2f 93       	push	r18
+ 3da:	3f 93       	push	r19
+ 3dc:	4f 93       	push	r20
+ 3de:	5f 93       	push	r21
+ 3e0:	6f 93       	push	r22
+ 3e2:	7f 93       	push	r23
+ 3e4:	8f 93       	push	r24
+ 3e6:	9f 93       	push	r25
+ 3e8:	af 93       	push	r26
+ 3ea:	bf 93       	push	r27
+ 3ec:	ef 93       	push	r30
+ 3ee:	ff 93       	push	r31
+		WorkLog[WorkIndex]= 0xFF;			// Если статус нулевой то вписываем FF
+		WorkIndex++;
+		}
+}
+*/
+switch(TWSR & 0xF8)						// Отсекаем биты прескалера
+ 3f0:	81 b1       	in	r24, 0x01	; 1
+ 3f2:	90 e0       	ldi	r25, 0x00	; 0
+ 3f4:	88 7f       	andi	r24, 0xF8	; 248
+ 3f6:	90 70       	andi	r25, 0x00	; 0
+ 3f8:	80 36       	cpi	r24, 0x60	; 96
+ 3fa:	91 05       	cpc	r25, r1
+ 3fc:	09 f4       	brne	.+2      	; 0x400 <__vector_17+0x32>
+ 3fe:	34 c1       	rjmp	.+616    	; 0x668 <__stack+0x209>
+ 400:	81 36       	cpi	r24, 0x61	; 97
+ 402:	91 05       	cpc	r25, r1
+ 404:	cc f5       	brge	.+114    	; 0x478 <__stack+0x19>
+ 406:	88 32       	cpi	r24, 0x28	; 40
+ 408:	91 05       	cpc	r25, r1
+ 40a:	09 f4       	brne	.+2      	; 0x40e <__vector_17+0x40>
+ 40c:	ac c0       	rjmp	.+344    	; 0x566 <__stack+0x107>
+ 40e:	89 32       	cpi	r24, 0x29	; 41
+ 410:	91 05       	cpc	r25, r1
+ 412:	b4 f4       	brge	.+44     	; 0x440 <__vector_17+0x72>
+ 414:	80 31       	cpi	r24, 0x10	; 16
+ 416:	91 05       	cpc	r25, r1
+ 418:	09 f4       	brne	.+2      	; 0x41c <__vector_17+0x4e>
+ 41a:	7a c0       	rjmp	.+244    	; 0x510 <__stack+0xb1>
+ 41c:	81 31       	cpi	r24, 0x11	; 17
+ 41e:	91 05       	cpc	r25, r1
+ 420:	3c f4       	brge	.+14     	; 0x430 <__vector_17+0x62>
+ 422:	00 97       	sbiw	r24, 0x00	; 0
+ 424:	09 f4       	brne	.+2      	; 0x428 <__vector_17+0x5a>
+ 426:	68 c0       	rjmp	.+208    	; 0x4f8 <__stack+0x99>
+ 428:	08 97       	sbiw	r24, 0x08	; 8
+ 42a:	09 f0       	breq	.+2      	; 0x42e <__vector_17+0x60>
+ 42c:	71 c1       	rjmp	.+738    	; 0x710 <__stack+0x2b1>
+ 42e:	68 c0       	rjmp	.+208    	; 0x500 <__stack+0xa1>
+ 430:	88 31       	cpi	r24, 0x18	; 24
+ 432:	91 05       	cpc	r25, r1
+ 434:	09 f4       	brne	.+2      	; 0x438 <__vector_17+0x6a>
+ 436:	7d c0       	rjmp	.+250    	; 0x532 <__stack+0xd3>
+ 438:	80 97       	sbiw	r24, 0x20	; 32
+ 43a:	09 f0       	breq	.+2      	; 0x43e <__vector_17+0x70>
+ 43c:	69 c1       	rjmp	.+722    	; 0x710 <__stack+0x2b1>
+ 43e:	db c0       	rjmp	.+438    	; 0x5f6 <__stack+0x197>
+ 440:	80 34       	cpi	r24, 0x40	; 64
+ 442:	91 05       	cpc	r25, r1
+ 444:	09 f4       	brne	.+2      	; 0x448 <__vector_17+0x7a>
+ 446:	d4 c0       	rjmp	.+424    	; 0x5f0 <__stack+0x191>
+ 448:	81 34       	cpi	r24, 0x41	; 65
+ 44a:	91 05       	cpc	r25, r1
+ 44c:	44 f4       	brge	.+16     	; 0x45e <__vector_17+0x90>
+ 44e:	80 33       	cpi	r24, 0x30	; 48
+ 450:	91 05       	cpc	r25, r1
+ 452:	09 f4       	brne	.+2      	; 0x456 <__vector_17+0x88>
+ 454:	bc c0       	rjmp	.+376    	; 0x5ce <__stack+0x16f>
+ 456:	c8 97       	sbiw	r24, 0x38	; 56
+ 458:	09 f0       	breq	.+2      	; 0x45c <__vector_17+0x8e>
+ 45a:	5a c1       	rjmp	.+692    	; 0x710 <__stack+0x2b1>
+ 45c:	be c0       	rjmp	.+380    	; 0x5da <__stack+0x17b>
+ 45e:	80 35       	cpi	r24, 0x50	; 80
+ 460:	91 05       	cpc	r25, r1
+ 462:	09 f4       	brne	.+2      	; 0x466 <__stack+0x7>
+ 464:	d4 c0       	rjmp	.+424    	; 0x60e <__stack+0x1af>
+ 466:	88 35       	cpi	r24, 0x58	; 88
+ 468:	91 05       	cpc	r25, r1
+ 46a:	09 f4       	brne	.+2      	; 0x46e <__stack+0xf>
+ 46c:	e6 c0       	rjmp	.+460    	; 0x63a <__stack+0x1db>
+ 46e:	88 34       	cpi	r24, 0x48	; 72
+ 470:	91 05       	cpc	r25, r1
+ 472:	09 f0       	breq	.+2      	; 0x476 <__stack+0x17>
+ 474:	4d c1       	rjmp	.+666    	; 0x710 <__stack+0x2b1>
+ 476:	bf c0       	rjmp	.+382    	; 0x5f6 <__stack+0x197>
+ 478:	88 39       	cpi	r24, 0x98	; 152
+ 47a:	91 05       	cpc	r25, r1
+ 47c:	09 f4       	brne	.+2      	; 0x480 <__stack+0x21>
+ 47e:	0b c1       	rjmp	.+534    	; 0x696 <__stack+0x237>
+ 480:	89 39       	cpi	r24, 0x99	; 153
+ 482:	91 05       	cpc	r25, r1
+ 484:	ec f4       	brge	.+58     	; 0x4c0 <__stack+0x61>
+ 486:	88 37       	cpi	r24, 0x78	; 120
+ 488:	91 05       	cpc	r25, r1
+ 48a:	09 f4       	brne	.+2      	; 0x48e <__stack+0x2f>
+ 48c:	e4 c0       	rjmp	.+456    	; 0x656 <__stack+0x1f7>
+ 48e:	89 37       	cpi	r24, 0x79	; 121
+ 490:	91 05       	cpc	r25, r1
+ 492:	4c f4       	brge	.+18     	; 0x4a6 <__stack+0x47>
+ 494:	88 36       	cpi	r24, 0x68	; 104
+ 496:	91 05       	cpc	r25, r1
+ 498:	09 f4       	brne	.+2      	; 0x49c <__stack+0x3d>
+ 49a:	dd c0       	rjmp	.+442    	; 0x656 <__stack+0x1f7>
+ 49c:	80 37       	cpi	r24, 0x70	; 112
+ 49e:	91 05       	cpc	r25, r1
+ 4a0:	09 f0       	breq	.+2      	; 0x4a4 <__stack+0x45>
+ 4a2:	36 c1       	rjmp	.+620    	; 0x710 <__stack+0x2b1>
+ 4a4:	e1 c0       	rjmp	.+450    	; 0x668 <__stack+0x209>
+ 4a6:	88 38       	cpi	r24, 0x88	; 136
+ 4a8:	91 05       	cpc	r25, r1
+ 4aa:	09 f4       	brne	.+2      	; 0x4ae <__stack+0x4f>
+ 4ac:	f4 c0       	rjmp	.+488    	; 0x696 <__stack+0x237>
+ 4ae:	80 39       	cpi	r24, 0x90	; 144
+ 4b0:	91 05       	cpc	r25, r1
+ 4b2:	09 f4       	brne	.+2      	; 0x4b6 <__stack+0x57>
+ 4b4:	e1 c0       	rjmp	.+450    	; 0x678 <__stack+0x219>
+ 4b6:	80 38       	cpi	r24, 0x80	; 128
+ 4b8:	91 05       	cpc	r25, r1
+ 4ba:	09 f0       	breq	.+2      	; 0x4be <__stack+0x5f>
+ 4bc:	29 c1       	rjmp	.+594    	; 0x710 <__stack+0x2b1>
+ 4be:	dc c0       	rjmp	.+440    	; 0x678 <__stack+0x219>
+ 4c0:	80 3b       	cpi	r24, 0xB0	; 176
+ 4c2:	91 05       	cpc	r25, r1
+ 4c4:	09 f4       	brne	.+2      	; 0x4c8 <__stack+0x69>
+ 4c6:	f3 c0       	rjmp	.+486    	; 0x6ae <__stack+0x24f>
+ 4c8:	81 3b       	cpi	r24, 0xB1	; 177
+ 4ca:	91 05       	cpc	r25, r1
+ 4cc:	44 f4       	brge	.+16     	; 0x4de <__stack+0x7f>
+ 4ce:	80 3a       	cpi	r24, 0xA0	; 160
+ 4d0:	91 05       	cpc	r25, r1
+ 4d2:	69 f1       	breq	.+90     	; 0x52e <__stack+0xcf>
+ 4d4:	88 3a       	cpi	r24, 0xA8	; 168
+ 4d6:	91 05       	cpc	r25, r1
+ 4d8:	09 f0       	breq	.+2      	; 0x4dc <__stack+0x7d>
+ 4da:	1a c1       	rjmp	.+564    	; 0x710 <__stack+0x2b1>
+ 4dc:	f1 c0       	rjmp	.+482    	; 0x6c0 <__stack+0x261>
+ 4de:	80 3c       	cpi	r24, 0xC0	; 192
+ 4e0:	91 05       	cpc	r25, r1
+ 4e2:	09 f4       	brne	.+2      	; 0x4e6 <__stack+0x87>
+ 4e4:	05 c1       	rjmp	.+522    	; 0x6f0 <__stack+0x291>
+ 4e6:	88 3c       	cpi	r24, 0xC8	; 200
+ 4e8:	91 05       	cpc	r25, r1
+ 4ea:	09 f4       	brne	.+2      	; 0x4ee <__stack+0x8f>
+ 4ec:	01 c1       	rjmp	.+514    	; 0x6f0 <__stack+0x291>
+ 4ee:	88 3b       	cpi	r24, 0xB8	; 184
+ 4f0:	91 05       	cpc	r25, r1
+ 4f2:	09 f0       	breq	.+2      	; 0x4f6 <__stack+0x97>
+ 4f4:	0d c1       	rjmp	.+538    	; 0x710 <__stack+0x2b1>
+ 4f6:	ea c0       	rjmp	.+468    	; 0x6cc <__stack+0x26d>
+	{
+	case 0x00:	// Bus Fail (автобус сломался)
+			{
+			i2c_Do |= i2c_ERR_BF;
+ 4f8:	80 91 2e 01 	lds	r24, 0x012E
+ 4fc:	81 60       	ori	r24, 0x01	; 1
+ 4fe:	7e c0       	rjmp	.+252    	; 0x5fc <__stack+0x19d>
+			break;
+			}
+
+	case 0x08:	// Старт был, а затем мы:
+			{
+			if( (i2c_Do & i2c_type_msk)== i2c_sarp)							// В зависимости от режима
+ 500:	80 91 2e 01 	lds	r24, 0x012E
+ 504:	8c 70       	andi	r24, 0x0C	; 12
+ 506:	90 91 25 01 	lds	r25, 0x0125
+ 50a:	88 23       	and	r24, r24
+ 50c:	51 f4       	brne	.+20     	; 0x522 <__stack+0xc3>
+ 50e:	07 c0       	rjmp	.+14     	; 0x51e <__stack+0xbf>
+			break;
+			}
+				
+	case 0x10:	// Повторный старт был, а затем мы
+			{
+			if( (i2c_Do & i2c_type_msk) == i2c_sawsarp)						// В зависимости от режима
+ 510:	80 91 2e 01 	lds	r24, 0x012E
+ 514:	8c 70       	andi	r24, 0x0C	; 12
+ 516:	90 91 25 01 	lds	r25, 0x0125
+ 51a:	88 30       	cpi	r24, 0x08	; 8
+ 51c:	11 f4       	brne	.+4      	; 0x522 <__stack+0xc3>
+				{
+				i2c_SlaveAddress |= 0x01;									// Шлем Addr+R
+ 51e:	91 60       	ori	r25, 0x01	; 1
+ 520:	01 c0       	rjmp	.+2      	; 0x524 <__stack+0xc5>
+				}
+			else
+				{
+				i2c_SlaveAddress &= 0xFE;									// Шлем Addr+W
+ 522:	9e 7f       	andi	r25, 0xFE	; 254
+ 524:	90 93 25 01 	sts	0x0125, r25
+				}
+
+			// To Do: Добавить сюда обработку ошибок 
+
+			TWDR = i2c_SlaveAddress;													// Адрес слейва
+ 528:	80 91 25 01 	lds	r24, 0x0125
+ 52c:	83 b9       	out	0x03, r24	; 3
+			TWCR = 0<<TWSTA|0<<TWSTO|1<<TWINT|i2c_i_am_slave<<TWEA|1<<TWEN|1<<TWIE;  	// Go!
+ 52e:	85 ec       	ldi	r24, 0xC5	; 197
+ 530:	dd c0       	rjmp	.+442    	; 0x6ec <__stack+0x28d>
+			break;
+			}
+
+	case 0x18:	// Был послан SLA+W получили ACK, а затем:
+			{
+			if( (i2c_Do & i2c_type_msk) == i2c_sawp)						// В зависимости от режима
+ 532:	80 91 2e 01 	lds	r24, 0x012E
+ 536:	90 e0       	ldi	r25, 0x00	; 0
+ 538:	8c 70       	andi	r24, 0x0C	; 12
+ 53a:	90 70       	andi	r25, 0x00	; 0
+ 53c:	84 30       	cpi	r24, 0x04	; 4
+ 53e:	91 05       	cpc	r25, r1
+ 540:	61 f4       	brne	.+24     	; 0x55a <__stack+0xfb>
+				{
+				TWDR = i2c_Buffer[i2c_index];								// Шлем байт данных
+ 542:	90 91 21 01 	lds	r25, 0x0121
+ 546:	e9 2f       	mov	r30, r25
+ 548:	f0 e0       	ldi	r31, 0x00	; 0
+ 54a:	ee 5d       	subi	r30, 0xDE	; 222
+ 54c:	fe 4f       	sbci	r31, 0xFE	; 254
+ 54e:	80 81       	ld	r24, Z
+ 550:	83 b9       	out	0x03, r24	; 3
+				i2c_index++;												// Увеличиваем указатель буфера
+ 552:	9f 5f       	subi	r25, 0xFF	; 255
+ 554:	90 93 21 01 	sts	0x0121, r25
+ 558:	ea cf       	rjmp	.-44     	; 0x52e <__stack+0xcf>
+				TWCR = 0<<TWSTA|0<<TWSTO|1<<TWINT|i2c_i_am_slave<<TWEA|1<<TWEN|1<<TWIE;  // Go! 
+
+				}
+
+			if( (i2c_Do & i2c_type_msk) == i2c_sawsarp)
+ 55a:	08 97       	sbiw	r24, 0x08	; 8
+ 55c:	09 f0       	breq	.+2      	; 0x560 <__stack+0x101>
+ 55e:	d8 c0       	rjmp	.+432    	; 0x710 <__stack+0x2b1>
+				{
+				TWDR = i2c_PageAddress[i2c_PageAddrIndex];					// Или шлем адрес странцы (по сути тоже байт данных)
+ 560:	90 91 2a 01 	lds	r25, 0x012A
+ 564:	2a c0       	rjmp	.+84     	; 0x5ba <__stack+0x15b>
+			break;
+			}
+
+	case 0x28: 	// Байт данных послали, получили ACK!  (если sawp - это был байт данных. если sawsarp - байт адреса страницы)
+			{	// А дальше: 
+			if( (i2c_Do & i2c_type_msk) == i2c_sawp)							// В зависимости от режима
+ 566:	80 91 2e 01 	lds	r24, 0x012E
+ 56a:	8c 70       	andi	r24, 0x0C	; 12
+ 56c:	84 30       	cpi	r24, 0x04	; 4
+ 56e:	c9 f4       	brne	.+50     	; 0x5a2 <__stack+0x143>
+				{
+				if (i2c_index == i2c_ByteCount)												// Если был байт данных последний
+ 570:	90 91 21 01 	lds	r25, 0x0121
+ 574:	80 91 2b 01 	lds	r24, 0x012B
+ 578:	98 17       	cp	r25, r24
+ 57a:	41 f4       	brne	.+16     	; 0x58c <__stack+0x12d>
+					{																		
+					TWCR = 0<<TWSTA|1<<TWSTO|1<<TWINT|i2c_i_am_slave<<TWEA|1<<TWEN|1<<TWIE;	// Шлем Stop
+ 57c:	85 ed       	ldi	r24, 0xD5	; 213
+ 57e:	86 bf       	out	0x36, r24	; 54
+					
+					MACRO_i2c_WhatDo_MasterOut												// И выходим в обработку стопа
+ 580:	e0 91 60 00 	lds	r30, 0x0060
+ 584:	f0 91 61 00 	lds	r31, 0x0061
+ 588:	09 95       	icall
+ 58a:	0b c0       	rjmp	.+22     	; 0x5a2 <__stack+0x143>
+
+					}
+				else
+					{
+					TWDR = i2c_Buffer[i2c_index];												// Либо шлем еще один байт
+ 58c:	e9 2f       	mov	r30, r25
+ 58e:	f0 e0       	ldi	r31, 0x00	; 0
+ 590:	ee 5d       	subi	r30, 0xDE	; 222
+ 592:	fe 4f       	sbci	r31, 0xFE	; 254
+ 594:	80 81       	ld	r24, Z
+ 596:	83 b9       	out	0x03, r24	; 3
+					i2c_index++;
+ 598:	9f 5f       	subi	r25, 0xFF	; 255
+ 59a:	90 93 21 01 	sts	0x0121, r25
+					TWCR = 0<<TWSTA|0<<TWSTO|1<<TWINT|i2c_i_am_slave<<TWEA|1<<TWEN|1<<TWIE;  	// Go!
+ 59e:	85 ec       	ldi	r24, 0xC5	; 197
+ 5a0:	86 bf       	out	0x36, r24	; 54
+					}
+				}
+
+			if( (i2c_Do & i2c_type_msk) == i2c_sawsarp)						// В другом режиме мы
+ 5a2:	80 91 2e 01 	lds	r24, 0x012E
+ 5a6:	8c 70       	andi	r24, 0x0C	; 12
+ 5a8:	88 30       	cpi	r24, 0x08	; 8
+ 5aa:	09 f0       	breq	.+2      	; 0x5ae <__stack+0x14f>
+ 5ac:	b1 c0       	rjmp	.+354    	; 0x710 <__stack+0x2b1>
+				{
+				if(i2c_PageAddrIndex == i2c_PageAddrCount)					// Если последний байт адреса страницы
+ 5ae:	90 91 2a 01 	lds	r25, 0x012A
+ 5b2:	80 91 27 01 	lds	r24, 0x0127
+ 5b6:	98 17       	cp	r25, r24
+ 5b8:	c9 f0       	breq	.+50     	; 0x5ec <__stack+0x18d>
+					{
+					TWCR = 1<<TWSTA|0<<TWSTO|1<<TWINT|i2c_i_am_slave<<TWEA|1<<TWEN|1<<TWIE;		// Запускаем Повторный старт!
+					}
+				else
+					{														// Иначе 
+					TWDR = i2c_PageAddress[i2c_PageAddrIndex];				// шлем еще один адрес страницы
+ 5ba:	e9 2f       	mov	r30, r25
+ 5bc:	f0 e0       	ldi	r31, 0x00	; 0
+ 5be:	e8 5d       	subi	r30, 0xD8	; 216
+ 5c0:	fe 4f       	sbci	r31, 0xFE	; 254
+ 5c2:	80 81       	ld	r24, Z
+ 5c4:	83 b9       	out	0x03, r24	; 3
+					i2c_PageAddrIndex++;									// Увеличиваем индекс счетчика адреса страниц
+ 5c6:	9f 5f       	subi	r25, 0xFF	; 255
+ 5c8:	90 93 2a 01 	sts	0x012A, r25
+ 5cc:	b0 cf       	rjmp	.-160    	; 0x52e <__stack+0xcf>
+			}
+			break;
+
+	case 0x30:	//Байт ушел, но получили NACK причин две. 1я передача оборвана слейвом и так надо. 2я слейв сглючил.
+			{
+			i2c_Do |= i2c_ERR_NK;				// Запишем статус ошибки. Хотя это не факт, что ошибка. 
+ 5ce:	80 91 2e 01 	lds	r24, 0x012E
+ 5d2:	82 60       	ori	r24, 0x02	; 2
+ 5d4:	80 93 2e 01 	sts	0x012E, r24
+ 5d8:	37 c0       	rjmp	.+110    	; 0x648 <__stack+0x1e9>
+			break;
+			}
+
+	case 0x38:	//  Коллизия на шине. Нашелся кто то поглавней
+			{
+			i2c_Do |= i2c_ERR_LP;			// Ставим ошибку потери приоритета
+ 5da:	80 91 2e 01 	lds	r24, 0x012E
+ 5de:	80 62       	ori	r24, 0x20	; 32
+ 5e0:	80 93 2e 01 	sts	0x012E, r24
+
+			// Настраиваем индексы заново. 
+			i2c_index = 0;
+ 5e4:	10 92 21 01 	sts	0x0121, r1
+			i2c_PageAddrIndex = 0;
+ 5e8:	10 92 2a 01 	sts	0x012A, r1
+
+			TWCR = 1<<TWSTA|0<<TWSTO|1<<TWINT|i2c_i_am_slave<<TWEA|1<<TWEN|1<<TWIE;		// Как только шина будет свободна 
+ 5ec:	85 ee       	ldi	r24, 0xE5	; 229
+ 5ee:	7e c0       	rjmp	.+252    	; 0x6ec <__stack+0x28d>
+			break;																		// попробуем передать снова.
+			}
+
+	case 0x40: // Послали SLA+R получили АСК. А теперь будем получать байты
+			{
+			if(i2c_index+1 == i2c_ByteCount)								// Если буфер кончится на этом байте, то 
+ 5f0:	20 91 21 01 	lds	r18, 0x0121
+ 5f4:	17 c0       	rjmp	.+46     	; 0x624 <__stack+0x1c5>
+			break;
+			}
+
+	case 0x48: // Послали SLA+R, но получили NACK. Видать slave занят или его нет дома. 
+			{
+			i2c_Do |= i2c_ERR_NA;															// Код ошибки No Answer
+ 5f6:	80 91 2e 01 	lds	r24, 0x012E
+ 5fa:	80 61       	ori	r24, 0x10	; 16
+ 5fc:	80 93 2e 01 	sts	0x012E, r24
+			TWCR = 0<<TWSTA|1<<TWSTO|1<<TWINT|i2c_i_am_slave<<TWEA|1<<TWEN|1<<TWIE;			// Шлем Stop
+ 600:	85 ed       	ldi	r24, 0xD5	; 213
+ 602:	86 bf       	out	0x36, r24	; 54
+
+			MACRO_i2c_WhatDo_ErrorOut														// Отрабатываем выходную ситуацию ошибки
+ 604:	e0 91 64 00 	lds	r30, 0x0064
+ 608:	f0 91 65 00 	lds	r31, 0x0065
+ 60c:	80 c0       	rjmp	.+256    	; 0x70e <__stack+0x2af>
+			break;
+			}
+
+	case 0x50: // Приняли байт.
+			{ 
+			i2c_Buffer[i2c_index] = TWDR;			// Забрали его из буфера
+ 60e:	20 91 21 01 	lds	r18, 0x0121
+ 612:	83 b1       	in	r24, 0x03	; 3
+ 614:	e2 2f       	mov	r30, r18
+ 616:	f0 e0       	ldi	r31, 0x00	; 0
+ 618:	ee 5d       	subi	r30, 0xDE	; 222
+ 61a:	fe 4f       	sbci	r31, 0xFE	; 254
+ 61c:	80 83       	st	Z, r24
+			i2c_index++;
+ 61e:	2f 5f       	subi	r18, 0xFF	; 255
+ 620:	20 93 21 01 	sts	0x0121, r18
+
+			// To Do: Добавить проверку переполнения буфера. А то мало ли что юзер затребует
+
+			if (i2c_index+1 == i2c_ByteCount)		// Если остался еще один байт из тех, что мы хотели считать
+ 624:	30 e0       	ldi	r19, 0x00	; 0
+ 626:	2f 5f       	subi	r18, 0xFF	; 255
+ 628:	3f 4f       	sbci	r19, 0xFF	; 255
+ 62a:	80 91 2b 01 	lds	r24, 0x012B
+ 62e:	90 e0       	ldi	r25, 0x00	; 0
+ 630:	28 17       	cp	r18, r24
+ 632:	39 07       	cpc	r19, r25
+ 634:	09 f0       	breq	.+2      	; 0x638 <__stack+0x1d9>
+ 636:	7b cf       	rjmp	.-266    	; 0x52e <__stack+0xcf>
+ 638:	56 c0       	rjmp	.+172    	; 0x6e6 <__stack+0x287>
+			break;
+			}
+
+	case 0x58:	// Вот мы взяли последний байт, сказали NACK слейв обиделся и отпал. 
+			{
+			i2c_Buffer[i2c_index] = TWDR;													// Взяли байт в буфер
+ 63a:	83 b1       	in	r24, 0x03	; 3
+ 63c:	e0 91 21 01 	lds	r30, 0x0121
+ 640:	f0 e0       	ldi	r31, 0x00	; 0
+ 642:	ee 5d       	subi	r30, 0xDE	; 222
+ 644:	fe 4f       	sbci	r31, 0xFE	; 254
+ 646:	80 83       	st	Z, r24
+			TWCR = 0<<TWSTA|1<<TWSTO|1<<TWINT|i2c_i_am_slave<<TWEA|1<<TWEN|1<<TWIE;			// Передали Stop
+ 648:	85 ed       	ldi	r24, 0xD5	; 213
+ 64a:	86 bf       	out	0x36, r24	; 54
+			
+			MACRO_i2c_WhatDo_MasterOut														// Отработали точку выхода
+ 64c:	e0 91 60 00 	lds	r30, 0x0060
+ 650:	f0 91 61 00 	lds	r31, 0x0061
+ 654:	5c c0       	rjmp	.+184    	; 0x70e <__stack+0x2af>
+// IIC  Slave ============================================================================
+
+	case 0x68:	// RCV SLA+W Low Priority							// Словили свой адрес во время передачи мастером
+	case 0x78:	// RCV SLA+W Low Priority (Broadcast)				// Или это был широковещательный пакет. Не важно
+			{
+			i2c_Do |= i2c_ERR_LP | i2c_Interrupted;					// Ставим флаг ошибки Low Priority, а также флаг того, что мастера прервали
+ 656:	80 91 2e 01 	lds	r24, 0x012E
+ 65a:	80 6a       	ori	r24, 0xA0	; 160
+ 65c:	80 93 2e 01 	sts	0x012E, r24
+			
+			// Restore Trans after.
+			i2c_index = 0;											// Подготовили прерваную передачу заново
+ 660:	10 92 21 01 	sts	0x0121, r1
+			i2c_PageAddrIndex = 0;
+ 664:	10 92 2a 01 	sts	0x012A, r1
+
+	case 0x60: // RCV SLA+W  Incoming?								// Или просто получили свой адрес
+	case 0x70: // RCV SLA+W  Incoming? (Broascast)					// Или широковещательный пакет
+			{
+
+			i2c_Do |= i2c_Busy;										// Занимаем шину. Чтобы другие не совались
+ 668:	80 91 2e 01 	lds	r24, 0x012E
+ 66c:	80 64       	ori	r24, 0x40	; 64
+ 66e:	80 93 2e 01 	sts	0x012E, r24
+			i2c_SlaveIndex = 0;										// Указатель на начало буфера слейва, Неважно какой буфер. Не ошибемся
+ 672:	10 92 2c 01 	sts	0x012C, r1
+ 676:	37 c0       	rjmp	.+110    	; 0x6e6 <__stack+0x287>
+			}
+
+	case 0x80:	// RCV Data Byte									// И вот мы приняли этот байт. Наш или широковещательный. Не важно
+	case 0x90:	// RCV Data Byte (Broadcast)
+			{
+			i2c_InBuff[i2c_SlaveIndex] = TWDR;						// Сжираем его в буфер.
+ 678:	80 91 2c 01 	lds	r24, 0x012C
+ 67c:	93 b1       	in	r25, 0x03	; 3
+ 67e:	e8 2f       	mov	r30, r24
+ 680:	f0 e0       	ldi	r31, 0x00	; 0
+ 682:	e3 5d       	subi	r30, 0xD3	; 211
+ 684:	fe 4f       	sbci	r31, 0xFE	; 254
+ 686:	90 83       	st	Z, r25
+			
+			i2c_SlaveIndex++;										// Сдвигаем указатель
+ 688:	8f 5f       	subi	r24, 0xFF	; 255
+ 68a:	80 93 2c 01 	sts	0x012C, r24
+
+			if (i2c_SlaveIndex == i2c_MasterBytesRX-1) 				// Свободно место всего под один байт? 
+ 68e:	88 23       	and	r24, r24
+ 690:	09 f0       	breq	.+2      	; 0x694 <__stack+0x235>
+ 692:	4d cf       	rjmp	.-358    	; 0x52e <__stack+0xcf>
+ 694:	28 c0       	rjmp	.+80     	; 0x6e6 <__stack+0x287>
+			} 
+
+	case 0x88: // RCV Last Byte										// Приянли последний байт
+	case 0x98: // RCV Last Byte (Broadcast)
+			{
+			i2c_InBuff[i2c_SlaveIndex] = TWDR;						// Сожрали его в буфер
+ 696:	83 b1       	in	r24, 0x03	; 3
+ 698:	e0 91 2c 01 	lds	r30, 0x012C
+ 69c:	f0 e0       	ldi	r31, 0x00	; 0
+ 69e:	e3 5d       	subi	r30, 0xD3	; 211
+ 6a0:	fe 4f       	sbci	r31, 0xFE	; 254
+ 6a2:	80 83       	st	Z, r24
+			
+			if (i2c_Do & i2c_Interrupted)							// Если у нас был прерываный сеанс от имени мастера
+ 6a4:	80 91 2e 01 	lds	r24, 0x012E
+ 6a8:	87 ff       	sbrs	r24, 7
+ 6aa:	2b c0       	rjmp	.+86     	; 0x702 <__stack+0x2a3>
+ 6ac:	28 c0       	rjmp	.+80     	; 0x6fe <__stack+0x29f>
+
+
+
+	case 0xB0:  // Поймали свой адрес на чтение во время передачи Мастером			
+			{
+			i2c_Do |= i2c_ERR_LP | i2c_Interrupted;			// Ну чо, коды ошибки и флаг прерваной передачи.
+ 6ae:	80 91 2e 01 	lds	r24, 0x012E
+ 6b2:	80 6a       	ori	r24, 0xA0	; 160
+ 6b4:	80 93 2e 01 	sts	0x012E, r24
+		
+			
+			// Восстанавливаем индексы
+			i2c_index = 0;
+ 6b8:	10 92 21 01 	sts	0x0121, r1
+			i2c_PageAddrIndex = 0;
+ 6bc:	10 92 2a 01 	sts	0x012A, r1
+
+			}												// Break нет! Идем дальше						
+
+	case 0xA8:	// // Либо просто словили свой адрес на чтение
+			{
+			i2c_SlaveIndex = 0;								// Индексы слейвовых массивов на 0
+ 6c0:	10 92 2c 01 	sts	0x012C, r1
+
+			TWDR = i2c_OutBuff[i2c_SlaveIndex];				// Чтож, отдадим байт из тех что есть.
+ 6c4:	80 91 26 01 	lds	r24, 0x0126
+ 6c8:	83 b9       	out	0x03, r24	; 3
+ 6ca:	0d c0       	rjmp	.+26     	; 0x6e6 <__stack+0x287>
+			
+
+	case 0xB8: // Послали байт, получили ACK
+			{
+
+			i2c_SlaveIndex++;								// Значит продолжаем дискотеку. Берем следующий байт
+ 6cc:	80 91 2c 01 	lds	r24, 0x012C
+ 6d0:	8f 5f       	subi	r24, 0xFF	; 255
+ 6d2:	80 93 2c 01 	sts	0x012C, r24
+			TWDR = i2c_OutBuff[i2c_SlaveIndex];				// Даем его мастеру
+ 6d6:	e8 2f       	mov	r30, r24
+ 6d8:	f0 e0       	ldi	r31, 0x00	; 0
+ 6da:	ea 5d       	subi	r30, 0xDA	; 218
+ 6dc:	fe 4f       	sbci	r31, 0xFE	; 254
+ 6de:	90 81       	ld	r25, Z
+ 6e0:	93 b9       	out	0x03, r25	; 3
+
+			if (i2c_SlaveIndex == i2c_MasterBytesTX-1)		// Если он последний был, то
+ 6e2:	88 23       	and	r24, r24
+ 6e4:	11 f4       	brne	.+4      	; 0x6ea <__stack+0x28b>
+				{
+				TWCR = 0<<TWSTA|0<<TWSTO|1<<TWINT|0<<TWEA|1<<TWEN|1<<TWIE;	// Шлем его и ждем NACK
+ 6e6:	85 e8       	ldi	r24, 0x85	; 133
+ 6e8:	01 c0       	rjmp	.+2      	; 0x6ec <__stack+0x28d>
+				}
+			else
+				{
+				TWCR = 0<<TWSTA|0<<TWSTO|1<<TWINT|1<<TWEA|0<<TWEN|1<<TWIE;	// Если нет, то шлем и ждем ACK
+ 6ea:	81 ec       	ldi	r24, 0xC1	; 193
+ 6ec:	86 bf       	out	0x36, r24	; 54
+ 6ee:	10 c0       	rjmp	.+32     	; 0x710 <__stack+0x2b1>
+			}
+
+	case 0xC0: // Мы выслали последний байт, больше у нас нет, получили NACK
+	case 0xC8: // или ACK. В данном случае нам пох. Т.к. больше байтов у нас нет.
+			{
+			if (i2c_Do & i2c_Interrupted)											// Если там была прерваная передача мастера
+ 6f0:	80 91 2e 01 	lds	r24, 0x012E
+ 6f4:	87 ff       	sbrs	r24, 7
+ 6f6:	05 c0       	rjmp	.+10     	; 0x702 <__stack+0x2a3>
+				{																	// То мы ему ее вернем
+				i2c_Do &= i2c_NoInterrupted;										// Снимем флаг прерваности
+ 6f8:	8f 77       	andi	r24, 0x7F	; 127
+ 6fa:	80 93 2e 01 	sts	0x012E, r24
+				TWCR = 1<<TWSTA|0<<TWSTO|1<<TWINT|1<<TWEA|1<<TWEN|1<<TWIE;			// Сгенерим старт сразу же как получим шину.
+ 6fe:	85 ee       	ldi	r24, 0xE5	; 229
+ 700:	01 c0       	rjmp	.+2      	; 0x704 <__stack+0x2a5>
+				}
+			else
+				{
+				TWCR = 0<<TWSTA|0<<TWSTO|1<<TWINT|1<<TWEA|1<<TWEN|1<<TWIE;			// Если мы там одни, то просто отдадим шину
+ 702:	85 ec       	ldi	r24, 0xC5	; 197
+ 704:	86 bf       	out	0x36, r24	; 54
+				}
+
+			MACRO_i2c_WhatDo_SlaveOut												// И отработаем выход слейва. Впрочем, он тут
+ 706:	e0 91 62 00 	lds	r30, 0x0062
+ 70a:	f0 91 63 00 	lds	r31, 0x0063
+ 70e:	09 95       	icall
+			break;																	// Нас почтил своим визитом.
+			}
+
+	default:	break;
+	}
+}
+ 710:	ff 91       	pop	r31
+ 712:	ef 91       	pop	r30
+ 714:	bf 91       	pop	r27
+ 716:	af 91       	pop	r26
+ 718:	9f 91       	pop	r25
+ 71a:	8f 91       	pop	r24
+ 71c:	7f 91       	pop	r23
+ 71e:	6f 91       	pop	r22
+ 720:	5f 91       	pop	r21
+ 722:	4f 91       	pop	r20
+ 724:	3f 91       	pop	r19
+ 726:	2f 91       	pop	r18
+ 728:	0f 90       	pop	r0
+ 72a:	0f be       	out	0x3f, r0	; 63
+ 72c:	0f 90       	pop	r0
+ 72e:	1f 90       	pop	r1
+ 730:	18 95       	reti
+
+00000732 <DoNothing>:
+
+void DoNothing(void)																// Функция пустышка, затыкать несуществующие ссылки
+{
+}
+ 732:	08 95       	ret
+
+00000734 <Init_i2c>:
+
+void Init_i2c(void)							// Настройка режима мастера
+{
+i2c_PORT |= 1<<i2c_SCL|1<<i2c_SDA;			// Включим подтяжку на ноги, вдруг юзер на резисторы пожмотился
+ 734:	85 b3       	in	r24, 0x15	; 21
+ 736:	83 60       	ori	r24, 0x03	; 3
+ 738:	85 bb       	out	0x15, r24	; 21
+i2c_DDR &=~(1<<i2c_SCL|1<<i2c_SDA);
+ 73a:	84 b3       	in	r24, 0x14	; 20
+ 73c:	8c 7f       	andi	r24, 0xFC	; 252
+ 73e:	84 bb       	out	0x14, r24	; 20
+
+TWBR = 0xFF;         						// Настроим битрейт
+ 740:	8f ef       	ldi	r24, 0xFF	; 255
+ 742:	80 b9       	out	0x00, r24	; 0
+TWSR = 0x03;
+ 744:	83 e0       	ldi	r24, 0x03	; 3
+ 746:	81 b9       	out	0x01, r24	; 1
+}
+ 748:	08 95       	ret
+
+0000074a <Init_Slave_i2c>:
+
+void Init_Slave_i2c(IIC_F Addr)				// Настройка режима слейва (если нужно)
+{
+TWAR = i2c_MasterAddress;					// Внесем в регистр свой адрес, на который будем отзываться. 
+ 74a:	22 e3       	ldi	r18, 0x32	; 50
+ 74c:	22 b9       	out	0x02, r18	; 2
+											// 1 в нулевом бите означает, что мы отзываемся на широковещательные пакеты
+SlaveOutFunc = Addr;						// Присвоим указателю выхода по слейву функцию выхода
+ 74e:	90 93 63 00 	sts	0x0063, r25
+ 752:	80 93 62 00 	sts	0x0062, r24
+
+TWCR = 0<<TWSTA|0<<TWSTO|0<<TWINT|1<<TWEA|1<<TWEN|1<<TWIE;		// Включаем агрегат и начинаем слушать шину.
+ 756:	85 e4       	ldi	r24, 0x45	; 69
+ 758:	86 bf       	out	0x36, r24	; 54
+}
+ 75a:	08 95       	ret
+
+0000075c <i2c_eep_WriteByte>:
+
+#define HI(X) (X>>8)
+#define LO(X) (X & 0xFF)
+
+u08 i2c_eep_WriteByte(u08 SAddr,u16 Addr, u08 Byte, IIC_F WhatDo)
+{
+ 75c:	98 2f       	mov	r25, r24
+
+if (i2c_Do & i2c_Busy) return 0;
+ 75e:	80 91 2e 01 	lds	r24, 0x012E
+ 762:	86 ff       	sbrs	r24, 6
+ 764:	02 c0       	rjmp	.+4      	; 0x76a <i2c_eep_WriteByte+0xe>
+ 766:	80 e0       	ldi	r24, 0x00	; 0
+ 768:	08 95       	ret
+
+i2c_index = 0;
+ 76a:	10 92 21 01 	sts	0x0121, r1
+i2c_ByteCount = 3;
+ 76e:	83 e0       	ldi	r24, 0x03	; 3
+ 770:	80 93 2b 01 	sts	0x012B, r24
+
+i2c_SlaveAddress = SAddr;
+ 774:	90 93 25 01 	sts	0x0125, r25
+
+
+i2c_Buffer[0] = HI(Addr);
+ 778:	70 93 22 01 	sts	0x0122, r23
+i2c_Buffer[1] = LO(Addr);
+ 77c:	60 93 23 01 	sts	0x0123, r22
+i2c_Buffer[2] = Byte;
+ 780:	40 93 24 01 	sts	0x0124, r20
+
+i2c_Do = i2c_sawp;
+
+MasterOutFunc = WhatDo;
+ 784:	30 93 61 00 	sts	0x0061, r19
+ 788:	20 93 60 00 	sts	0x0060, r18
+ErrorOutFunc = WhatDo;
+ 78c:	30 93 65 00 	sts	0x0065, r19
+ 790:	20 93 64 00 	sts	0x0064, r18
+
+TWCR = 1<<TWSTA|0<<TWSTO|1<<TWINT|0<<TWEA|1<<TWEN|1<<TWIE;
+ 794:	85 ea       	ldi	r24, 0xA5	; 165
+ 796:	86 bf       	out	0x36, r24	; 54
+
+i2c_Do |= i2c_Busy;
+ 798:	84 e4       	ldi	r24, 0x44	; 68
+ 79a:	80 93 2e 01 	sts	0x012E, r24
+ 79e:	81 e0       	ldi	r24, 0x01	; 1
+
+return 1;
+}
+ 7a0:	08 95       	ret
+
+000007a2 <i2c_eep_ReadByte>:
+
+
+u08 i2c_eep_ReadByte(u08 SAddr, u16 Addr, u08 ByteNumber, IIC_F WhatDo)
+{
+ 7a2:	98 2f       	mov	r25, r24
+if (i2c_Do & i2c_Busy) return 0;
+ 7a4:	80 91 2e 01 	lds	r24, 0x012E
+ 7a8:	86 ff       	sbrs	r24, 6
+ 7aa:	02 c0       	rjmp	.+4      	; 0x7b0 <i2c_eep_ReadByte+0xe>
+ 7ac:	80 e0       	ldi	r24, 0x00	; 0
+ 7ae:	08 95       	ret
+
+i2c_index = 0;
+ 7b0:	10 92 21 01 	sts	0x0121, r1
+i2c_ByteCount = ByteNumber;
+ 7b4:	40 93 2b 01 	sts	0x012B, r20
+
+i2c_SlaveAddress = SAddr;
+ 7b8:	90 93 25 01 	sts	0x0125, r25
+
+i2c_PageAddress[0] = HI(Addr);
+ 7bc:	70 93 28 01 	sts	0x0128, r23
+i2c_PageAddress[1] = LO(Addr);
+ 7c0:	60 93 29 01 	sts	0x0129, r22
+
+i2c_PageAddrIndex = 0;
+ 7c4:	10 92 2a 01 	sts	0x012A, r1
+i2c_PageAddrCount = 2;
+ 7c8:	82 e0       	ldi	r24, 0x02	; 2
+ 7ca:	80 93 27 01 	sts	0x0127, r24
+
+i2c_Do = i2c_sawsarp;
+
+MasterOutFunc = WhatDo;
+ 7ce:	30 93 61 00 	sts	0x0061, r19
+ 7d2:	20 93 60 00 	sts	0x0060, r18
+ErrorOutFunc = WhatDo;
+ 7d6:	30 93 65 00 	sts	0x0065, r19
+ 7da:	20 93 64 00 	sts	0x0064, r18
+
+TWCR = 1<<TWSTA|0<<TWSTO|1<<TWINT|0<<TWEA|1<<TWEN|1<<TWIE;
+ 7de:	85 ea       	ldi	r24, 0xA5	; 165
+ 7e0:	86 bf       	out	0x36, r24	; 54
+
+i2c_Do |= i2c_Busy;
+ 7e2:	88 e4       	ldi	r24, 0x48	; 72
+ 7e4:	80 93 2e 01 	sts	0x012E, r24
+ 7e8:	81 e0       	ldi	r24, 0x01	; 1
+
+return 1;
+}
+ 7ea:	08 95       	ret
+
+000007ec <_exit>:
+ 7ec:	f8 94       	cli
+
+000007ee <__stop_program>:
+ 7ee:	ff cf       	rjmp	.-2      	; 0x7ee <__stop_program>

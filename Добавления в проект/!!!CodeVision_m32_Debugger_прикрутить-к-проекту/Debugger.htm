@@ -1,0 +1,401 @@
+<html><head>
+<title>Debugger</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+</head>
+
+<body bgcolor="#FFFFFF">
+<p align="center"><font size="+2">Cornell University<br>
+  Electrical Engineering 476 <br>
+  CodeVision 1.24.6 Debugger<br>
+  for Atmel Mega32 microcontrollers</font></p>
+<p align="left"><b>Introduction</b></p>
+<p align="left"> This is an attempt to make a debugger which is easy to 
+link with a target program and which allows interactive exploration and 
+modification of the state of the target program. There are commands to 
+read/write i/o registers, data registers and memory, read variables on 
+the fly, and to determine the locations of the Codevision data stack and
+ hardware stack.</p>
+<p> The intent 
+  was to make a system in which a student could debug any C program (the target program) with very 
+  minimal modification.  The debugger is small and designed to minimally interfere with the target program. </p>
+<ul>
+  <li>The program memory used for the full debugger is about 
+      2700 words of flash (~15% of the available flash). By omitting  
+logging and reporting you can cut flash use to 2000 words, see below). 
+Of the 2700 words, about 1000 represent <code>printf</code> and <code>scanf</code>. </li>
+  <li>SRAM overhead is about 60 bytes. </li>
+  <li>Debugger time overhead when running the target program 
+        is zero (At RESET time the debugger runs briefly to set up its 
+structures). Using the on-the-fly reporting functions slows the taget 
+program down by about 1 mSec per character printed. Using the on-the-fly
+ logging functions costs about 3 microseconds per log item. When you are
+ actually in the interactive debugger, the target program is stopped and
+ the timers are frozen.</li>
+  <li>No interrupts are used and only the UART i/o lines are used, unless you activate the <code>use_rxc_isr</code>
+ option. This  is an option to use interrupt-driven UART-receive so that
+ you can break target program execution from the keyboard. </li>
+  <li>By adding one line to the target program, all debugger commands 
+can be eliminated for a production code without actually commenting them
+ out. </li>
+</ul>
+<p><strong>Using the Debugger</strong> </p>
+<p>There are only a few changes that have to be made to the target C program 
+  to run it with the debugger: </p>
+<ul>
+  <li>Include <a href="https://instruct1.cit.cornell.edu/courses/ee476/RTOS/Debugger/DB8jan07/debugger.c">debugger.c</a> on the first line of the 
+    target code. The syntax is <code>#include "debugger.c"</code> if you have stored a copy of the debugger in the same directory as your project. </li>
+  <li>If your program modifies the UART control register (<code>UCSRB</code>), then comment out that line.</li>
+  <li>In the <code>Project...Configure</code> dialog set  the clock speed to the correct crystal value, (as you should anyway). </li>
+  <li>Connect the RS232 jumper on the stk500 board and connect the <code>RS232 SPARE</code> line to the PC. On the PC run hyperterm. Set up hyperterm for 9600 baud, no
+parity, 1 stop-bit, no flow-control.</li>
+  <li>Anyplace in your code you want to invoke the debugger, call <code>debug(IDnumber).</code> 
+    The <code>IDnumber</code> represents a code that you choose. <br>
+    There is a <a href="https://instruct1.cit.cornell.edu/courses/ee476/RTOS/Debugger/DemoDB.c">demo code</a>
+ which blinks 
+    some lights and enters the debugger at reset and when  button 1 is 
+pushed. Button 2 tests serial input to the target code. Register zero 
+    is set to <code>0x55</code> just before entering the debugger when button 1 is pushed. The demo code 
+    assumes that PORTB will be hooked to the LEDs on the STK500, PORTC to the 
+    switches, and the UART (PORTD.0 and D.1) attached to a PC running hyperterm. 
+    The demo code is a slightly modified version of <a href="https://instruct1.cit.cornell.edu/courses/ee476/labs/s2005/sched1.c">sched1.c</a> 
+    used as an example in Lab 1 in 2005. </li>
+  <li>Anyplace in your code you want to trace a variable use a <code>report</code> or <code>logV</code> statement (see second table below). </li>
+  <li>When you are done debugging and want to try out the final code, insert the line <code>#define nullify_debugger</code>
+ just before the debugger include statement. All debug statements can 
+stay in the target program, but the program acts as if they are removed 
+and there is no code size or timing overhead. </li>
+</ul>
+<p>There are keyboard commands available which you can use at the <code>db&gt;</code>
+ prompt (appearing on the 
+PC hyperterm window) and there are various debug statements which you 
+embed in your target program. The two tables below explain the commands 
+and statements. </p>
+<p><strong>Interactive Commands:</strong></p>
+<p>The interactive, <code>db&gt;</code> prompt commands are in the first table table. The <code>Backspace</code>
+ key works at the debugger command line, but does not echo the erased 
+characters. After backspacing, new characters type over old characters. 
+No error checking is done at the command line. Unrecognized commands are
+ ignored. Poorly formed parameters (e.g. letters in a number) default to
+ whatever C does to them, which is usually to return a zero.</p>
+<table border="1" height="764" width="100%">
+  <tbody><tr> 
+    <td width="22%"> 
+      <div align="center"><code>h</code></div>
+    </td>
+    <td width="78%">Prints a short version of this table (disabled if you comment the <code>verbose</code> define).</td>
+  </tr>
+  <tr> 
+    <td width="22%"> 
+      <div align="center"><code>g</code></div>
+    </td>
+    <td width="78%">Exits the command shell and run target program </td>
+  </tr>
+  <tr> 
+    <td width="22%"> 
+      <div align="center"><code>&lt;control-c&gt;</code></div>
+    </td>
+    <td width="78%">Stops the target program and enters command shell with DebugID=255. 
+      NOTE: you must uncomment a define near the beginning of <code>debugger.c </code>for this 
+      command to work.</td>
+  </tr>
+  <tr> 
+    <td width="22%"> 
+      <div align="center"><code>x</code></div>
+    </td>
+    <td width="78%">Forces a RESET of the MCU and <em>trashes the state of your program</em>! This is implemented using the watchdog timer reset function. </td>
+  </tr>
+  <tr> 
+    <td width="22%"> 
+      <div align="center"><code>i ioregAddress</code></div>
+    </td>
+    <td width="78%">Reads an i/o register. The register address is entered in hexadecimal. 
+      The result displayed in in hex. <br>
+      Example:<code> i 13</code><br>
+      Reads the state of the pushbuttons attached to PINC.</td>
+  </tr>
+  <tr> 
+    <td width="22%"> 
+      <div align="center"><code>I ioregAddress iodata</code></div>
+    </td>
+    <td width="78%"> 
+      <p>Writes to an i/o register. The register address and data are entered in 
+        hexadecimal<br>
+        Example: <code>I 18 f0</code><br>
+        Turns on LEDs 0 to 3 attached to PORTB (If DDRB=0xff).</p>
+    </td>
+  </tr>
+  <tr> 
+    <td width="22%"> 
+      <div align="center"><code>r datareg</code></div>
+    </td>
+    <td width="78%">Reads data register. The register number is in decimal. The 
+      result displayed is in hex. The <code>.map</code> file generated 
+by the 
+      compiler will show you where variables are stored. Note that 
+Codevision can store varibles in SRAM or in registers. You have to look 
+at the <code>map</code> file to verify where a variable is stored. 
+Registers 1 to 15 are available for global variables. Registers 16 to 21
+ can store local variables. Registers 22 to 31 store state information 
+for Codevision. Normally, no user information 
+      should be in these registers.<br>
+      Example:<code> r 16 </code><br>
+      Displays the value <code>55</code> if the demo program is running and button 
+      one is pressed to enter the command shell. This is because the running 
+      program writes a 0x55 to data register sixteen just before it calls the <code>debug(3) 
+    </code> macro.</td>
+  </tr>
+  <tr> 
+    <td width="22%"> 
+      <div align="center"><code>R datareg data</code></div>
+    </td>
+    <td width="78%"> 
+      <div align="left">Writes task data register. The register number is in decimal. 
+        The data is in hex.<code><br>
+        Example: R 0 aa<br>
+        </code>Writes<code> 0xaa </code> to register 0. The debugger 
+does not allow you to modify registers 22 to 31 because of the dynamic 
+contents of these internal C registers make it hard to predict the 
+results of a modification. If the
+demo program is running, it stops with debugID=1 just after reset time. 
+There are  six local variables in registers when it stops. </div>
+    </td>
+  </tr>
+  <tr> 
+    <td height="56" width="22%"> 
+      <div align="center"><code>m address</code></div>
+    </td>
+    <td height="56" width="78%"><p>Reads memory. Address is given in hex. The <code>.map</code> 
+        file generated by the compiler will show you where variables are stored. 
+        Remember that by default, Codevision stores the first few variables you 
+        define into registers.<br>
+      Example:<code> m 7d0 <br>
+      </code></p>
+    </td>
+  </tr>
+  <tr> 
+    <td width="22%"> 
+      <div align="center"><code>M address data</code></div>
+    </td>
+    <td width="78%">Writes data to memory. Address and data are in hex. <code><br>
+      Example: M 7d0 aa<br>
+      </code>Writes<code> 0xaa </code>to address <code>7d0</code>. Remember that 
+      there is NO memory protection, so you can easily trash the system with this 
+      command. </td>
+  </tr>
+  <tr>
+    <td height="30"><div align="center"><code>l, lc, ld </code></div></td>
+    <td height="30">View a logged variable. The <code>l</code> command shows a log, if any is stored. The <code>lc</code> command clears a log and the <code>ld</code> command lists the logged variable, but in decimal. To use these commands, you must first insert <code>loginit</code> and <code>logV</code> commands into your code (see table below). </td>
+  </tr>
+  <tr> 
+    <td height="30" width="22%"> 
+      <div align="center"><code>w</code></div>
+    </td>
+    <td height="30" width="78%">Reads the memory location of the top of the hardware 
+      stack. This is mostly useful to make sure that you have not overrun the 
+      space allocated to the hardware stack. The value reported by this command is the stack location <em>before</em>
+ the context switch to the debugger stores 32 bytes on the stack. The 
+hardware stack grows downward from the top of memory, which in the 
+Mega32 is <code>0x85f</code>.  Mega32 <a href="https://instruct1.cit.cornell.edu/courses/ee476/labs/s2007/Mega32memory.png">RAM organization diagram</a>. Codevision <a href="https://instruct1.cit.cornell.edu/courses/ee476/labs/s2007/CodevisionMemory.png">RAM use diagram</a>. </td>
+  </tr>
+  <tr> 
+    <td width="22%">
+      <div align="center"><code>d</code></div>
+    </td>
+    <td width="78%"> 
+      <p>Reads the memory location of the top of the data stack. This is
+ mostly 
+        useful to make sure that you have not overrun the space 
+allocated to the 
+        data stack. If you are looking for local variables, remember 
+that Codevision 
+        puts the first six bytes of local variables defined in a 
+function in data 
+        registers R16-R21. After that they are placed on the data stack.
+ The example program stops with debugID=1 at reset time. The data stack 
+has 6 stored bytes, then six local variables in registers. The software 
+stack grows downward from a location set in the <code>Project...Configure</code> dialog box, which defaults to <code>0x260</code>. Mega32 <a href="https://instruct1.cit.cornell.edu/courses/ee476/labs/s2007/Mega32memory.png">RAM organization diagram</a>. Codevision <a href="https://instruct1.cit.cornell.edu/courses/ee476/labs/s2007/CodevisionMemory.png">RAM use diagram</a>. </p>
+    </td>
+  </tr>
+  <tr>
+    <td><div align="center"><code>s</code></div></td>
+    <td><p>Reads the processor status register (SREG). Output is in hex.<br>
+      Bits in SREG: <code>I T H S V N Z C</code><br>
+      See the complete <a href="http://instruct1.cit.cornell.edu/courses/ee476/AtmelStuff/AVRinstr2002.PDF">instruction set document</a> for information on which bits are set by each instruction. </p>
+      <table border="1" width="100%">
+        <tbody><tr>
+          <td width="9%"><code>bit7 I </code></td>
+          <td width="30%">master interrupt enable</td>
+          <td width="61%">This is set/cleared by <code>sei/cli </code>and by leaving/entering an ISR</td>
+        </tr>
+        <tr>
+          <td><code>bit6 T </code></td>
+          <td>user settable bit</td>
+          <td>Use this for whatever you want (in assembly language) using <code>set/clt/bst/bld/brts/brtc </code></td>
+        </tr>
+        <tr>
+          <td><code>bit5 H </code></td>
+          <td>half-carry</td>
+          <td>Carry-out from bit 3 of last arithmetic result (for binary coded decimal arithmetic) </td>
+        </tr>
+        <tr>
+          <td><code>bit4 S </code></td>
+          <td>sign bit</td>
+          <td>Sign of last arithmetic result</td>
+        </tr>
+        <tr>
+          <td><code>bit3 V </code></td>
+          <td>2-complement overflow bit</td>
+          <td>Overflow of last arithmetic result </td>
+        </tr>
+        <tr>
+          <td><code>bit2 N </code></td>
+          <td>negative bit</td>
+          <td>Indicates that last arithmetic result was negative </td>
+        </tr>
+        <tr>
+          <td><code>bit1 Z </code></td>
+          <td>zero bit</td>
+          <td>Indicates that last arithmetic result was zero </td>
+        </tr>
+        <tr>
+          <td><code>bit0 C </code></td>
+          <td>carry bit</td>
+          <td>Carry-out from bit 7 of last arithmetic result (for extended precision arithmetic and for <code>ror/rol</code> roll instructions) </td>
+        </tr>
+      </tbody></table>      
+      <p>&nbsp;      </p></td>
+  </tr>
+</tbody></table>
+<p>&nbsp;</p>
+<p><strong>Statements inserted in target program:</strong></p>
+<p>The following table has the statements which can be inserted into the target program. All of the <code>report</code> statements <em>slow down the MCU</em>
+ while printing to hyperterm. The time overhead is about 1mSec/character
+ printed, including spaces and carrage returns. This time overhead is 
+not too important if the commands are in a task which executes every 500
+ mSec, but they <em>should not be used</em> in any fast ISR. A short <a href="https://instruct1.cit.cornell.edu/courses/ee476/RTOS/Debugger/DB2feb06/sched1.c">demo</a>
+ shows how the commands work. The logging commands are much faster 
+(about 3 microseconds) but use memory. A big log may crash the software 
+stack. </p>
+<table border="1" width="100%">
+  <tbody><tr>
+    <td><div align="center"><code>#define nullify_debugger</code></div></td>
+    <td>Completely eliminates the debugger, while allowing debug, report
+ and log statements to remain in the program. Use this when you are 
+ready to make a production code. </td>
+  </tr>
+  <tr>
+    <td><div align="center"><code>&lt;control-c&gt;</code></div></td>
+    <td>Stop target program and enters command shell with <code>debugID:255</code>.
+ This command is actually interactive, but is included here for 
+completeness. NOTE: you must uncomment a define near the beginning of <code>debugger.c </code>for this command to work.</td>
+  </tr>
+  <tr>
+    <td><div align="center"><code>debug(char debugID) </code></div></td>
+    <td>When used in the target program being debugged, this macro 
+enters the command shell with the specified debugID. The debugID can be 
+used as an error code. The valid range is <code>0&lt;debugID&lt;250</code>. <br>
+    Example: <code>debug(4)</code></td>
+  </tr>
+  <tr>
+    <td width="26%"><div align="center"><code>reportR(regnum)</code></div></td>
+    <td width="74%">Display the contents of data register <code>regnum</code>
+ while the program is running. The output register number is in decimal 
+and the contents is in hex. Time overhead is 6 or 7 mSec. </td>
+  </tr>
+  <tr>
+    <td height="57"><p align="center"><code>reportI(ioregnum)</code></p>
+    </td>
+    <td>Display the contents of i/o register <code>ioregnum</code> while the program is running. For example, <code>reportI(0x3f)</code> returns the value of  SREG. The output register number is in hex and the contents is in hex.Time overhead is 6 or 7 mSec. </td>
+  </tr>
+  <tr>
+    <td><div align="center"><code>reportM(address)</code></div></td>
+    <td>Display the contents of memory location <code>address</code> while the program is running. The output  address is in hex and the contents is in hex.Time overhead is 7 to  10 mSec. </td>
+  </tr>
+  <tr>
+    <td><div align="center">
+      <pre>reportVhex(var)</pre>
+    </div></td>
+    <td>Display the contents of variable name <code>var</code> in hexadecimal while the program is running. This command will show the value of <code>char</code> and <code>int</code> variables, as well as  i/o registers (e.g. <code>TCCR0</code>) defined in the <code>mega32.h</code> header. Time overhead is 7 to 10 mSec. </td>
+  </tr>
+  <tr>
+    <td><div align="center">
+      <pre>reportVdec(var)</pre>
+    </div></td>
+    <td>Display the contents of variable name <code>var</code> in decimal while the program is running. This command will show the value of <code>char</code> and <code>int</code> variables, as well as i/o registers (e.g. <code>TCCR0</code>) defined in the <code>mega32.h</code> header.Time overhead is 7 to 10 mSec. </td>
+  </tr>
+  <tr>
+    <td><div align="center">
+      <pre>logInit(var,max)</pre>
+    </div></td>
+    <td>Initialize a storage area for logged variables. The log is created <em>below</em> the software stack and grows upward. A big log may crash the software stack. The <code>max</code>
+ parameter sets the maximum size of the log and must be less than 256. 
+The variable name is stored for interactive use and must be less than 16
+ characters. If you use <code>logV(var) </code>more than <code>max</code> times, you will enter the debugger with <code>debugID:254</code>. </td>
+  </tr>
+  <tr>
+    <td><div align="center">
+      <pre>logV(var)</pre>
+    </div></td>
+    <td>Record a variable of name <code>var</code> to be displayed later in the debugger with the <code>l</code> command. The variable <em>must</em> be only 8 bits (type <code>char</code>).  You must call <code>logInit</code> once before using this statement. If you use <code>logV(var) </code>more than the maximum number of  times set in the <code>logInit </code>command, you will enter the debugger with <code>debugID:254</code>. Time overhead of <code>logV(var)</code> is about 3 microseconds with a 16 MHz clock (49 cycles). </td>
+  </tr>
+</tbody></table>
+<p><strong>Details of using the debugger</strong> </p>
+<p>The debugger attempts to change the state of the MCU as little as possible: </p>
+<ul>
+  <li>The MCU enters your <code>main</code> with interrupts turned off (normal behavior), unless you have chosen to enable the character receive ISR (see above). </li>
+  <li>All UART communication should use the standard I/O commands (from stdio.h) such as <code>printf</code> and <code>scanf</code> (normal behavior).</li>
+  <li>When you enter the debugger from a running program, the timers are frozen by default. Time stops for the MCU. </li>
+  <li>When you are done debugging, just add the line<br>
+      <code>#define nullify_debugger</code><br>
+    just before the debugger include statement. All debug commands can 
+stay in the program, but the program acts as if they are removed. There 
+is no code size (or timing) overhead once the debugger is nullified. </li>
+</ul>
+<p>When you enter the debugger, the three MCU timers are frozen, but 
+interrupt state is not changed. If you don't like this particular 
+behavior, you can hack on the following macro <code>debug</code> (in <code>debugger.c</code>) to change the defaults. The <code>saveitall</code> and <code>loaddatareg</code>
+ functions are asm routines to make it easier for the debugger to get 
+the SREG, stack pointers and data register values. You can treat the 
+debug ID as an error code for your program. </p>
+<pre>#define debug(id) \
+	do{      	\
+	db_t0temp = TCCR0;  \
+	db_t1temp = TCCR1B; \
+	db_t2temp = TCCR2;  \
+	TCCR0 = 0;  \
+	TCCR1B = 0; \
+	TCCR2 = 0;  \
+	saveitall(); \
+	db_break_id = id;  \          
+	cmd();     \ 
+	loaddatareg(); \
+	TCCR0 = db_t0temp;	\
+	TCCR1B = db_t1temp;\
+	TCCR2 = db_t2temp;	\
+	}while(0)  </pre>
+<p>If<i> </i>you want to be able to enter the debugger with a <code>&lt;control-c&gt;</code> from hyperterm, uncomment the following line near the beginning of the <code>debugger.c</code> file. But note that your <code>main</code>
+ is entered with interrupts enabled! Also, the target program should not
+ disable interrupts for a long period of time when using this option. <em>NOTE</em>: If you turn on this option, then you cannot use the <code>debug</code> statement in any ISR unless you explicitly set the I-bit in the ISR. </p>
+<p><code>//#define use_rxc_isr </code></p>
+<p>If you want to save 400 bytes of flash memory you can comment the 
+following define, however you will lose the interactive help command. </p>
+<pre>#define verbose</pre>
+<p>If you want to disable on-the-fly reporting of variables to the terminal, comment out the following to save 100 words of flash. </p>
+<p><code>#define use_reporting</code></p>
+<p>If you want to disable on-the-fly logging of variables to memory for 
+later inspection, comment out the following to save 150 words of flash. </p>
+<p><code>#define use_logging</code> </p>
+<p>When you are done debugging and want to try out the final code, insert the line <code><br>
+  #define nullify_debugger</code><br>
+  just before the debugger include statement. All debug statements can 
+stay in the target program, but the program acts as if they are removed 
+and there is no code size (or timing) overhead. </p>
+<p></p>
+<hr>
+<p>Older versions of the debugger are <a href="https://instruct1.cit.cornell.edu/courses/ee476/RTOS/Debugger/oldindex.html">available</a>, but are bigger and slower. </p>
+<hr>
+<p><font size="-1">Copyright Cornell University Jan 2007</font></p>
+<p>&nbsp; </p>
+
+
+</body></html>
