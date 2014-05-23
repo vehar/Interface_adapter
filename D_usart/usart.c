@@ -221,7 +221,7 @@ void USART_SendStrFl(uint8_t sel, unsigned char __flash * data) //функция посыла
  // unsigned char symbol;
   while(*data)
   {
-    //symbol = *data++; //USART_PutChar(sel, symbol);   
+    //symbol = *data++; //USART_PutChar(sel, symbol);
     USART_PutChar(sel, *data++);
   }
 }
@@ -365,11 +365,11 @@ data =  UDR0;//! read to clear RxC flag!
        Usart0_RX_buf[Usart0_rxBufTail] = data;//!    //считать символ в буфер
       Usart0_rxBufTail++;                    //увеличить индекс хвоста приемного буфера
       Usart0_rxCount++;                      //увеличить счетчик принятых символов
-#warning проверить необходимость следующего куска   
+#warning проверить необходимость следующего куска
      if (Usart0_rxBufTail == SIZE_BUF_RX)
       {
        Usart0_rxBufTail = 0;
-      }     
+      }
     }
 #ifdef DEBUG
 RX_CNT++;
@@ -389,7 +389,7 @@ data =  UDR1;//! read to clear RxC flag!
        Usart1_RX_buf[Usart1_rxBufTail] = data;//!    //считать символ  в буфер
       Usart1_rxBufTail++;                    //увеличить индекс хвоста приемного буфера
       Usart1_rxCount++;                      //увеличить счетчик принятых символов
-#warning проверить необходимость следующего куска   
+#warning проверить необходимость следующего куска
     if (Usart1_rxBufTail == SIZE_BUF_RX)
       {
        Usart1_rxBufTail = 0;
@@ -409,34 +409,7 @@ data =  UDR1;//! read to clear RxC flag!
 
 
 
-/////// Отладочный кусок. Вывод лога работы конечного автомата в буфер памяти, а потом. По окончании работы через UART на волю
-static volatile char WorkLog[512];
-static volatile uint16_t LogIndex = 0;
 
-void WorkLogPutChar(unsigned char symbol){
-__disable_interrupts();
-if (LogIndex <1023)							// Если лог не переполнен
-{
-		WorkLog[LogIndex]= symbol;			// Пишем статус в лог
-		LogIndex++;						
-}
- __restore_interrupts();
-}
-
-void Put_In_LogFl (unsigned char __flash* data){
-  while(*data)
-  {
-    WorkLogPutChar(*data++);
-  }  
-}
-
-void Put_In_Log (unsigned char * data){
-  while(*data)
-  {
-    WorkLogPutChar(*data++);
-  }  
-}          
-/////////////
 
 
 

@@ -213,17 +213,7 @@ while (SYS_TICK < timecnt){}
 }
 
 
-void LogOut(void)				// Выброс логов
-{
-StopRTOS();
-WorkLog[LogIndex]= 0xFF;
-LogIndex++;
-USART_SendStr(USART_0, WorkLog);
-RunRTOS();
 
-SetTimerTask(Task_Flush_WorkLog,10);//очистка лог буффера
-LogIndex = 0;
-}
 
 /**
 void cust_ltoa(long int n, char *str;)

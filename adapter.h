@@ -23,6 +23,8 @@
 #include <io.h>
 #include <stdbool.h>
 
+#include "my_debug.c"
+
 #include "D_LCD/n3310lcd_update.c"   //Upd-2   // D_LCD/ = Upd-8
 #include "D_LCD/pictures.c"          //Upd-2   // D_LCD/ = Upd-8
 

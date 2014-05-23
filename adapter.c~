@@ -10,7 +10,7 @@ AVR Core Clock frequency: 16,000000 MHz
 Data Stack size         : 1024
 *****************************************************/
 
-#define DEBUG
+//#define DEBUG
 
 #include <adapter.h>
 #include "init.c"
@@ -41,7 +41,7 @@ SOFTWARE_init();
 RunRTOS();			// —тарт €дра.
 
 //delay_ms(1000);// «апуск фоновых задач.
-SetTask(Task_Start);     //290uS (50/50) and (10/10)   но при 1/1 таск 1 лагает
+SetTask(Task_Start);     //290uS (50/50) and (10/10) но при 1/1 таск 1 лагает
 
 ///-----------------Upd-7-----------------------------
 // первичный запуск всех задач

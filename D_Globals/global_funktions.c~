@@ -2,7 +2,7 @@
 
 #include "RTOS/EERTOS.h"
 #include "RTOS/EERTOSHAL.h"
- #include "task_list.h"
+ #include "D_Tasks/task_list.h"
 /*
 Обработчик результата парсера.(команд)
 Эта функция вызывается парсером после обработки

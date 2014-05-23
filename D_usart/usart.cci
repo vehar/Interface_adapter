@@ -1,4 +1,4 @@
-VERSION:3 SOURCE_TIMESTAMP:44AA36AD
+VERSION:3 SOURCE_TIMESTAMP:44B76831
 NODE:I LEVEL:0 LINE:13 "C:\Users\abc\Dropbox\ADAPTER_CV_PROJ_v7 - current\D_usart\usart.h"
 NODE:V LEVEL:0 LINE:31 "Usart0_TX_buf_G000 -> RAM:????"
 NODE:V LEVEL:0 LINE:32 "Usart0_txBufTail_G000 -> RAM:????"
@@ -29,8 +29,3 @@ NODE:F LEVEL:0 LINE:305 "USART_GetChar(uint8_t sel)"
 NODE:F LEVEL:0 LINE:358 "usart0_rxc(void)"
 NODE:F LEVEL:0 LINE:382 "usart1_rxc(void)"
 NODE:F LEVEL:0 LINE:402 "How_Much_data_in_buf(uint16_t BufTail,uint16_t BufHead)"
-NODE:V LEVEL:0 LINE:413 "WorkLog_G000 -> RAM:????"
-NODE:V LEVEL:0 LINE:414 "LogIndex_G000 -> RAM:????"
-NODE:F LEVEL:0 LINE:416 "WorkLogPutChar(unsigned char symbol)"
-NODE:F LEVEL:0 LINE:426 "Put_In_LogFl(flash unsigned char * data)"
-NODE:F LEVEL:0 LINE:433 "Put_In_Log(unsigned char * data)"

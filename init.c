@@ -155,7 +155,7 @@ void HARDWARE_init(void)
  USART_1_init();
  Hard_SPI_Master_Init_default();
 //TWI_init();
- rtc_init();
+ rtc_init(); //Timer 0 used
 
 //i2c_init(); // I2C Bus initialization
 //w1_init(); // 1 Wire Bus initialization
