@@ -10,10 +10,12 @@
 
 #define array_size(arr) (sizeof(arr)/sizeof(arr[0]))
 #define TCNT1_1MS (65536-(F_CPU/(256L*1000))) //столько тиков будет делать T/C1 за 1 мс
-  /* void SetupTIMER1 (void){ //example
+  /* void SetupTIMER1 (void){ //example    
+  #asm("cli");      //Upd-11
   TCCR1B = (1<<CS12);
   TCNT1 = TCNT1_1MS;
-  TIMSK = (1<<TOIE1);}   // Enable timer 1 overflow interrupt.
+  TIMSK = (1<<TOIE1);}   // Enable timer 1 overflow interrupt.   
+  #asm("sei");      //Upd-11
   */
 
 

@@ -1,8 +1,8 @@
 VERSION:3 SOURCE_TIMESTAMP:444E05F6
 NODE:M LEVEL:0 LINE:2 "EERTOSHAL_H"
 NODE:I LEVEL:0 LINE:4 "RTOS\HAL.h"
-NODE:I LEVEL:0 LINE:5 "C:\cvavreval\inc\mega128.h"
-NODE:I LEVEL:0 LINE:6 "C:\cvavreval\inc\stdint.h"
+NODE:I LEVEL:0 LINE:5 "C:\Program Files\CV_avr\inc\mega128.h"
+NODE:I LEVEL:0 LINE:6 "C:\Program Files\CV_avr\inc\stdint.h"
 NODE:M LEVEL:0 LINE:8 "STATUS_REG"
 NODE:M LEVEL:0 LINE:9 "Interrupt_Flag"
 NODE:M LEVEL:0 LINE:10 "_disable_interrupts"

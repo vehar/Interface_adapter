@@ -1,5 +1,6 @@
 #include "ADC.h"
 
+
 void ADC_init(void){ // ADC initialization  //Upd-6
 PORTF=0x00; DDRF=0x00;
 // ADC Clock frequency: 1000,000 kHz

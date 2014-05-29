@@ -1,7 +1,7 @@
 VERSION:3 SOURCE_TIMESTAMP:444E62CE
 NODE:M LEVEL:0 LINE:15 "COMPILERS_H"
-NODE:I LEVEL:0 LINE:41 "C:\cvavreval\inc\io.h"
-NODE:I LEVEL:0 LINE:42 "C:\cvavreval\inc\delay.h"
+NODE:I LEVEL:0 LINE:41 "C:\Program Files\CV_avr\inc\io.h"
+NODE:I LEVEL:0 LINE:42 "C:\Program Files\CV_avr\inc\delay.h"
 NODE:M LEVEL:0 LINE:44 "__save_interrupt"
 NODE:M LEVEL:0 LINE:45 "__restore_interrupt"
 NODE:M LEVEL:0 LINE:46 "__disable_interrupt"

@@ -6,9 +6,9 @@ A=
 C=
 D=04.02.2014 12:06:56
 Files=3
-OpenedFiles=13
+OpenedFiles=10
 OF1=init.c
-Active1=0
+Active1=1
 OutputListFilesDirectory=List
 OutputObjectFilesDirectory=Obj
 OutputExecutableFilesDirectory=Exe
@@ -16,22 +16,22 @@ OutputLinkerFilesDirectory=Linker
 AllowDisplayFunctionCallTree=1
 CleanUp=2
 EditorPanelMode=1
-ActiveEditorPanel=0
-Active0=1
+ActiveEditorPanel=1
+Active0=0
 EditorPanel0=0
 PageIndex0=0
 EditorPanel1=1
-TimeStamp1=1152869752
+TimeStamp1=1152869751
 PageIndex1=0
 OF2=adapter.c
 Active2=0
 EditorPanel2=0
-TimeStamp2=1152870776
+TimeStamp2=1152885528
 PageIndex2=1
 OF3=D_usart\usart.h
 Active3=0
 EditorPanel3=0
-TimeStamp3=1150597667
+TimeStamp3=1150597668
 PageIndex3=2
 OF4=D_ADC\ADC.h
 Active4=0
@@ -42,7 +42,7 @@ TimeStamp0=1152870776
 OF5=D_ADC\ADC.c
 Active5=0
 EditorPanel5=0
-TimeStamp5=1152016165
+TimeStamp5=1152885942
 PageIndex5=4
 OF6=D_usart\usart.c
 Active6=0
@@ -59,16 +59,16 @@ Active8=0
 EditorPanel8=1
 TimeStamp8=1152277773
 PageIndex8=3
-OF9=D_IIC_ultimate\IIC_ultimate.c
+OF9=D_Tasks\task_list.c
 Active9=0
 EditorPanel9=0
-TimeStamp9=1152870160
+TimeStamp9=1152022167
 PageIndex9=5
-OF10=D_IIC_ultimate\IIC_ultimate.h
+OF10=D_Globals\global_defines.h
 Active10=0
-EditorPanel10=0
-TimeStamp10=1152278022
-PageIndex10=6
+EditorPanel10=1
+TimeStamp10=1152892433
+PageIndex10=4
 OF11=D_Tasks\task_list.c
 Active11=0
 EditorPanel11=0
@@ -203,7 +203,7 @@ WarningUnknownPragma=1
 LinkerWarnings=1
 DebugBootLoader=0
 WatchAVR8LAutoVariables=0
-Build=611
+Build=616
 UseEEPROMLocation0=1
 ExternalInterruptVectors=0
 IncludePath0=
@@ -353,7 +353,7 @@ UserProgPath=C:\Program Files\MicroSyl\MegaLoad\MegaLoad .NET.exe
 UserProgCmdLine=
 UserProgWorkDir=
 [BookmarksFoldedCode]
-Files=80
+Files=82
 F1=C:\cvavreval\inc\mega128.h
 F2=adapter.c
 F3=D:\Work\Переходник_интерфейсов-сделать\CV_avr_PROJ\interruptes.c
@@ -434,6 +434,8 @@ F77=D_Tasks\task_list.c
 F78=D_Globals\global_variables.h
 F79=D_Globals\global_funktions.c
 F80=C:\Users\abc\Dropbox\ADAPTER_CV_PROJ_v7 - current\my_debug.c
+F81=my_debug.c
+F82=D_Globals\global_defines.h
 [Bookmarks1]
 TimeStamp=1145332547
 Row=133
@@ -451,17 +453,17 @@ BK7=-1
 BK8=-1
 BK9=-1
 [Bookmarks0]
-Row=5
-Column=46
+Row=4
+Column=33
 ScrollPosX=0
 ScrollPosY=0
-TimeStamp=1152870776
+TimeStamp=1152929651
 [Bookmarks2]
-TimeStamp=1152870776
-Row=12
+TimeStamp=1152885528
+Row=36
 Column=0
 ScrollPosX=0
-ScrollPosY=3
+ScrollPosY=18
 BK0=-1
 BK1=-1
 BK2=-1
@@ -527,7 +529,7 @@ BK9=-1
 [FoldedCode5]
 Blocks=0
 [Bookmarks6]
-TimeStamp=1150597667
+TimeStamp=1150597668
 Row=0
 Column=0
 ScrollPosX=0
@@ -544,10 +546,10 @@ BK8=-1
 BK9=-1
 [Bookmarks7]
 TimeStamp=1152870449
-Row=12
+Row=300
 Column=0
 ScrollPosX=0
-ScrollPosY=0
+ScrollPosY=268
 BK0=-1
 BK1=-1
 BK2=-1
@@ -591,11 +593,11 @@ BK7=-1
 BK8=-1
 BK9=-1
 [Bookmarks10]
-TimeStamp=1152869752
-Row=157
-Column=27
+TimeStamp=1152869751
+Row=41
+Column=20
 ScrollPosX=0
-ScrollPosY=137
+ScrollPosY=8
 BK0=-1
 BK1=-1
 BK2=-1
@@ -769,11 +771,11 @@ BK7=-1
 BK8=-1
 BK9=-1
 [Bookmarks21]
-TimeStamp=982408964
-Row=0
-Column=0
+TimeStamp=982411012
+Row=59
+Column=9
 ScrollPosX=0
-ScrollPosY=86
+ScrollPosY=23
 BK0=-1
 BK1=-1
 BK2=-1
@@ -820,14 +822,12 @@ BK8=-1
 BK9=-1
 [FoldedCode23]
 Blocks=0
-[FoldedCode21]
-Blocks=0
 [Bookmarks24]
-TimeStamp=982082338
-Row=0
-Column=0
+TimeStamp=982084386
+Row=645
+Column=15
 ScrollPosX=0
-ScrollPosY=0
+ScrollPosY=620
 BK0=-1
 BK1=-1
 BK2=-1
@@ -838,8 +838,6 @@ BK6=-1
 BK7=-1
 BK8=-1
 BK9=-1
-[FoldedCode24]
-Blocks=0
 [Bookmarks25]
 TimeStamp=1145791376
 Row=27
@@ -1253,7 +1251,7 @@ TimeStamp=1152870135
 Row=186
 Column=49
 ScrollPosX=0
-ScrollPosY=139
+ScrollPosY=0
 BK0=-1
 BK1=-1
 BK2=-1
@@ -1283,9 +1281,9 @@ BK9=-1
 [FoldedCode49]
 Blocks=0
 [Bookmarks50]
-TimeStamp=1150635818
-Row=29
-Column=0
+TimeStamp=1152892227
+Row=5
+Column=28
 ScrollPosX=0
 ScrollPosY=0
 BK0=-1
@@ -1336,7 +1334,7 @@ BK9=-1
 Blocks=0
 [Bookmarks53]
 TimeStamp=1145964022
-Row=0
+Row=27
 Column=0
 ScrollPosX=0
 ScrollPosY=0
@@ -1644,14 +1642,12 @@ BK8=-1
 BK9=-1
 [FoldedCode70]
 Blocks=0
-[FoldedCode50]
-Blocks=0
 [Bookmarks71]
-TimeStamp=1152016165
-Row=45
-Column=72
+TimeStamp=1152885942
+Row=2
+Column=0
 ScrollPosX=0
-ScrollPosY=12
+ScrollPosY=0
 BK0=-1
 BK1=-1
 BK2=-1
@@ -1732,11 +1728,11 @@ BK7=-1
 BK8=-1
 BK9=-1
 [Bookmarks75]
-TimeStamp=1152284837
-Row=52
-Column=50
+TimeStamp=1152892227
+Row=42
+Column=9
 ScrollPosX=0
-ScrollPosY=0
+ScrollPosY=23
 BK0=-1
 BK1=-1
 BK2=-1
@@ -1773,14 +1769,12 @@ Blocks=0
 Blocks=0
 [FoldedCode74]
 Blocks=0
-[FoldedCode75]
-Blocks=0
 [Bookmarks77]
 TimeStamp=1152022167
 Row=76
 Column=13
 ScrollPosX=0
-ScrollPosY=48
+ScrollPosY=39
 BK0=-1
 BK1=-1
 BK2=-1
@@ -1836,29 +1830,75 @@ BK8=-1
 BK9=-1
 [FoldedCode79]
 Blocks=0
-[FoldedCode48]
+[FoldedCode8]
+Blocks=0
+[Bookmarks80]
+TimeStamp=1152870701
+Row=12
+Column=0
+ScrollPosX=0
+ScrollPosY=0
+BK0=-1
+BK1=-1
+BK2=-1
+BK3=-1
+BK4=-1
+BK5=-1
+BK6=-1
+BK7=-1
+BK8=-1
+BK9=-1
+[FoldedCode80]
+Blocks=0
+[FoldedCode64]
+Blocks=0
+[FoldedCode63]
+Blocks=0
+[FoldedCode24]
+Blocks=0
+[FoldedCode21]
+Blocks=0
+[Bookmarks81]
+TimeStamp=1152870701
+Row=23
+Column=0
+ScrollPosX=0
+ScrollPosY=0
+BK0=-1
+BK1=-1
+BK2=-1
+BK3=-1
+BK4=-1
+BK5=-1
+BK6=-1
+BK7=-1
+BK8=-1
+BK9=-1
+[FoldedCode81]
+Blocks=0
+[FoldedCode53]
 Blocks=0
 [HeadersList]
 Files=3
-F1=C:\Users\abc\Dropbox\ADAPTER_CV_PROJ_v7 - current\adapter.c
-F2=C:\Users\abc\Dropbox\ADAPTER_CV_PROJ_v7 - current\RTOS\EERTOS.c
-F3=C:\Users\abc\Dropbox\ADAPTER_CV_PROJ_v7 - current\RTOS\EERTOSHAL.c
+F1=C:\Users\veha\Dropbox\ADAPTER_CV_PROJ_v7 - current\adapter.c
+F2=C:\Users\veha\Dropbox\ADAPTER_CV_PROJ_v7 - current\RTOS\EERTOS.c
+F3=C:\Users\veha\Dropbox\ADAPTER_CV_PROJ_v7 - current\RTOS\EERTOSHAL.c
 [Header1]
 Files=49
 F1=adapter.h
-F2=C:\cvavreval\inc\mega128.h
-F3=C:\cvavreval\inc\mega128_bits.h
-F4=C:\cvavreval\inc\i2c.h
-F5=C:\cvavreval\inc\1wire.h
-F6=C:\cvavreval\inc\ds1820.h
-F7=C:\cvavreval\inc\stdio.h
-F8=C:\cvavreval\inc\stdarg.h
-F9=C:\cvavreval\inc\delay.h
-F10=C:\cvavreval\inc\string.h
-F11=C:\cvavreval\inc\stdlib.h
-F12=C:\cvavreval\inc\stdint.h
-F13=C:\cvavreval\inc\io.h
-F14=C:\cvavreval\inc\stdbool.h
+F2=C:\Program Files\CV_avr\inc\mega128.h
+F3=C:\Program Files\CV_avr\inc\mega128_bits.h
+F4=C:\Program Files\CV_avr\inc\i2c.h
+F5=C:\Program Files\CV_avr\inc\1wire.h
+F6=C:\Program Files\CV_avr\inc\ds1820.h
+F7=C:\Program Files\CV_avr\inc\stdio.h
+F8=C:\Program Files\CV_avr\inc\stdarg.h
+F9=C:\Program Files\CV_avr\inc\delay.h
+F10=C:\Program Files\CV_avr\inc\string.h
+F11=C:\Program Files\CV_avr\inc\stdlib.h
+F12=C:\Program Files\CV_avr\inc\stdint.h
+F13=C:\Program Files\CV_avr\inc\io.h
+F14=C:\Program Files\CV_avr\inc\stdbool.h
 F15=my_debug.c
 F16=D_Globals\global_defines.h
 F17=D_Globals\global_variables.h
@@ -1899,28 +1939,30 @@ Files=6
 F1=RTOS\EERTOS.h
 F2=RTOS\HAL.h
 F3=RTOS\EERTOSHAL.h
-F4=C:\cvavreval\inc\mega128.h
-F5=C:\cvavreval\inc\mega128_bits.h
-F6=C:\cvavreval\inc\stdint.h
+F4=C:\Program Files\CV_avr\inc\mega128.h
+F5=C:\Program Files\CV_avr\inc\mega128_bits.h
+F6=C:\Program Files\CV_avr\inc\stdint.h
 [Header3]
 Files=5
 F1=RTOS\EERTOSHAL.h
 F2=RTOS\HAL.h
-F3=C:\cvavreval\inc\mega128.h
-F4=C:\cvavreval\inc\mega128_bits.h
-F5=C:\cvavreval\inc\stdint.h
-[FoldedCode8]
+F3=C:\Program Files\CV_avr\inc\mega128.h
+F4=C:\Program Files\CV_avr\inc\mega128_bits.h
+F5=C:\Program Files\CV_avr\inc\stdint.h
+[FoldedCode75]
+Blocks=0
+[FoldedCode48]
+Blocks=0
+[FoldedCode50]
 Blocks=0
 [FoldedCode2]
 Blocks=0
-[FoldedCode53]
-Blocks=0
-[Bookmarks80]
-TimeStamp=1152870701
-Row=12
-Column=0
+[Bookmarks82]
+TimeStamp=1152892433
+Row=61
+Column=34
 ScrollPosX=0
-ScrollPosY=0
+ScrollPosY=36
 BK0=-1
 BK1=-1
 BK2=-1
@@ -1931,13 +1973,9 @@ BK6=-1
 BK7=-1
 BK8=-1
 BK9=-1
-[FoldedCode80]
+[FoldedCode82]
 Blocks=0
 [FoldedCode77]
-Blocks=0
-[FoldedCode64]
-Blocks=0
-[FoldedCode63]
 Blocks=0
 [FoldedCode18]
 Blocks=0
