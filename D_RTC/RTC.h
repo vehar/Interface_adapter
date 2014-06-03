@@ -3,7 +3,7 @@
 
 //#include "compilers.h"
 
-static void rtc_init(void);
+static void RTC_init(void);
 static char not_leap(void);
 
 //orig struct  = 6 bytes
@@ -20,14 +20,14 @@ typedef struct TIME {
 */
 
 
-typedef struct TIME {
-    uint32_t second:7; //7
-    uint32_t minute:7; //7
-    uint32_t hour:6;   //6
-    uint32_t date:6;   //6
+typedef struct {
+    uint32_t second:6; //7
+    uint32_t minute:6; //7
+    uint32_t hour:5;   //6
+    uint32_t date:5;   //6
     uint32_t month:4;  //4
-    uint32_t year:2;   //2 //по остатку
-    }time;
+    uint32_t year:6;   //2 //по остатку
+    }time_t;
 
 
 

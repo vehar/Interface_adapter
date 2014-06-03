@@ -9,10 +9,60 @@ Upd-7 : 10.5.14
 Upd-9 : 16.5.14
 Upd-10 : 23.5.14   //создал отдельный модуль для дебага
 Upd-11 : 26.5.14
+Upd-12 : 31.5.14
 
 //добавить опрос датчика освещённости - динамическая подсветка экрана и 2 ур яркости vd1
 
 
+
+Заметки на оптимизацию:
+1
+/*
+ Правда, целый таймер выделять для этого иногда накладно, и есть смысл работать с 
+глобальной переменной, которая будет уменьшаться в прерывании по таймеру: 
+     
+    // Фрагмент обработчика прерывания 
+     
+    if (TMR0IF && TMR0IE) 
+    { 
+        TMR0IF = 0; 
+        TMR0 -= TMR0_CONST;     // Обновляем таймер  
+ 
+        if (!--g_WaitTimer)     // Проверяем переполнение  
+            g_Timeout = 1; 
+        ... 
+    } 
+... 
+char  lcd_wait_ready (void) 
+{ 
+    g_WaitTimer = 10;           // Готовим таймер для фиксации таймаута  
+    g_Timeout = 0; 
+ 
+    while (!PIN_LCD_READY) 
+    { 
+        if (g_Timeout) return 0;// Выходим с кодом ошибки  
+    } 
+ 
+    return 1;                   // Выходим OK 
+} 
+*/
+
+2
+/*
+  Префиксы:  
+§  Префикс области видимости 
+Без   префикса  –  локальная   или   параметр   функции  
+s_ -  статическая  
+m_ -  локальная   для   модуля  
+g_ -  глобальная  
+i_ -  Обрабатывается   в   прерывании  
+§  Префикс типа 
+uc – unsigned char 
+sc – signed char 
+ui – unsigned int (n) 
+si – signed int (w) 
+И   т . д . 
+*/
 
 
 ТЗ на универсальный отладчик-эмулятор - тестер полупроводников(резисторов) и конденсаторов.
@@ -295,7 +345,7 @@ if (!strcmpf(argv[0], Set))
       //  TIM2_ON();
     }
 
-  USART_SendStrFl(USART_0,response);
+  USART_Send_StrFl(USART_0,response);
 }
 
 /////////////////////////////////////////////////////////////
@@ -303,63 +353,67 @@ if (!strcmpf(argv[0], Set))
 
 
 
-USART_SendStr((char*)&dist); //convert dec to str
+USART_Send_Str((char*)&dist); //convert dec to str
 
 
 /*
-USART_SendStr(SYSTEM_USART,"\r 1-2400 0.1 ");
+USART_Send_Str(SYSTEM_USART,"\r 1-2400 0.1 ");
 ltoa(calk_safe_baud(1, 24),str);
-USART_SendStr(USART_0,str); //convert dec to str
+USART_Send_Str(USART_0,str); //convert dec to str
 
-USART_SendStr(SYSTEM_USART,"\r 0-9600 0.2 ");
+USART_Send_Str(SYSTEM_USART,"\r 0-9600 0.2 ");
 ltoa(calk_safe_baud(0, 96),str);
-USART_SendStr(USART_0,str); //convert dec to str
+USART_Send_Str(USART_0,str); //convert dec to str
 
-USART_SendStr(SYSTEM_USART,"\r 1-9600 0.2 ");
+USART_Send_Str(SYSTEM_USART,"\r 1-9600 0.2 ");
 ltoa(calk_safe_baud(1, 96),str);
-USART_SendStr(USART_0,str); //convert dec to str
+USART_Send_Str(USART_0,str); //convert dec to str
 
-USART_SendStr(SYSTEM_USART,"\r 0-14400 -0.8 ");
+USART_Send_Str(SYSTEM_USART,"\r 0-14400 -0.8 ");
 ltoa(calk_safe_baud(0, 144),str);
-USART_SendStr(USART_0,str); //convert dec to str
+USART_Send_Str(USART_0,str); //convert dec to str
 
-USART_SendStr(SYSTEM_USART,"\r 1-14400 0.6 ");
+USART_Send_Str(SYSTEM_USART,"\r 1-14400 0.6 ");
 ltoa(calk_safe_baud(1, 144),str);
-USART_SendStr(USART_0,str); //convert dec to str
+USART_Send_Str(USART_0,str); //convert dec to str
 
-USART_SendStr(SYSTEM_USART,"\r 0-28800 2.1 ");
+USART_Send_Str(SYSTEM_USART,"\r 0-28800 2.1 ");
 ltoa(calk_safe_baud(0, 288),str);
-USART_SendStr(USART_0,str); //convert dec to str
+USART_Send_Str(USART_0,str); //convert dec to str
 
-USART_SendStr(SYSTEM_USART,"\r 1-28800 -0.8 ");
+USART_Send_Str(SYSTEM_USART,"\r 1-28800 -0.8 ");
 ltoa(calk_safe_baud(1, 288),str);
-USART_SendStr(USART_0,str); //convert dec to str
+USART_Send_Str(USART_0,str); //convert dec to str
 
-USART_SendStr(SYSTEM_USART,"\r 1-38400 0.2 ");
+USART_Send_Str(SYSTEM_USART,"\r 1-38400 0.2 ");
 ltoa(calk_safe_baud(1, 384),str);
-USART_SendStr(USART_0,str); //convert dec to str
+USART_Send_Str(USART_0,str); //convert dec to str
 
-USART_SendStr(SYSTEM_USART,"\r 0-57600 -3.5 ");
+USART_Send_Str(SYSTEM_USART,"\r 0-57600 -3.5 ");
 ltoa(calk_safe_baud(0, 576),str);
-USART_SendStr(USART_0,str); //convert dec to str
+USART_Send_Str(USART_0,str); //convert dec to str
 
-USART_SendStr(SYSTEM_USART,"\r 1-57600 2.1 ");
+USART_Send_Str(SYSTEM_USART,"\r 1-57600 2.1 ");
 ltoa(calk_safe_baud(1, 576),str);
-USART_SendStr(USART_0,str); //convert dec to str
+USART_Send_Str(USART_0,str); //convert dec to str
 
-USART_SendStr(SYSTEM_USART,"\r 0-76800 -7 ");
+USART_Send_Str(SYSTEM_USART,"\r 0-76800 -7 ");
 ltoa(calk_safe_baud(0, 768),str);
-USART_SendStr(USART_0,str); //convert dec to str
+USART_Send_Str(USART_0,str); //convert dec to str
 
-USART_SendStr(SYSTEM_USART,"\r 1-76800 0.2 ");
+USART_Send_Str(SYSTEM_USART,"\r 1-76800 0.2 ");
 ltoa(calk_safe_baud(1, 768),str);
-USART_SendStr(USART_0,str); //convert dec to str
+USART_Send_Str(USART_0,str); //convert dec to str
 
-USART_SendStr(SYSTEM_USART,"\r 0-115200 8.5 ");
+USART_Send_Str(SYSTEM_USART,"\r 0-115200 8.5 ");
 ltoa(calk_safe_baud(0, 1152),str);
-USART_SendStr(USART_0,str); //convert dec to str
+USART_Send_Str(USART_0,str); //convert dec to str
 
-USART_SendStr(SYSTEM_USART,"\r 1-115200 -3.5 ");
+USART_Send_Str(SYSTEM_USART,"\r 1-115200 -3.5 ");
 ltoa(calk_safe_baud(1, 1152),str);
-USART_SendStr(USART_0,str); //convert dec to str
+USART_Send_Str(USART_0,str); //convert dec to str
 */
+
+
+
+

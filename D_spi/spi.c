@@ -196,7 +196,7 @@ uint8_t i=0; //char data;
 while(num)
 {
       SPDR = data_tx[i];  data_tx[i] = 0;
-      while(!(SPSR & (1<<SPIF)));
+      while(!(SPSR & (1<<SPIF))){};
       data_rx[i] = SPDR;
       // *data_tx++; *data_rx++;
        --num;

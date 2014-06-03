@@ -45,25 +45,25 @@ unsigned char hard_twi_write(unsigned char data);
 
 void hard_twi_start() {
 	TWCR = (1 << TWINT) | (1 << TWSTA) | (1 << TWEN); // send start condition
-	while (!(TWCR & (1 << TWINT)));
+	while (!(TWCR & (1 << TWINT))){};
     //возможно сдесь нужно очистить  TWSTA
 }
 
 void hard_twi_write_byte(char byte) {
 	TWDR = byte;
 	TWCR = (1 << TWINT) | (1 << TWEN); // start address transmission
-	while (!(TWCR & (1 << TWINT)));
+	while (!(TWCR & (1 << TWINT))){};
 }
 
 char hard_twi_read_byte() {
 	TWCR = (1 << TWINT) | (1 << TWEA) | (1 << TWEN); // start data reception, transmit ACK
-	while (!(TWCR & (1 << TWINT)));
+	while (!(TWCR & (1 << TWINT))){};
 	return TWDR;
 }
 
 char hard_twi_read_last_byte() {
 	TWCR = (1 << TWINT) | (1 << TWEN); // start data reception
-	while (!(TWCR & (1 << TWINT)));
+	while (!(TWCR & (1 << TWINT))){};
 	return TWDR;
 }
 
@@ -74,14 +74,14 @@ void hard_twi_stop() {
 uint8_t hard_twi_read_ACK(void)
 {
     TWCR = (1<<TWINT)|(1<<TWEN)|(1<<TWEA);
-    while ((TWCR & (1<<TWINT)) == 0);
+    while ((TWCR & (1<<TWINT)) == 0){};
     return TWDR;
 }
 //read byte with NACK
 uint8_t hard_twi_read_NACK(void)
 {
     TWCR = (1<<TWINT)|(1<<TWEN);
-    while ((TWCR & (1<<TWINT)) == 0);
+    while ((TWCR & (1<<TWINT)) == 0){};
     return TWDR;
 }
 

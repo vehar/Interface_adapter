@@ -4,9 +4,9 @@ Variable                                                          Address   Size
 __ds1820_scratch_pad                                              0x039F       9
 saved_state                                                       0x03A8       1
 symbol                                                            0x03A9       1
-SYS_TICK                                                          0x03AA       4
-TX_CNT                                                            0x03AE       4
-RX_CNT                                                            0x03B2       4
+v_u32_SYS_TICK                                                    0x03AA       4
+v_u32_TX_CNT                                                      0x03AE       4
+v_u32_RX_CNT                                                      0x03B2       4
 RAM_settings                                                      0x03B6      12
 WorkLog                                                           0x03C2     512
 LogIndex                                                          0x05C2       2

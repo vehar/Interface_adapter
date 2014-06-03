@@ -23,8 +23,8 @@ void Task_SPI_ClrBuf (void);    //очистка rx/tx буфферов SPI
 
 //======================I2C===================================
 // Прототипы задач ============================================================
-void Writed2EEP(void);
-void StartWrite2EPP(void);
-void SendAddrToSlave(void);
-void SendedAddrToSlave(void);
+void EEP_Writed(void);
+void EEP_StartWrite(void);
+void IIC_Send_Addr_ToSlave(void);
+void IIC_SendeD_Addr_ToSlave(void);
 void SlaveControl(void);

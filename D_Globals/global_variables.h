@@ -28,10 +28,10 @@ volatile struct flag_collector0 {
 //volatile uint32_t result = 0;
 extern volatile uint8_t symbol = 0;
 extern volatile uint8_t Parser_req_state_cnt = 255;
-register volatile uint32_t SYS_TICK    = 0; //may be static
+register volatile uint32_t v_u32_SYS_TICK    = 0; //may be static
 
-extern volatile uint32_t TX_CNT = 0;
-extern volatile uint32_t RX_CNT = 0;
+extern volatile uint32_t v_u32_TX_CNT = 0;
+extern volatile uint32_t v_u32_RX_CNT = 0;
 
 
 /*команды*/

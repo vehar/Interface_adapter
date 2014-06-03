@@ -10,7 +10,7 @@ AVR Core Clock frequency: 16,000000 MHz
 Data Stack size         : 1024
 *****************************************************/
 
-//#define DEBUG
+#define DEBUG
 
 #include <adapter.h>
 #include "init.c"

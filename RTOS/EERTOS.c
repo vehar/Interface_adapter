@@ -55,8 +55,6 @@ uint8_t	index;
 
 }
 
-
-
  //UPDATE
  void SetTask(TPTR TS){  // Поставить задачу в очередь для немедленного выполнения
  SetTimerTask(TS,0);

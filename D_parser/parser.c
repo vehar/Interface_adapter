@@ -143,9 +143,7 @@ uint8_t PARS_StrToUchar(char *s)
 uint16_t PARS_StrToUint(char *s)
 {
    uint16_t value = 0;
-
    //while(*s == '0'){s++;}
-
    while(*s)
    {
       value += (*s - 0x30);

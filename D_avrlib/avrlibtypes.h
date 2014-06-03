@@ -29,9 +29,9 @@
 #endif
 
 // datatype definitions macros
-typedef unsigned char  uint8_t;
+typedef unsigned char  u08;
 typedef   signed char  s08;
-typedef unsigned short uint16_t;
+typedef unsigned short u16;
 typedef   signed short s16;
 typedef unsigned long  u32;
 typedef   signed long  s32;
@@ -39,7 +39,7 @@ typedef   signed long  s32;
 //typedef unsigned long long u64;
 //typedef   signed long long s64;
 
-/* use inttypes.h instead
+// use inttypes.h instead
 // C99 standard integer type definitions
 typedef unsigned char	uint8_t;
 typedef   signed char	int8_t;
@@ -49,7 +49,16 @@ typedef unsigned long	uint32_t;
 typedef   signed long	int32_t;
 typedef unsigned long	uint64_t;
 typedef   signed long	int64_t;
+
+/*
+ S_ALU_INT  и  U_ALU_INT  –  это  знаковое  и беззнаковое  целые, имеющие 
+  размерность  машинного  слова  для  конкретного контроллера.Т.к.  операции  
+  над  операндами,  имеющими  размерность  шины данных, производятся наиболее
+  оптимально,  иногда  есть  смысл  пользоваться этими типами данных
 */
+ typedef signed   char    S_ALU_INT; 
+ typedef unsigned char    U_ALU_INT;  
+     
 // maximum value that can be held
 // by unsigned data types (8,16,32bits)
 #define MAX_uint8_t	255

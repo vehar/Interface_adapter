@@ -1,4 +1,4 @@
-/*****************************************************
+                       /*****************************************************
 Project : Uni_interface_adapter
 Version :
 Date    : 04.02.2014
@@ -31,13 +31,13 @@ SOFTWARE_init();
 #ifdef DEBUG
     //DDRD.7=1;//PORTD.7=1;  //Led VD2
     //DDRD.6=1;PORTD.6=1;    //Led VD1
-    USART_SendStrFl(USART_1,start);
-    USART_SendStrFl(SYSTEM_USART,start);
+    USART_Send_StrFl(USART_1,start);
+    USART_Send_StrFl(SYSTEM_USART,start);
 #endif
 
 
 //#asm("sei") // Global enable interrupts Upd-1
-//sprintf(lcd_buf, "Z=%d", SYS_TICK); ;LcdString(1,3); LcdUpdate();
+//sprintf(lcd_buf, "Z=%d", v_u32_SYS_TICK); ;LcdString(1,3); LcdUpdate();
 RunRTOS();			// Старт ядра.
 
 //delay_ms(1000);// Запуск фоновых задач.
@@ -69,5 +69,5 @@ TaskManager();	// Вызов диспетчера
 interrupt [RTOS_ISR] void timer2_comp_isr(void)//RTOS Interrupt 1mS
 {
  TimerService();
- SYS_TICK++;
+ v_u32_SYS_TICK++;
 }

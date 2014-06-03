@@ -2,7 +2,6 @@
 //
 //  Author(s)...: Pashgan    http://ChipEnable.Ru
 //
-//
 //  Compiler....: CodeVision 2.04
 //
 //  Description.: USART/UART. Используем кольцевой буфер
@@ -409,35 +408,7 @@ data =  UDR1;//! read to clear RxC flag!
 
 
 
-/////// Отладочный кусок. Вывод лога работы конечного автомата в буфер памяти, а потом. По окончании работы через UART на волю
-#define LogBufSize 512 //Размер буффера для логов
-static volatile char WorkLog[LogBufSize];
-static volatile uint16_t LogIndex = 0;
 
-void WorkLogPutChar(unsigned char symbol){
-__disable_interrupts();
-if (LogIndex <LogBufSize)							// Если лог не переполнен
-{
-		WorkLog[LogIndex]= symbol;			// Пишем статус в лог
-		LogIndex++;
-}
- __restore_interrupts();
-}
-
-void Put_In_LogFl (unsigned char __flash* data){
-  while(*data)
-  {
-    WorkLogPutChar(*data++);
-  }
-}
-
-void Put_In_Log (unsigned char * data){
-  while(*data)
-  {
-    WorkLogPutChar(*data++);
-  }
-}
-/////////////
 
 
 

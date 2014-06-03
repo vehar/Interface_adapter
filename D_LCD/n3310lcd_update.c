@@ -403,7 +403,7 @@ void LcdSend (unsigned char data, unsigned char cmd)    //Sends data to display 
 
         #ifndef SOFT_SPI
         SPDR = data;                            //Send data to display controller
-        while ( (SPSR & 0x80) != 0x80 );        //Wait until Tx register empty
+        while ( (SPSR & 0x80) != 0x80 ){};        //Wait until Tx register empty
         #endif
         
         LCD_CPORT.LCD_CPIN = 1;                //Disable display controller
@@ -614,7 +614,7 @@ void LcdLine (int x1, int y1, int x2, int y2, unsigned char mode)  	//Draws a li
                 {
                 fraction = dy - (dx >> 1); 
                 while (x1 != x2)
-                        {
+                   {
                         if (fraction >= 0)
                                 {
                                 y1 += stepy;
@@ -623,7 +623,7 @@ void LcdLine (int x1, int y1, int x2, int y2, unsigned char mode)  	//Draws a li
                         x1 += stepx;
                         fraction += dy;  
                         LcdPixel(x1,y1,mode);
-                        }
+                   }
                 }
                 else
                         {

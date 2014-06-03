@@ -24,7 +24,9 @@
 
 #endif
 
-	time t;
+#include "RTC.h"
+
+	time_t t;
 /*
 int main(void)
 {
@@ -38,9 +40,8 @@ int main(void)
 	}
 }
 */
-static void rtc_init(void)
+static void RTC_init(void)
 {
-#asm("cli")	 //Upd-11
    	TIMSK &= ~((1<<TOIE0)|(1<<OCIE0));						//Make sure all TC0 interrupts are disabled
 	ASSR |= (1<<AS0);										//set Timer/counter0 to be asynchronous from the CPU clock
 															//with a second external clock (32,768kHz)driving it.

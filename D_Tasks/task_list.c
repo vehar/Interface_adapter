@@ -64,7 +64,7 @@ void Task_pars_cmd (void)
 {
   if (USART_Get_rxCount(SYSTEM_USART) > 0) //если в приёмном буфере что-то есть
        {
-        symbol = USART_GetChar(SYSTEM_USART);
+        symbol = USART_Get_Char(SYSTEM_USART);
         PARS_Parser(symbol);
        }
 SetTimerTask(Task_pars_cmd, 25);
@@ -80,7 +80,7 @@ if(LogIndex){LogOut();} //если что-то есть в лог буфере - вывести
 
 void Task_Flush_WorkLog(void){ //очистка лог буффера
 uint16_t i = 0;
-while(i<512){WorkLog[i] = 0; i++;}
+while(i<512){WorkLog[i] = 0; i++;};
 PORTD.7^=1;
 }
 
@@ -107,35 +107,35 @@ Spi0_TX_buf[i] = 0;
 //============================================================================
 
 // Записываем в ЕЕПРОМ байт.
-void StartWrite2EPP(void)
+void EEP_StartWrite(void)
 {
-if (!i2c_eep_WriteByte(0xA0,0x00FF,/*(char)Usart0_RX_buf[15]*/ 9,&Writed2EEP))    // Если байт незаписался
+if (!i2c_eep_WriteByte(0xA0,0x00FF,/*(char)Usart0_RX_buf[15]*/ 9,&EEP_Writed))    // Если байт незаписался
     {
-    SetTimerTask(StartWrite2EPP,50);                        // Повторить попытку через 50мс
+    SetTimerTask(EEP_StartWrite,50);                        // Повторить попытку через 50мс
     }
 }
 
 // Точка выхода из автомата по записи в ЕЕПРОМ
-void Writed2EEP(void)
+void EEP_Writed(void)
 {
 i2c_Do &= i2c_Free;                                            // Освобождаем шину
 
 if(i2c_Do & (i2c_ERR_NA|i2c_ERR_BF))                        // Если запись не удалась
     {
-    SetTimerTask(StartWrite2EPP,20);                        // повторяем попытку
+    SetTimerTask(EEP_StartWrite,20);                        // повторяем попытку
     }
 else
     {
-    SetTask(SendAddrToSlave);        						// Если все ок, то идем на следующий
-	}														// Пункт задания - передача данных слейву 2
+    SetTask(IIC_Send_Addr_ToSlave);        		// Если все ок, то идем на следующий
+	}											// Пункт задания - передача данных слейву 2
 }
 
 // Обращение к SLAVE контроллеру
-void SendAddrToSlave(void)
+void IIC_Send_Addr_ToSlave(void)
 {
 if (i2c_Do & i2c_Busy)						// Если передатчик занят
 		{
-		SetTimerTask(SendAddrToSlave,100);	// То повторить через 100мс
+		SetTimerTask(IIC_Send_Addr_ToSlave,100);	// То повторить через 100мс
 		}
 
 i2c_index = 0;								// Сброс индекса
@@ -148,8 +148,8 @@ i2c_Buffer[1] = 0xFF;
 
 i2c_Do = i2c_sawp;							// Режим = простая запись, адрес+два байта данных
 
-MasterOutFunc = &SendedAddrToSlave;			// Точка выхода из автомата если все хорошо
-ErrorOutFunc = &SendedAddrToSlave;			// И если все плохо.
+MasterOutFunc = &IIC_SendeD_Addr_ToSlave;			// Точка выхода из автомата если все хорошо
+ErrorOutFunc = &IIC_SendeD_Addr_ToSlave;			// И если все плохо.
 
 TWCR = 1<<TWSTA|0<<TWSTO|1<<TWINT|0<<TWEA|1<<TWEN|1<<TWIE;		// Поехали!
 i2c_Do |= i2c_Busy;												// Шина занята!
@@ -157,13 +157,13 @@ i2c_Do |= i2c_Busy;												// Шина занята!
 
 
 // Выход из автомата IIC
-void SendedAddrToSlave(void)
+void IIC_SendeD_Addr_ToSlave(void)
 {
 i2c_Do &= i2c_Free;							// Освобождаем шину
 
 if(i2c_Do & (i2c_ERR_NA|i2c_ERR_BF))		// Если адресат нас не услышал или был сбой на линии
 	{
-	SetTimerTask(SendAddrToSlave,20);		// Повторить попытку
+	SetTimerTask(IIC_Send_Addr_ToSlave,20);		// Повторить попытку
 	}
 }
 

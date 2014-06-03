@@ -2,7 +2,6 @@
 //
 //  Author(s)...: Pashgan    http://ChipEnable.Ru
 //
-//
 //  Compiler....: CodeVision 2.04
 //
 //  Description.: USART/UART. Используем кольцевой буфер
@@ -51,16 +50,14 @@ static volatile uint16_t Usart1_rxBufTail = 0;
 static volatile uint16_t Usart1_rxBufHead = 0;
 static volatile uint16_t Usart1_rxCount = 0;
 
-#ifndef F_CPU
-#error "F_CPU is not defined"
-#endif
 
-void UartTxBufOvf_Handler(void){ //обработчик переполнения передающего буфера UART
-PORTD.6=1;
+void UartTxBufOvf_Handler(void) //обработчик переполнения передающего буфера UART
+{ 
+    PORTD.6=1;
 }
 
 
-uint16_t Calk_safe_baud(uint8_t mode, uint16_t input_baud){
+uint16_t Calk_safe_baud(uint8_t mode, uint16_t input_baud){   //Проверка возможности работі на заданой скорости
  uint8_t max_total_err = 52; //порог ошибки, если больше - комуникация невозможна. 52 соответствует 2.1%
 
  uint32_t tmp0 = 0;
@@ -81,24 +78,34 @@ return tmp1;
 
  void USART_Init (uint8_t sel, uint8_t mode, uint16_t baudRate) //инициализация usart`a
 {
-  uint16_t ubrrValue;
+uint16_t ubrrValue;
+#warning возможно надо увеличить разрядность baudRate!
 __disable_interrupts();
 
 #ifdef UART_BAUD-ERR-CONTROL_EN
 baudRate = Calk_safe_baud(mode, baudRate);// Проверка погрешности при выбраной скорости (зависит от F_CPU)
 #endif
 baudRate = baudRate * 100;
-if(sel==USART_0)
+
+ if (mode == USART_NORMAL)
+ {
+   ubrrValue = (F_CPU+8UL*baudRate)/(16UL*baudRate) - 1;
+ }    //Upd-12
+  else 
+  {
+    ubrrValue = (F_CPU+4UL*baudRate)/(8UL*baudRate) - 1; //doubles speed 
+  } //Upd-12
+
+
+if(sel==USART_0)    //for USART_0
 {
   Usart0_txBufTail = 0;  Usart0_txBufHead = 0;
   Usart0_rxBufTail = 0;  Usart0_rxBufHead = 0;
   Usart0_rxCount = 0;
   UCSR0A = 0; // USART0 disabled
-  UCSR0B = 0;
-  UCSR0C = 0;
+  UCSR0B = 0;  UCSR0C = 0;
 
-    if (mode == USART_NORMAL){ubrrValue = F_CPU/(16UL*baudRate) - 1;}
-    else                     {ubrrValue = F_CPU/(8UL*baudRate) - 1; UCSR0A = (1<<U2X0);}//doubles speed
+    if (mode != USART_NORMAL){ UCSR0A = (1<<U2X0);}//doubles speed  //Upd-12
 
   // Communication Parameters: 8 Data, 1 Stop, No Parity
   // USART1 Receiver: On //Transmitter: On //Mode: Asynchronous
@@ -107,17 +114,15 @@ if(sel==USART_0)
   UCSR0B = (1<<RXCIE0)|(1<<RXEN0)|(1<<TXEN0); //разр. прерыв при приеме и передачи, разр приема, разр передачи.
   UCSR0C = (1<<UCSZ01)|(1<<UCSZ00); //размер слова 8 разрядов
 }
-else
+else             //for USART_1
 {
   Usart1_txBufTail = 0;  Usart1_txBufHead = 0;
   Usart1_rxBufTail = 0;  Usart1_rxBufHead = 0;
   Usart1_rxCount = 0;
   UCSR1A = 0;  // USART1 disabled
-  UCSR1B = 0;
-  UCSR1C = 0;
+  UCSR1B = 0;  UCSR1C = 0;
 
-    if (mode == USART_NORMAL){ubrrValue = F_CPU/(16UL*baudRate) - 1;}
-    else                     {ubrrValue = F_CPU/(8UL*baudRate) - 1; UCSR1A = (1<<U2X1);}//doubles speed
+    if (mode != USART_NORMAL) { UCSR1A = (1<<U2X1);}//doubles speed
 
   // Communication Parameters: 8 Data, 1 Stop, No Parity
   // USART1 Receiver: On //Transmitter: On //Mode: Asynchronous
@@ -140,7 +145,7 @@ unsigned char USART_Get_txCount(void) //возвращает колличество символов передающ
 void USART_FlushTxBuf(uint8_t sel) //"очищает" передающий буфер
 {
 __disable_interrupts();
-TX_CNT=0;
+v_u32_TX_CNT=0;
 
  switch (sel)
  {
@@ -148,7 +153,6 @@ TX_CNT=0;
 Usart_0_flush:
   Usart0_txBufTail = 0;
   Usart0_txBufHead = 0;
-    //txCount = 0; //not used
    break;
    case USART_1:
   Usart1_txBufTail = 0;
@@ -182,7 +186,7 @@ void USART_PutChar(uint8_t sel, unsigned char symbol) //помещает символ в буфер,
                __disable_interrupts();
                Usart0_txBufHead = Tmp_0;
                UCSR0B |= (1 << UDRIE0);
-               } else {UartTxBufOvf_Handler();}
+               } else {UartTxBufOvf_Handler();} //if TX buf ovverflowed, go to ovrf handler
          //    }
    break;
    case USART_1:
@@ -194,7 +198,7 @@ void USART_PutChar(uint8_t sel, unsigned char symbol) //помещает символ в буфер,
                __disable_interrupts();
                Usart1_txBufHead = Tmp_1;
                UCSR1B |= (1 << UDRIE1);
-               }else {UartTxBufOvf_Handler();}
+               }else {UartTxBufOvf_Handler();} //if TX buf ovverflowed, go to ovrf handler
           //   }
    break;
      default:
@@ -206,22 +210,18 @@ void USART_PutChar(uint8_t sel, unsigned char symbol) //помещает символ в буфер,
 
 
 
-void USART_SendStr(uint8_t sel, unsigned char * data)//функция посылающая строку по usart`у
+void USART_Send_Str(uint8_t sel, unsigned char * data)//функция посылающая строку по usart`у
 {
- // unsigned char symbol;
   while(*data)
   {
-    //symbol = *data++;// USART_PutChar(sel,symbol);
    USART_PutChar(sel, *data++);//Optimized
   }
 }
 
-void USART_SendStrFl(uint8_t sel, unsigned char __flash * data) //функция посылающая строку из флэша по usart`у
+void USART_Send_StrFl(uint8_t sel, unsigned char __flash * data) //функция посылающая строку из флэша по usart`у
 {
- // unsigned char symbol;
   while(*data)
   {
-    //symbol = *data++; //USART_PutChar(sel, symbol);
     USART_PutChar(sel, *data++);
   }
 }
@@ -245,7 +245,7 @@ uint16_t Tmp = Usart0_txBufTail; // use local variable instead of volatile
         UCSR0B &= ~(1 << UDRIE0); // disable this int
        }
 #ifdef DEBUG
-TX_CNT++;
+v_u32_TX_CNT++;
 #endif
 }
 
@@ -263,7 +263,7 @@ uint16_t Tmp = Usart1_txBufTail; // use local variable instead of volatile
         UCSR1B &= ~(1 << UDRIE1); // disable this int
        }
 #ifdef DEBUG
-//TX_CNT++;
+//v_u32_TX_CNT++;
 #endif
 }
 /*
@@ -287,7 +287,7 @@ return  sel ? Usart1_rxCount : Usart0_rxCount;
 void USART_FlushRxBuf(uint8_t sel)//"очищает" приемный буфер
 {
   // uint8_t saved_state;
-   RX_CNT = 0;
+   v_u32_RX_CNT = 0;
 __disable_interrupts();
 if(!sel){
   Usart0_rxBufTail = 0;
@@ -302,7 +302,7 @@ __restore_interrupts();
 }
 
 
-char USART_GetChar(uint8_t sel) //чтение буфера
+char USART_Get_Char(uint8_t sel) //чтение буфера
 {
   unsigned char symbol;
   uint8_t saved_state;
@@ -372,7 +372,7 @@ data =  UDR0;//! read to clear RxC flag!
       }
     }
 #ifdef DEBUG
-RX_CNT++;
+v_u32_RX_CNT++;
 #endif
 }
 
@@ -399,7 +399,7 @@ data =  UDR1;//! read to clear RxC flag!
 
 
 //считает кол-во данных в кольцевом буфере
- uint16_t How_Much_data_in_buf (uint16_t BufTail, uint16_t BufHead)
+ uint16_t usart_calc_BufData (uint16_t BufTail, uint16_t BufHead)
 {
     if (BufTail >=  BufHead)
         return (BufTail -  BufHead);

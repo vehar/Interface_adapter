@@ -1,4 +1,4 @@
-VERSION:3 SOURCE_TIMESTAMP:44AA7697
+VERSION:3 SOURCE_TIMESTAMP:44BFBA61
 NODE:I LEVEL:0 LINE:3 "C:\Users\veha\Dropbox\ADAPTER_CV_PROJ_v7 - current\D_Tasks\task_list.h"
 NODE:F LEVEL:0 LINE:8 "Task_Start(void)"
 NODE:F LEVEL:0 LINE:14 "Task_LedOff(void)"
@@ -11,8 +11,8 @@ NODE:F LEVEL:0 LINE:63 "Task_pars_cmd(void)"
 NODE:F LEVEL:0 LINE:74 "Task_LogOut(void)"
 NODE:F LEVEL:0 LINE:81 "Task_Flush_WorkLog(void)"
 NODE:F LEVEL:0 LINE:92 "Task_SPI_ClrBuf(void)"
-NODE:F LEVEL:0 LINE:110 "StartWrite2EPP(void)"
-NODE:F LEVEL:0 LINE:119 "Writed2EEP(void)"
-NODE:F LEVEL:0 LINE:134 "SendAddrToSlave(void)"
-NODE:F LEVEL:0 LINE:160 "SendedAddrToSlave(void)"
+NODE:F LEVEL:0 LINE:110 "EEP_StartWrite(void)"
+NODE:F LEVEL:0 LINE:119 "EEP_Writed(void)"
+NODE:F LEVEL:0 LINE:134 "IIC_Send_Addr_ToSlave(void)"
+NODE:F LEVEL:0 LINE:160 "IIC_SendeD_Addr_ToSlave(void)"
 NODE:F LEVEL:0 LINE:172 "SlaveControl(void)"

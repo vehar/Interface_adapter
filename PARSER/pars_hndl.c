@@ -63,7 +63,7 @@ if (!strcmpf(argv[0], Set))
                }
               else{response = largeValue;
 #ifdef DEBUG
- //USART_SendStr(SYSTEM_USART,"\rM EXIT");
+ //USART_Send_Str(SYSTEM_USART,"\rM EXIT");
  Put_In_Log("\rM EXIT");
 #endif
             goto exit;}
@@ -220,7 +220,7 @@ if (!strcmpf(argv[0], W)) //Write
       if (argc > 3)    //Data
       {
       StopRTOS; //так как передача по UART-у может быть медленной,RTOS на время замедляется (Ибо внешний интерфейс приоритетнее)
-        USART_SendStr(Interface_Num, argv[3]);
+        USART_Send_Str(Interface_Num, argv[3]);
       RunRTOS;
       #ifdef DEBUG
 Put_In_Log("\r U D>TX ");
@@ -238,14 +238,14 @@ Put_In_Log(str); //convert dec to str
     if (!strcmpf(argv[1], Spi))
      {
  #ifdef DEBUG
- //USART_SendStr(SYSTEM_USART,"\r SPI ");
+ //USART_Send_Str(SYSTEM_USART,"\r SPI ");
  #endif
        if (argc > 2)
         {
           tmp = PARS_StrToUchar(argv[2]);//Get number of interface to write
           if (tmp <= COUNT_OF_SPI){Interface_Num = tmp; response = ok;
  #ifdef DEBUG
- //USART_SendStr(SYSTEM_USART,"\r SPI num w ");
+ //USART_Send_Str(SYSTEM_USART,"\r SPI num w ");
  #endif
           }
           else{response = largeValue;}
@@ -265,7 +265,7 @@ Put_In_Log(str); //convert dec to str
 Put_In_Log("\r S D<RX ");
 Put_In_Log(Spi0_RX_buf);
 //SetTimerTask(Task_SPI_ClrBuf, 10);
- // USART_SendStr(SYSTEM_USART, Spi0_RX_buf);
+ // USART_Send_Str(SYSTEM_USART, Spi0_RX_buf);
   #endif
       }
      }
@@ -278,14 +278,14 @@ Put_In_Log(Spi0_RX_buf);
     if (!strcmpf(argv[1], I2c))
      {
  #ifdef DEBUG
- //USART_SendStr(SYSTEM_USART,"\r I2c ");
+ //USART_Send_Str(SYSTEM_USART,"\r I2c ");
  #endif
        if (argc > 2)
         {
           tmp = PARS_StrToUchar(argv[2]);//Get number of interface to write
           if (tmp <= COUNT_OF_I2C){Interface_Num = tmp; response = ok;
  #ifdef DEBUG
- //USART_SendStr(SYSTEM_USART,"\r I2C num w ");
+ //USART_Send_Str(SYSTEM_USART,"\r I2C num w ");
  #endif
           }
           else{response = largeValue;}
@@ -296,7 +296,7 @@ Put_In_Log(Spi0_RX_buf);
 
 Put_In_Log("\r I2C D>TX ");
  ltoa(PARS_StrToUint(argv[3]),str);  //возможно вывести не > 65535
- USART_SendStr(SYSTEM_USART,str); //convert dec to str
+ USART_Send_Str(SYSTEM_USART,str); //convert dec to str
  #endif
 
  //I2C_RW_Buf(10/*array_size(argv[3])*/, argv[3], Spi0_RX_buf); //TODO определять кол-во автоматически
@@ -305,7 +305,7 @@ Put_In_Log("\r I2C D>TX ");
 
  #ifdef DEBUG
 Put_In_Log("\r I2C D<RX ");
-  USART_SendStr(SYSTEM_USART, Spi0_RX_buf);
+  USART_Send_Str(SYSTEM_USART, Spi0_RX_buf);
   #endif
       }
      }
@@ -322,8 +322,6 @@ Put_In_Log("\r I2C D<RX ");
 
  сделать и2с,
  добавить опцию автопередачи с/на выбраный интерфейс.
-
- +Поднять диспетчер
  */
 
     if (!strcmpf(argv[0], Help)){ print_help(); response = ok; }
@@ -332,13 +330,13 @@ Put_In_Log("\r I2C D<RX ");
     // dbg не успевает вывестись из-за прерывания ртос(вунужден временно останавливать, а с help всё ок.)
     if (!strcmpf(argv[0], dbg)){StopRTOS(); print_settings_eeprom(); print_settings_ram(); print_sys(); response = ok; RunRTOS();}
     if (!strcmpf(argv[0], "s")){ print_sys(); response = ok;}
-        if (!strcmpf(argv[0], "E")){SetTask(StartWrite2EPP); response = ok;}  // Запускаем процесс записи в ЕЕПРОМ.
+        if (!strcmpf(argv[0], "E")){SetTask(EEP_StartWrite); response = ok;}  // Запускаем процесс записи в ЕЕПРОМ.
 
  //EE_settings = RAM_settings; //rewrite settings to EEPROM
 
 exit:
   //USART_FlushTxBuf(SYSTEM_USART);
-  USART_SendStrFl(SYSTEM_USART,response);
+  USART_Send_StrFl(SYSTEM_USART,response);
 #ifdef DEBUG
  // RunRTOS();
 #endif

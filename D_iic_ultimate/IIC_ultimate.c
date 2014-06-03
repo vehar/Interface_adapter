@@ -102,8 +102,7 @@ switch(TWSR & 0xF8)						// Отсекаем биты прескалера
 				TWDR = i2c_Buffer[i2c_index];								// Шлем байт данных
 				i2c_index++;												// Увеличиваем указатель буфера
 				TWCR = 0<<TWSTA|0<<TWSTO|1<<TWINT|i2c_i_am_slave<<TWEA|1<<TWEN|1<<TWIE;  // Go!
-
-				}
+  				}
 
 			if( (i2c_Do & i2c_type_msk) == i2c_sawsarp)
 				{

@@ -145,7 +145,7 @@ void HARDWARE_init(void)
 {
  GPIO_init();
  ADC_init(); //Upd-6
- adc_calibrate(); //Upd-7
+ ADC_calibrate(); //Upd-7
  TIM_0_init();
  TIM_1_init();
  TIM_2_init();
@@ -155,7 +155,7 @@ void HARDWARE_init(void)
  USART_1_init();
  Hard_SPI_Master_Init_default();
 //TWI_init();
- rtc_init(); //Timer 0 used
+ RTC_init(); //Timer 0 used
 
 //i2c_init(); // I2C Bus initialization
 //w1_init(); // 1 Wire Bus initialization

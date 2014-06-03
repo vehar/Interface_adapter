@@ -299,7 +299,7 @@ Put_In_Log("\r I2C D>TX ");
  USART_SendStr(SYSTEM_USART,str); //convert dec to str
  #endif
 
- //SPI_RW_Buf(10/*array_size(argv[3])*/, argv[3], Spi0_RX_buf); //TODO определять кол-во автоматически
+ //I2C_RW_Buf(10/*array_size(argv[3])*/, argv[3], Spi0_RX_buf); //TODO определять кол-во автоматически
  //I2C_write(argv[3]);
 
 
@@ -323,7 +323,7 @@ Put_In_Log("\r I2C D<RX ");
  сделать и2с,
  добавить опцию автопередачи с/на выбраный интерфейс.
 
- Поднять диспетчер
+ +Поднять диспетчер
  */
 
     if (!strcmpf(argv[0], Help)){ print_help(); response = ok; }
