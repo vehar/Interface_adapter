@@ -19,7 +19,8 @@ void PARS_Parser(char symbol)
 {
    if (symbol !='\r'){               //'\r' //end of string 
      if (i < SIZE_RECEIVE_BUF - 1){
-        if (symbol != ' '){
+        if (symbol != ' ')
+         {
            if (!argc){
               argv[0] = buf;
               argc++;
@@ -35,14 +36,15 @@ void PARS_Parser(char symbol)
 
             buf[i] = symbol;
             i++;
-        }
-        else{                 // "space" - is divider
+         }
+        else
+         {                 // "space" - is divider
            if (!flag){
               buf[i] = 0;
               i++;
               flag = TRUE;
            }
-        }
+         }
      }
      buf[i] = 0;
      return;
@@ -140,6 +142,7 @@ uint8_t PARS_StrToUchar(char *s)
   return value;
 }
 
+//atoi 
 uint16_t PARS_StrToUint(char *s)
 {
    uint16_t value = 0;

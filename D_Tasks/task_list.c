@@ -60,14 +60,16 @@ void Task_AdcOnLcd (void)
  LcdUpdate();
 }
 
+//#error Проверить!
 void Task_pars_cmd (void)
 {
   if (USART_Get_rxCount(SYSTEM_USART) > 0) //если в приёмном буфере что-то есть
        {
         symbol = USART_Get_Char(SYSTEM_USART);
         PARS_Parser(symbol);
+       // SetTask(Task_pars_cmd);  //Проверить!
        }
-SetTimerTask(Task_pars_cmd, 25);
+SetTimerTask(Task_pars_cmd, 100); //25   //Проверить!
 }
 
 

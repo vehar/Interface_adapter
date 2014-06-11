@@ -26,7 +26,8 @@
 
 #include "RTC.h"
 
-	time_t t;
+	time_t rtc; 
+
 /*
 int main(void)
 {
@@ -40,7 +41,7 @@ int main(void)
 	}
 }
 */
-static void RTC_init(void)
+inline void RTC_init(void)
 {
    	TIMSK &= ~((1<<TOIE0)|(1<<OCIE0));						//Make sure all TC0 interrupts are disabled
 	ASSR |= (1<<AS0);										//set Timer/counter0 to be asynchronous from the CPU clock
@@ -55,48 +56,48 @@ static void RTC_init(void)
 
 interrupt [TIM0_OVF] void timer0_ovf_isr(void)
 {
-	if (++t.second==60)        //keep track of time, date, month, and year
+	if (++rtc.second==60)        //keep track of time, date, month, and year
 	{
-		t.second=0;
-		if (++t.minute==60)
+		rtc.second=0;
+		if (++rtc.minute==60)
 		{
-			t.minute=0;
-			if (++t.hour==24)
+			rtc.minute=0;
+			if (++rtc.hour==24)
 			{
-				t.hour=0;
-				if (++t.date==32)
+				rtc.hour=0;
+				if (++rtc.date==32)
 				{
-					t.month++;
-					t.date=1;
+					rtc.month++;
+					rtc.date=1;
 				}
-				else if (t.date==31)
+				else if (rtc.date==31)
 				{
-					if ((t.month==4) || (t.month==6) || (t.month==9) || (t.month==11))
+					if ((rtc.month==4) || (rtc.month==6) || (rtc.month==9) || (rtc.month==11))
 					{
-						t.month++;
-						t.date=1;
+						rtc.month++;
+						rtc.date=1;
 					}
 				}
-				else if (t.date==30)
+				else if (rtc.date==30)
 				{
-					if(t.month==2)
+					if(rtc.month==2)
 					{
-						t.month++;
-						t.date=1;
+						rtc.month++;
+						rtc.date=1;
 					}
 				}
-				else if (t.date==29)
+				else if (rtc.date==29)
 				{
-					if((t.month==2) && (not_leap()))
+					if((rtc.month==2) && (not_leap()))
 					{
-						t.month++;
-						t.date=1;
+						rtc.month++;
+						rtc.date=1;
 					}
 				}
-				if (t.month==13)
+				if (rtc.month==13)
 				{
-					t.month=1;
-					t.year++;
+					rtc.month=1;
+					rtc.year++;    // HAPPY NEW YEAR !  :)
 				}
 			}
 		}
@@ -106,12 +107,47 @@ interrupt [TIM0_OVF] void timer0_ovf_isr(void)
 
 static char not_leap(void)      //check for leap year
 {
-	if (!(t.year%100))
+	if (!(rtc.year%100))
 	{
-		return (char)(t.year%400);
+		return (char)(rtc.year%400);
 	}
 	else
 	{
-		return (char)(t.year%4);
+		return (char)(rtc.year%4);
 	}
 }
+
+//**************************************************************
+// read RTC function
+void getRTC(time_t* stm)
+ {
+  __disable_interrupts();     // evite erronated read because RTC is called from interrupt
+  memcpy(stm,&rtc,sizeof(time_t));
+  __restore_interrupts();
+ }
+//**************************************************************
+// set RTC function
+/*
+void setRTC(u16 year, u08 mon, u08 day, u08 hour, u08 min, u08 sec)
+ {
+  __disable_interrupts();
+  rtc.year=year;
+  rtc.month=mon;
+  rtc.date=day;
+  rtc.hour=hour;
+  rtc.minute=min;
+  rtc.second=sec;
+  __restore_interrupts();
+ }*/
+ 
+ void setRTC(time_t* rtc_p, u16 year, u08 mon, u08 day, u08 hour, u08 min, u08 sec)
+ {
+  __disable_interrupts();
+  rtc_p->year=year;
+  rtc_p->month=mon;
+  rtc_p->date=day;
+  rtc_p->hour=hour;
+  rtc_p->minute=min;
+  rtc_p->second=sec;
+  __restore_interrupts();
+ }

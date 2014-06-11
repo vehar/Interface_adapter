@@ -28,10 +28,11 @@ DI HALT:
 // Тип данных - указатель на функцию
 //volatile static TPTR	TaskQueue[TaskQueueSize+1];			// очередь указателей
 //update
+#warning оптимизировать передачей указателя или ссылки а структуру
 volatile static struct
-						{
-						    TPTR GoToTask; 						// Указатель перехода
-						    uint16_t Time;					// Выдержка в мс
+						{     
+                            uint16_t Time;					// Выдержка в мс
+						    TPTR GoToTask; 						// Указатель перехода						    
 						}
 						MainTimer[MainTimerQueueSize+1];	// Очередь таймеров
 
@@ -52,7 +53,7 @@ uint8_t	index;
 //Пустая процедура - простой ядра.
   void  Idle(void)
 {
-
+  #warning наполнить полезным функционалом
 }
 
  //UPDATE
@@ -187,108 +188,4 @@ nointerrupted = 1;
 }
 
 
-    #warning обновил на файл ниже!
-/*
-
-Автор www.google.com-accounts-o8-id-id-AItOawmi18Y12U8R4bYF3i0GRgR
-Язык: C++
-Опубликовано 8 ноября 2011 года в 00:05
-Просмотров 1067
-Вставлю и свои 5 копеек :) Избавился от очереди задач TaskQueue, вместо этого в диспетчере задач выполняются задачи из очереди MainTimer, которые уже "выщелкали", соответственно количество кода очень уменьшилось. Изменен только код eertos.c
-#include "eertos.h"
-
-// Очередь задач.
-volatile static struct	{
-	TPTR GoToTask; 						// Указатель перехода
-	uint16_t Time;							// Выдержка в мс
-} MainTimer[MainTimerQueueSize+1];	// Очередь таймеров
-
-// RTOS Подготовка. Очистка очередей
-inline void InitRTOS(void)
-{
-    uint8_t	index;
-
-    for(index=0;index!=MainTimerQueueSize+1;index++) { // Обнуляем все таймеры.
-		MainTimer[index].GoToTask = Idle;
-        MainTimer[index].Time = 0;
-	}
-}
-
-//Пустая процедура - простой ядра.
-void  Idle(void) {
-
-}
-
-//Функция установки задачи по таймеру. Передаваемые параметры - указатель на функцию,
-// Время выдержки в тиках системного таймера. Возвращет код ошибки.
-void SetTimerTask(TPTR TS, uint16_t NewTime) {
-
-    uint8_t		index=0;
-    uint8_t		nointerrupted = 0;
-
-    if (STATUS_REG & (_BV(Interrupt_Flag))) { 			// Проверка запрета прерывания, аналогично функции выше
-        Disable_Interrupt
-        nointerrupted = 1;
-	}
-
-    for(index=0;index!=MainTimerQueueSize+1;++index) {	//Прочесываем очередь таймеров
-        if(MainTimer[index].GoToTask == TS) {			// Если уже есть запись с таким адресом
-            MainTimer[index].Time = NewTime;			// Перезаписываем ей выдержку
-            if (nointerrupted) 	Enable_Interrupt		// Разрешаем прерывания если не были запрещены.
-            return;										// Выходим. Раньше был код успешной операции. Пока убрал
-		}
-	}
-
-    for(index=0;index!=MainTimerQueueSize+1;++index) {	// Если не находим похожий таймер, то ищем любой пустой
-		if (MainTimer[index].GoToTask == Idle) {
-			MainTimer[index].GoToTask = TS;			// Заполняем поле перехода задачи
-            MainTimer[index].Time = NewTime;		// И поле выдержки времени
-            if (nointerrupted) 	Enable_Interrupt	// Разрешаем прерывания
-            return;									// Выход.
-		}
-	}												// тут можно сделать return c кодом ошибки - нет свободных таймеров
-}
-
-void SetTask(TPTR TS) {                             // Поставить задачу в очередь для немедленного выполнения
-    SetTimerTask(TS,0);
-}
-
-//=================================================================================
-Диспетчер задач ОС. Выбирает из очереди задачи и отправляет на выполнение.
-
-
-inline void TaskManager(void) {
-
-uint8_t		index=0;
-TPTR task;
-
-    Disable_Interrupt				// Запрещаем прерывания!!!
-    for(index=0;index!=MainTimerQueueSize+1;++index) {  // Прочесываем очередь в поисках нужной задачи
-		if ((MainTimer[index].GoToTask != Idle)&&(MainTimer[index].Time==0)) { // пропускаем пустые задачи и те, время которых еще не подошло
-		    task=MainTimer[index].GoToTask;             // запомним задачу
-		    MainTimer[index].GoToTask = Idle;           // ставим затычку
-            Enable_Interrupt							// Разрешаем прерывания
-            (task)();								    // Переходим к задаче
-            return;                                     // выход до следующего цикла
-		}
-	}
-    Enable_Interrupt							// Разрешаем прерывания
-	Idle();                                     // обошли задачи, нужных нет - простой
-}
-
-
-//Служба таймеров ядра. Должна вызываться из прерывания раз в 1мс. Хотя время можно варьировать в зависимости от задачи
-
-inline void TimerService(void) {
-
-uint8_t index;
-
-    for(index=0;index!=MainTimerQueueSize+1;index++) {		// Прочесываем очередь таймеров
-        if((MainTimer[index].GoToTask != Idle) && 		    // Если не пустышка и
-           (MainTimer[index].Time > 0)) {					// таймер не выщелкал, то
-            MainTimer[index].Time--;						// щелкаем еще раз.
-		};
-	}
-}
-
-*/
+  

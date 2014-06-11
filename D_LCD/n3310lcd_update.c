@@ -53,6 +53,7 @@ unsigned char SPSR_val = 0x01;  // удвоение частоты
 
 unsigned char lcd_buf[15];		//текстовый буфер для вывода на LCD
 
+#warning - перенести в дефайны
 bit power_down = 0;			//power-down control: 0 - chip is active, 1 - chip is in PD-mode
 bit addressing = 0;			//направление адресации: 0 - горизонтальная, 1- вертикальная
 //bit instuct_set = 0;			//набор инструкций: 0 - стандартный, 1 - расширенный - в текущей версии не используется

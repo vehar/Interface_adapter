@@ -140,14 +140,14 @@ __flash char help_Spi_1[] = "\r Prescaller: pow of 2 (Ex: Presc 16)\r";
 
 //Хранимые настройки
 
-
+ #warning ОПТИМИЗИРОВАТЬ!
  /* Global structure located in EEPROM */
 eeprom  struct eeprom_settings_structure {
  unsigned int baud_of_Uart[COUNT_OF_UARTS];
  unsigned char MODE_of_Uart[COUNT_OF_UARTS];
  //bool mode, bool phase, bool polarity, uint16_t prescaller
  unsigned char MODE_of_Spi[COUNT_OF_SPI]; // bits 0 - master/slave, 1 - phase, 2 - polarity
- unsigned char PhaPol_of_Spi[COUNT_OF_SPI];  //Up - 1
+ unsigned char PhaPol_of_Spi[COUNT_OF_SPI];  //Upd - 1
  unsigned char prescaller_of_Spi[COUNT_OF_SPI];
 } EE_settings;
 
@@ -156,7 +156,7 @@ eeprom  struct eeprom_settings_structure {
  unsigned int baud_of_Uart[COUNT_OF_UARTS];
  unsigned char MODE_of_Uart[COUNT_OF_UARTS];
  unsigned char MODE_of_Spi[COUNT_OF_SPI]; // bits 0 - master/slave, 1 - phase, 2 - polarity
- unsigned char PhaPol_of_Spi[COUNT_OF_SPI];  //Up - 1
+ unsigned char PhaPol_of_Spi[COUNT_OF_SPI];  //Upd - 1
  unsigned char prescaller_of_Spi[COUNT_OF_SPI];
 } RAM_settings;
 

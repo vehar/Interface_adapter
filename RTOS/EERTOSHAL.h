@@ -17,7 +17,7 @@
  #else
     #define RTOS_ISR  		TIMER2_COMP_vect
 #endif
-#define	TaskQueueSize		20
+//#define	TaskQueueSize		20
 #define MainTimerQueueSize	15
 
 extern void RunRTOS (void);      //запуск системмного таймера

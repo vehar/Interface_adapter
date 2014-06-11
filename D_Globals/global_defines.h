@@ -75,6 +75,8 @@ extern volatile uint8_t saved_state = 0;
 #define L_OFF            GICR&=~(1<<INT0);MCUCR&=~((1<<ISC00)|(1<<ISC01))
 #define _set_EXT_INT(X)  (X)
 
+#define SHOWVAL(val) printf(#val " = %d \n", (int)(val)) 
+
 
 //----END OTHERS----//
 
