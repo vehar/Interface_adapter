@@ -274,6 +274,36 @@ data =  SPDR;
 
 
 
+interrupt [SPI_STC] void spi_isr(void) 
+{
+char data;
+uint8_t Tmp = Spi0_txBufTail; // use local variable instead of volatile
+ SPCR = (1<<MSTR);  //Master
+////////RX
+data =  SPDR;
+    if (Spi0_rxCount < SIZE_SPI_BUF_RX) //якщо в буфері є місцк
+    {
+       Spi0_RX_buf[Spi0_rxBufTail] = data;//!    //зчитати символ з SPDR в буфер
+       Spi0_rxBufTail++;                 
+      if (Spi0_rxBufTail == SIZE_BUF_RX)
+      {
+       Spi0_rxBufTail = 0;
+      }
+      Spi0_rxCount++;                     
+    }
+///////////
+//////////TX
+ if(Tmp != Spi0_txBufHead) // all transmitted
+  {
+   ++Tmp;
+   Spi0_txBufTail = Tmp;
+   SPDR = Spi0_TX_buf[Tmp & (SIZE_SPI_BUF_TX - 1)];
+  }
+/////////    
+}
+
+
+
 
 
 

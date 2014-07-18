@@ -3129,7 +3129,6 @@ _0x20C000D:
 ;	{
 _clean_lcd_buf:
 ;	char i;
-;
 ;	for (i=0; i<14; i++) lcd_buf[i] = 0;
 	ST   -Y,R17
 ;	i -> R17

@@ -2095,7 +2095,6 @@
 ;PCODE: $000004C0 VOL: 0
 ;PCODE: $000004C1 VOL: 0
 ;	char i;
-;
 ;	for (i=0; i<14; i++) lcd_buf[i] = 0;
 ;PCODE: $000004C2 VOL: 0
 ;	i -> R17

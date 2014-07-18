@@ -336,7 +336,6 @@ __restore_interrupts();
 }
 
 
-
 /*
   ISR (USART_RXC_vect) {
 	u08 tmp = 0;
@@ -355,16 +354,15 @@ __restore_interrupts();
 	}
 }
 */
- interrupt [USART0_RXC] void usart0_rxc(void) //прерывание по завершению приема
+ interrupt [USART0_RXC] void usart0_rxc(void) //перериванн€ по завершенню прийому
 {
-char data;//!
-data =  UDR0;//! read to clear RxC flag!
-    if (Usart0_rxCount < SIZE_BUF_RX) //если в буфере еще есть место
+char data;
+data =  UDR0;// read to clear RxC flag
+    if (Usart0_rxCount < SIZE_BUF_RX) //€кщо в буфер≥ ще Ї м≥сце
     {
-      //!//Usart0_RX_buf[Usart0_rxBufTail] = UDR;    //считать символ из UDR в буфер
-       Usart0_RX_buf[Usart0_rxBufTail] = data;//!    //считать символ в буфер
-      Usart0_rxBufTail++;                    //увеличить индекс хвоста приемного буфера
-      Usart0_rxCount++;                      //увеличить счетчик прин€тых символов
+       Usart0_RX_buf[Usart0_rxBufTail] = data;//зчитати символ до буфера
+      Usart0_rxBufTail++;                    //зб≥льшити ≥ндекс к≥нц€ буферу
+      Usart0_rxCount++;                     
 #warning проверить необходимость следующего куска
      if (Usart0_rxBufTail == SIZE_BUF_RX)
       {

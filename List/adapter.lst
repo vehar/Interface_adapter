@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.1.30  C:\Users\veha\Dropbox\ADAPTER_CV_PROJ_v7 - current\List\adapter.asm Mon Jun 09 22:59:10 2014
+AVRASM ver. 2.1.30  C:\Users\veha\Dropbox\ADAPTER_CV_PROJ_v7 - current\List\adapter.asm Tue Jun 10 16:39:07 2014
 
 C:\Users\veha\Dropbox\ADAPTER_CV_PROJ_v7 - current\List\adapter.asm(1061): warning: Register r4 already defined by the .DEF directive
 C:\Users\veha\Dropbox\ADAPTER_CV_PROJ_v7 - current\List\adapter.asm(1062): warning: Register r3 already defined by the .DEF directive
@@ -4199,7 +4199,6 @@ C:\Users\veha\Dropbox\ADAPTER_CV_PROJ_v7 - current\List\adapter.asm(1512): warni
                  ;	{
                  _clean_lcd_buf:
                  ;	char i;
-                 ;
                  ;	for (i=0; i<14; i++) lcd_buf[i] = 0;
 000827 931a      	ST   -Y,R17
                  ;	i -> R17

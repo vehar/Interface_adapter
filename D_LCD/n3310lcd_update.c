@@ -742,8 +742,7 @@ void LcdGotoXYFont (unsigned char x, unsigned char y)   //Sets cursor location t
 
 void clean_lcd_buf (void)	//очистка текстового буфера
 	{
-	char i;
-	
+	char i;	
 	for (i=0; i<14; i++) lcd_buf[i] = 0;
 	} 
 
