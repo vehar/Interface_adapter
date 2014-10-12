@@ -53,7 +53,7 @@ static volatile uint16_t Usart1_rxCount = 0;
 
 void UartTxBufOvf_Handler(void) //обработчик переполнения передающего буфера UART
 { 
-    PORTD.6=1;
+    PORTD.7=1;
 }
 
 
@@ -240,7 +240,7 @@ uint16_t Tmp = Usart0_txBufTail; // use local variable instead of volatile
        Usart0_txBufTail = Tmp;
        }
        else{
-    // PORTD.6=0;
+    // PORTD.7=0;
          Usart0_txBufHead = 0; Usart0_txBufTail = 0;
         UCSR0B &= ~(1 << UDRIE0); // disable this int
        }
@@ -258,7 +258,7 @@ uint16_t Tmp = Usart1_txBufTail; // use local variable instead of volatile
        Usart1_txBufTail = Tmp;
       if(Tmp == Usart1_txBufHead) // all transmitted
        {
-       //PORTD.6=0;
+       //PORTD.7=0;
          Usart1_txBufHead = 0; Usart1_txBufTail = 0;
         UCSR1B &= ~(1 << UDRIE1); // disable this int
        }
@@ -354,6 +354,7 @@ __restore_interrupts();
 	}
 }
 */
+#warning проверить, действительно ли нужно наращивать при приёме Tail а не Head!
  interrupt [USART0_RXC] void usart0_rxc(void) //переривання по завершенню прийому
 {
 char data;
@@ -381,9 +382,11 @@ v_u32_RX_CNT++;
 {
 char data;//!
 data =  UDR1;//! read to clear RxC flag!
+
+if(!U1_in_buf_flag)
+  {
     if (Usart1_rxCount < SIZE_BUF_RX) //если в буфере еще есть место
     {
-      //!//Usart1_RX_buf[Usart1_rxBufTail] = UDR1;    //считать символ из UDR в буфер
        Usart1_RX_buf[Usart1_rxBufTail] = data;//!    //считать символ  в буфер
       Usart1_rxBufTail++;                    //увеличить индекс хвоста приемного буфера
       Usart1_rxCount++;                      //увеличить счетчик принятых символов
@@ -392,9 +395,21 @@ data =  UDR1;//! read to clear RxC flag!
       {
        Usart1_rxBufTail = 0;
       }
-     }
+     }  
+  }
+ else   //При флаге - грузим в буфер системного юарта и сразу на вывод!
+ {
+    if((uint16_t)(Usart1_txBufHead - Usart1_txBufTail) <= (uint16_t) SIZE_BUF_TX) //если в буфере еще есть место
+    {
+      Usart0_TX_buf[Usart1_txBufHead & (SIZE_BUF_TX - 1)] = data;//!    //считать символ  в буфер
+      Usart0_txBufHead++;                    //увеличить индекс   буфера    
+      //UCSR0B |= (1 << UDRIE0); // TX int - on
+      }
+ }    
 }
 
+/*
+*/
 
 //считает кол-во данных в кольцевом буфере
  uint16_t usart_calc_BufData (uint16_t BufTail, uint16_t BufHead)

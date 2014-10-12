@@ -18,6 +18,7 @@ void Task_LcdLines (void);
 
 void Task_pars_cmd (void);      //Запуск парсера
 void Task_LogOut (void);        // Выброс логов
+void Task_BuffOut (void);       // Вывод содержимого кольцевого буффера
 void Task_Flush_WorkLog(void);  //очистка лог буффера
 void Task_SPI_ClrBuf (void);    //очистка rx/tx буфферов SPI
 

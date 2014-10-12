@@ -238,7 +238,7 @@ interrupt [SPI_STC] void spi_isr(void)  //разобраться с приёмом/передачей!!!!!
 char data;
 uint8_t Tmp = Spi0_txBufTail; // use local variable instead of volatile
  SPCR = (1<<MSTR);  //Master
-  PORTD.6^=1;
+  PORTD.7^=1;
 ////////RX
 data =  SPDR;
 /*
@@ -273,7 +273,7 @@ data =  SPDR;
 
 
 
-
+  /*
 interrupt [SPI_STC] void spi_isr(void) 
 {
 char data;
@@ -301,7 +301,7 @@ data =  SPDR;
   }
 /////////    
 }
-
+  */
 
 
 

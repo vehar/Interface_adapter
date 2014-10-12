@@ -29,8 +29,8 @@ HARDWARE_init();
 SOFTWARE_init();
 
 #ifdef DEBUG
-    //DDRD.7=1;//PORTD.7=1;  //Led VD2
-    //DDRD.6=1;PORTD.6=1;    //Led VD1
+    DDRD.7=1;//PORTD.7=1;  //Led VD2
+    //DDRD.6=1;//PORTD.6=1;    //Led VD1
     USART_Send_StrFl(USART_1,start);
     USART_Send_StrFl(SYSTEM_USART,start);
 #endif
@@ -48,14 +48,17 @@ SetTask(Task_Start);     //290uS (50/50) and (10/10) но при 1/1 таск 1 лагает
 SetTimerTask(Task_pars_cmd, 25); //Upd-6
 #ifdef DEBUG                    //Upd-6
 SetTimerTask(Task_LogOut,50);
-SetTimerTask(Task_ADC_test,5000);   //Upd-6
 SetTask(Task_LcdGreetImage);    //Upd-4
-SetTask(Task_AdcOnLcd);
+//SetTimerTask(Task_ADC_test,5000);   //Upd-6
+//SetTimerTask(Task_AdcOnLcd, 6000);
+//SetTimerTask(Task_BuffOut,5); 
 #endif
 ///---------------------------------------------------
 
 
-delay_ms(1000); //?
+
+
+//delay_ms(1000); //?
 while (1)
  {
 //wdt_reset();	// —брос собачьего таймера

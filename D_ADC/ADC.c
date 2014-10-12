@@ -18,6 +18,7 @@ ADCSRA=0x8C;
 
 void ADC_use (void)
 {
+  ADMUX |=0x01;
   ADCSRA=0b11011111;  //вкл
 };
 

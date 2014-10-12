@@ -130,9 +130,10 @@ inline void First_EE_init(void){ // settings transfer from eeprom to ram
 uint8_t i = 0;
   for(i=0;i<COUNT_OF_UARTS;i++)
     {
-EE_settings.baud_of_Uart[i] = 576; //57600baud
 EE_settings.MODE_of_Uart[i] = USART_NORMAL;
-    }
+    }     
+    EE_settings.baud_of_Uart[0] = 576; //57600baud   
+    EE_settings.baud_of_Uart[1] = 288; //28800baud
   for(i=0;i<COUNT_OF_SPI;i++)
     {
 EE_settings.MODE_of_Spi[i] = 0;

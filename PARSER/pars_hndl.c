@@ -90,11 +90,13 @@ if (!strcmpf(argv[0], Set))
 
      USART_Init(Interface_Num, RAM_settings.MODE_of_Uart[Interface_Num], RAM_settings.baud_of_Uart[Interface_Num]);
      Interface_Num = 0;
-
+       
+     StopRTOS();
      EE_settings.MODE_of_Uart[Interface_Num] = RAM_settings.MODE_of_Uart[Interface_Num];  //save to eeprom
-     EE_settings.baud_of_Uart[Interface_Num] = RAM_settings.baud_of_Uart[Interface_Num];
+     EE_settings.baud_of_Uart[Interface_Num] = RAM_settings.baud_of_Uart[Interface_Num];  
+     RunRTOS();
 #ifdef DEBUG          //не переносятся настройки!!!
- Put_In_Log("\r Usart_init");
+ Put_In_Log("\r Uart_init");
  //print_settings_ram();
 #endif
       }
@@ -196,6 +198,80 @@ Put_In_Log("\rS Presc-");
     }
 /////////////////////SPI_SET_END//////////////////////////////////
 //////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////
+/////////////////////I2C_SET_START///////////////////////////////
+      if (!strcmpf(argv[1], I2c))
+     {
+#ifdef DEBUG
+   Put_In_Log("\r I2c");
+#endif
+
+       if (argc > 2)
+        {
+          tmp = PARS_StrToUint(argv[2]);//Get number of interface
+          if (tmp <= COUNT_OF_UARTS){Interface_Num = tmp; response = ok;
+#ifdef DEBUG
+  Put_In_Log("\r Num");
+#endif
+          }
+          else{response = largeValue; goto exit;}
+
+         if (argc > 3)    //Mode
+        {
+             if (!strcmpf(argv[3], Mode))
+             {
+               tmp = PARS_StrToUchar(argv[4]); //Get uart mode
+              if (tmp==1 || tmp==0){RAM_settings.MODE_of_Uart[Interface_Num] = tmp; response = ok;
+#ifdef DEBUG
+  Put_In_Log("\r Mode");
+#endif
+               i = 2; //go to next param "speed"
+               }
+              else{response = largeValue;
+#ifdef DEBUG
+ //USART_Send_Str(SYSTEM_USART,"\rM EXIT");
+ Put_In_Log("\rM EXIT");
+#endif
+            goto exit;}
+             }
+
+             if (!strcmpf(argv[3+i], Speed)) //may be 3 or 5th param
+             {
+              tmp = PARS_StrToUint(argv[4+i]); //get Baud Rate
+              if (tmp <= MAX_BAUD_RATE)
+              {
+              RAM_settings.baud_of_Uart[Interface_Num] = tmp;
+              response = ok; i = 0;
+#ifdef DEBUG
+  Put_In_Log("\r ");
+  Put_In_LogFl(Speed);
+#endif
+              }
+              else{response = largeValue;
+#ifdef DEBUG
+ Put_In_Log("\rM EXIT");
+#endif
+             goto exit;}
+        }
+
+     USART_Init(Interface_Num, RAM_settings.MODE_of_Uart[Interface_Num], RAM_settings.baud_of_Uart[Interface_Num]);
+     Interface_Num = 0; //?
+
+     EE_settings.MODE_of_Uart[Interface_Num] = RAM_settings.MODE_of_Uart[Interface_Num];  //save to eeprom
+     EE_settings.baud_of_Uart[Interface_Num] = RAM_settings.baud_of_Uart[Interface_Num];
+#ifdef DEBUG          //не переносятся настройки!!!
+ Put_In_Log("\r I2c_init");
+ //print_settings_ram();
+#endif
+      }
+     }
+#ifdef DEBUG
+       USART_FlushTxBuf(USART_0);
+#endif
+    }
+/////////////////////I2C_SET_END////////////////////////////////
+/////////////////////////////////////////////////////////////////
   }
  }
 
@@ -312,6 +388,14 @@ Put_In_Log("\r I2C D<RX ");
     }
 /////////////////////I2C_WRITE_END/////////////////////////////////
 ///////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////
+/////////////////////READ_COMAND_START//////////////////////////////
+ 
+
+
+/////////////////////READ_COMAND_END//////////////////////////////
+///////////////////////////////////////////////////////////////////
    }
  }
 
@@ -323,12 +407,16 @@ Put_In_Log("\r I2C D<RX ");
  сделать и2с,
  добавить опцию автопередачи с/на выбраный интерфейс.
  */
-
+      
+if (!strcmpf(argv[0], "y")){  SetTask(Task_BuffOut);  U1_in_buf_flag = 1; response = ok;}
+if (!strcmpf(argv[0], "n")){  ClearTimerTask(Task_BuffOut);  U1_in_buf_flag = 0; response = ok;}
+if (!strcmpf(argv[0], "a")){  SetTask(Task_AdcOnLcd);  response = ok;}
+ 
     if (!strcmpf(argv[0], Help)){ print_help(); response = ok; }
-    if (!strcmpf(argv[0], boot)){#asm("call 0x1E00");response = ok;}//Boot_reset "Goto bootloader"
-    if (!strcmpf(argv[0], reset)){#asm("jmp 0x0000");response = ok;} //reset
+    if (!strcmpf(argv[0], boot)){response = ok;#asm("call 0x1E00");}//Boot_reset "Goto bootloader"
+    if (!strcmpf(argv[0], reset)){response = ok;#asm("jmp 0x0000");} //reset
     // dbg не успевает вывестись из-за прерывания ртос(вунужден временно останавливать, а с help всё ок.)
-    if (!strcmpf(argv[0], dbg)){StopRTOS(); print_settings_eeprom(); print_settings_ram(); print_sys(); response = ok; RunRTOS();}
+    if (!strcmpf(argv[0], dbg)){StopRTOS(); print_settings_eeprom(); print_settings_ram(); print_sys(); response = ok; RunRTOS();}//stop=15kbt
     if (!strcmpf(argv[0], "s")){ print_sys(); response = ok;}
         if (!strcmpf(argv[0], "E")){SetTask(EEP_StartWrite); response = ok;}  // Запускаем процесс записи в ЕЕПРОМ.
 

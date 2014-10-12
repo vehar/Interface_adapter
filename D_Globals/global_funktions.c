@@ -198,6 +198,10 @@ USART_Send_Str(USART_0,str); //convert dec to str
 }
 
 
+void RingBuff_TX(void)
+{ 
+  UCSR0B |= (1 << UDRIE0); // TX int - on
+}
 
 #warning TODO
 uint8_t get_curr_cpu_freq (void){ //возвращает значение текущей частоты работы мк

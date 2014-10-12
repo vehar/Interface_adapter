@@ -23,7 +23,7 @@ volatile struct flag_collector0 {
               unsigned char aa:1; /* bit 7 */
               }flags;
 
-
+ volatile char U1_in_buf_flag = 0;
 
 //volatile uint32_t result = 0;
 extern volatile uint8_t symbol = 0;

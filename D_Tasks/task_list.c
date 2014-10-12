@@ -7,69 +7,100 @@
 
 void Task_Start (void)
 {
-LED_PORT  |=1<<LED1;
-SetTimerTask(Task_LedOff,50); //запуск мигалки-антизависалки
+
+SetTimerTask(Task_LedOff,100); //запуск мигалки-антизависалки
 }
 
 void Task_LedOff (void)
 {
-SetTimerTask(Task_LedOn,500);
-LED_PORT  &= ~(1<<LED1);
+SetTimerTask(Task_LedOn,900);
+LED_PORT  &= ~(1<<LED2);
 }
 
 void Task_LedOn (void)
 {
-SetTimerTask(Task_LedOff,50);
-LED_PORT  |= (1<<LED1);
+SetTimerTask(Task_LedOff,100);
+LED_PORT  |= (1<<LED2);
 }
+
+
 
 void Task_ADC_test (void) //Upd-6     //для проверки освещённоси помещения
  {
-
+ sprintf (lcd_buf, "DummyADC=%d ",volt);      // вывод на экран результата
+ LcdString(1,1);   LcdUpdate();
  SetTimerTask(Task_ADC_test,5000);
  }
 void Task_LcdGreetImage (void) //Greeting image on start    //Upd-4
 {
-SetTask(LcdClear);
- LcdImage(rad1Image);
-SetTask(LcdUpdate);
-SetTimerTask(LcdClear,2000);
-SetTimerTask(Task_LcdLines,3000);
+//SetTask(LcdClear);
+//SetTask(Task_LcdLines);
+ //LcdImage(rad1Image);  SetTimerTask(LcdClear,3000);
+      
+  sprintf (lcd_buf, "  Interface   ");    
+ LcdStringBig(1,1);  
+  sprintf (lcd_buf, " Monitor v2.1 ");    
+ LcdString(1,3);    
+  sprintf (lcd_buf, " Хмелевськой  ");    
+ LcdString(1,4);  
+  sprintf (lcd_buf, "  Владислав   ");    
+ LcdString(1,5);   
+   sprintf (lcd_buf, "  АЕ - 104    ");    
+ LcdString(1,6);  
+LcdUpdate();
+//SetTimerTask(LcdClear,7000);
+
+// sprintf (lcd_buf, "Wait comand...");      //не работает
+// LcdStringBig(1,3);  
+// SetTimerTask(LcdUpdate,8000);
 }
 
 void Task_LcdLines (void)      //Upd-4       //сильно грузит!
 {
-    	for (i=0; i<84; i++){
+    	for (i=0; i<84; i++)
+        {
 		LcdLine ( 0, 47, i, 0, 1);
         LcdLine ( 84, 47, 84-i, 0, 1);
 		LcdUpdate();
 		}
-SetTimerTask(LcdClear,2000);
 }
 
 void Task_AdcOnLcd (void)
 {
- sprintf (lcd_buf, "vref=%d ",vref);      // вывод на экран результата
+//SetTask(LcdClear);
+ /*sprintf (lcd_buf, "vref=%d ",vref);      // вывод на экран результата
  LcdString(1,1);      
   sprintf (lcd_buf, "d=%d ",d);      // вывод на экран результата
  LcdString(1,2);
   sprintf (lcd_buf, "delta=%d ",delta);      // вывод на экран результата
  LcdString(1,3);
   sprintf (lcd_buf, "volt=%d ",volt);      // вывод на экран результата
+ LcdString(1,4);  */
+ LcdClear();    
+ ADC_use();
+ sprintf (lcd_buf, "Напряжение на");  
+ LcdString(1,2);   
+  sprintf (lcd_buf, "  канале 0");  
+ LcdString(1,3); 
+  sprintf (lcd_buf, "= %d мВ",adc_result);  
  LcdString(1,4);
+ 
  LcdUpdate();
 }
 
 //#error Проверить!
 void Task_pars_cmd (void)
 {
+char scan_interval = 100;
   if (USART_Get_rxCount(SYSTEM_USART) > 0) //если в приёмном буфере что-то есть
        {
         symbol = USART_Get_Char(SYSTEM_USART);
         PARS_Parser(symbol);
-       // SetTask(Task_pars_cmd);  //Проверить!
-       }
-SetTimerTask(Task_pars_cmd, 100); //25   //Проверить!
+        //SetTask(Task_pars_cmd);  //Проверить!    
+        scan_interval = 10;
+       } 
+ else{scan_interval = 100;};
+SetTimerTask(Task_pars_cmd, scan_interval); //25   //Проверить!
 }
 
 
@@ -100,6 +131,12 @@ Spi0_TX_buf[i] = 0;
   //if(i<=SIZE_SPI_BUF_TX){Spi0_TX_buf[i] = 0;}
  }
 }
+
+ void Task_BuffOut  (void)
+ {
+  SetTimerTask(Task_BuffOut,50);   
+  RingBuff_TX();
+ }
 
 //=================================================
 //////////////////////////I2C//////////////////////
