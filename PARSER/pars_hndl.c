@@ -296,7 +296,7 @@ if (!strcmpf(argv[0], W)) //Write
       if (argc > 3)    //Data
       {
       StopRTOS; //так как передача по UART-у может быть медленной,RTOS на время замедляется (Ибо внешний интерфейс приоритетнее)
-        USART_Send_Str(Interface_Num, argv[3]);
+        USART_Send_Str(Interface_Num, argv[3]); //TODO проверить реальную задержку
       RunRTOS;
       #ifdef DEBUG
 Put_In_Log("\r U D>TX ");
@@ -418,7 +418,7 @@ if (!strcmpf(argv[0], "a")){  SetTask(Task_AdcOnLcd);  response = ok;}
     // dbg не успевает вывестись из-за прерывания ртос(вунужден временно останавливать, а с help всё ок.)
     if (!strcmpf(argv[0], dbg)){StopRTOS(); print_settings_eeprom(); print_settings_ram(); print_sys(); response = ok; RunRTOS();}//stop=15kbt
     if (!strcmpf(argv[0], "s")){ print_sys(); response = ok;}
-        if (!strcmpf(argv[0], "E")){SetTask(EEP_StartWrite); response = ok;}  // Запускаем процесс записи в ЕЕПРОМ.
+    if (!strcmpf(argv[0], "E")){SetTask(EEP_StartWrite); response = ok;}  // Запускаем процесс записи в ЕЕПРОМ.
 
  //EE_settings = RAM_settings; //rewrite settings to EEPROM
 

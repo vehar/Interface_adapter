@@ -20,6 +20,10 @@ Data Stack size         : 1024
 
 // G_vars are here
 
+
+//TODO переписать парсер команд в конечный автомат как в http://habrahabr.ru/post/241941/
+
+
 void main(void)
 {
 char i;
@@ -47,7 +51,7 @@ SetTask(Task_Start);     //290uS (50/50) and (10/10) но при 1/1 таск 1 лагает
 // первичный запуск всех задач
 SetTimerTask(Task_pars_cmd, 25); //Upd-6
 #ifdef DEBUG                    //Upd-6
-SetTimerTask(Task_LogOut,50);
+SetTimerTask(Task_LogOut, 50);
 SetTask(Task_LcdGreetImage);    //Upd-4
 //SetTimerTask(Task_ADC_test,5000);   //Upd-6
 //SetTimerTask(Task_AdcOnLcd, 6000);

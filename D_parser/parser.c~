@@ -7,7 +7,7 @@ uint8_t argc;
 uint8_t i = 0;
 uint8_t flag = 0;
 
-void PARS_Init(void)
+void PARSER_Init(void)
 {
   argc = 0;
   argv[0] = buf;
@@ -17,16 +17,21 @@ void PARS_Init(void)
 
 void PARS_Parser(char symbol)
 {
-   if (symbol !='='){               //'\r' //end of string
+   if (symbol !='\r')    //'\r' //end of string 
+   {               
      if (i < SIZE_RECEIVE_BUF - 1){
-        if (symbol != ' '){
-           if (!argc){
+        if (symbol != ' ')
+         {
+           if (!argc)
+           {
               argv[0] = buf;
               argc++;
            }
 
-           if (flag){
-              if (argc < AMOUNT_PAR){
+           if (flag)
+           {
+              if (argc < AMOUNT_PAR)
+              {
                  argv[argc] = &buf[i];
                  argc++;
               }
@@ -35,19 +40,22 @@ void PARS_Parser(char symbol)
 
             buf[i] = symbol;
             i++;
-        }
-        else{                 // "space" - is divider
-           if (!flag){
+         }
+        else
+         {                 // "space" - is divider
+           if (!flag)
+           {
               buf[i] = 0;
               i++;
               flag = TRUE;
            }
-        }
+         }
      }
      buf[i] = 0;
      return;
    }
-   else{
+   else
+   {     
       buf[i] = 0;
         if (argc)
            {
@@ -84,7 +92,7 @@ uint8_t PARS_EqualStrFl(char *s1, char const *s2)
 
 #else
 
-#warning standart strcmpf reduced less memory
+#warning standart strcmpf req less memory
 uint8_t PARS_EqualStrFl(char *s1, char __flash *s2)
 {
   uint8_t i = 0;
@@ -105,7 +113,7 @@ uint8_t PARS_EqualStrFl(char *s1, char __flash *s2)
 
 #endif
 
-#warning standart strcmp reduced less memory
+#warning standart strcmp req less memory
 uint8_t PARS_EqualStr(char *s1, char *s2)
 {
   uint8_t i = 0;
@@ -127,9 +135,7 @@ uint8_t PARS_EqualStr(char *s1, char *s2)
 uint8_t PARS_StrToUchar(char *s)
 {
    uint8_t value = 0;
-
   // while(*s == '0'){s++;} // For what?
-
    while(*s)
    {
       value += (*s - 0x30);
@@ -142,12 +148,11 @@ uint8_t PARS_StrToUchar(char *s)
   return value;
 }
 
+//atoi 
 uint16_t PARS_StrToUint(char *s)
 {
    uint16_t value = 0;
-
    //while(*s == '0'){s++;}
-
    while(*s)
    {
       value += (*s - 0x30);

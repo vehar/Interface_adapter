@@ -5,33 +5,38 @@ char *argv[AMOUNT_PAR];
 uint8_t argc;
 
 uint8_t i = 0;
-uint8_t flag = 0;
+uint8_t devider_f = 0;
 
 void PARSER_Init(void)
 {
   argc = 0;
   argv[0] = buf;
-  flag = FALSE;
+  devider_f = FALSE;
   i = 0;
 }
 
 void PARS_Parser(char symbol)
 {
-   if (symbol !='\r'){               //'\r' //end of string 
-     if (i < SIZE_RECEIVE_BUF - 1){
+   if (symbol !='\r')    //'\r' //end of string 
+   {               
+     if (i < SIZE_RECEIVE_BUF - 1)
+     {
         if (symbol != ' ')
          {
-           if (!argc){
+           if (!argc)
+           {
               argv[0] = buf;
               argc++;
            }
 
-           if (flag){
-              if (argc < AMOUNT_PAR){
+           if (devider_f)
+           {
+              if (argc < AMOUNT_PAR)
+              {
                  argv[argc] = &buf[i];
                  argc++;
               }
-              flag = FALSE;
+              devider_f = FALSE;
             }
 
             buf[i] = symbol;
@@ -39,27 +44,26 @@ void PARS_Parser(char symbol)
          }
         else
          {                 // "space" - is divider
-           if (!flag){
+           if (!devider_f)
+           {
               buf[i] = 0;
               i++;
-              flag = TRUE;
+              devider_f = TRUE;
            }
          }
      }
      buf[i] = 0;
      return;
    }
-   else{     
+   else
+   {     
       buf[i] = 0;
         if (argc)
            {
                 PARS_Handler(argc, argv);
            }
-      //   else{
-                  //сюда можно что-то добавить  ");
-       //      }
       argc = 0;
-      flag = FALSE;
+      devider_f = FALSE;
       i = 0;
    }
 }

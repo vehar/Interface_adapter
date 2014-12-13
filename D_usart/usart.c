@@ -57,7 +57,8 @@ void UartTxBufOvf_Handler(void) //обработчик переполнения передающего буфера UAR
 }
 
 
-uint16_t Calk_safe_baud(uint8_t mode, uint16_t input_baud){   //Проверка возможности работі на заданой скорости
+uint16_t Calk_safe_baud(uint8_t mode, uint16_t input_baud)   //Проверка возможности работі на заданой скорости
+{
  uint8_t max_total_err = 52; //порог ошибки, если больше - комуникация невозможна. 52 соответствует 2.1%
 
  uint32_t tmp0 = 0;
@@ -302,11 +303,12 @@ __restore_interrupts();
 }
 
 
-char USART_Get_Char(uint8_t sel) //чтение буфера
+char USART_Get_Char(uint8_t Uart_sel) //чтение буфера
 {
   unsigned char symbol;
   uint8_t saved_state;
-if(!sel){
+if(!Uart_sel)
+{
   if (Usart0_rxCount > 0)        //если приемный буфер не пустой
   {
     symbol = Usart0_RX_buf[Usart0_rxBufHead];        //прочитать из него символ
@@ -318,7 +320,7 @@ __restore_interrupts();
     return symbol;                         //вернуть прочитанный символ
   }
   return 0;
-  }
+}
   else
   {
    if (Usart1_rxCount > 0)        //если приемный буфер не пустой

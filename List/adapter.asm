@@ -3764,7 +3764,8 @@ _UartTxBufOvf_Handler:
 	RET
 ;
 ;
-;uint16_t Calk_safe_baud(uint8_t mode, uint16_t input_baud){   //Проверка возможности работі на заданой скорости
+;uint16_t Calk_safe_baud(uint8_t mode, uint16_t input_baud)   //Проверка возможности работі на заданой скорости
+;{
 ; uint8_t max_total_err = 52; //порог ошибки, если больше - комуникация невозможна. 52 соответствует 2.1%
 ;
 ; uint32_t tmp0 = 0;
@@ -4348,20 +4349,21 @@ _0xCE:
 ;}
 ;
 ;
-;char USART_Get_Char(uint8_t sel) //чтение буфера
+;char USART_Get_Char(uint8_t Uart_sel) //чтение буфера
 ;{
 _USART_Get_Char:
 ;  unsigned char symbol;
 ;  uint8_t saved_state;
-;if(!sel){
+;if(!Uart_sel)
 	ST   -Y,R17
 	ST   -Y,R16
-;	sel -> Y+2
+;	Uart_sel -> Y+2
 ;	symbol -> R17
 ;	saved_state -> R16
 	LDD  R30,Y+2
 	CPI  R30,0
 	BRNE _0xD5
+;{
 ;  if (Usart0_rxCount > 0)        //если приемный буфер не пустой
 	LDS  R26,_Usart0_rxCount_G000
 	LDS  R27,_Usart0_rxCount_G000+1
@@ -4406,7 +4408,7 @@ _0xD6:
 	LDD  R17,Y+1
 	LDD  R16,Y+0
 	RJMP _0x20C000C
-;  }
+;}
 ;  else
 _0xD5:
 ;  {
@@ -4691,36 +4693,41 @@ _PARSER_Init:
 ;void PARS_Parser(char symbol)
 ;{
 _PARS_Parser:
-;   if (symbol !='\r'){               //'\r' //end of string
+;   if (symbol !='\r')    //'\r' //end of string
 ;	symbol -> Y+0
 	LD   R26,Y
 	CPI  R26,LOW(0xD)
 	BREQ _0xEA
-;     if (i < SIZE_RECEIVE_BUF - 1){
+;   {
+;     if (i < SIZE_RECEIVE_BUF - 1)
 	LDI  R30,LOW(127)
 	CP   R9,R30
 	BRSH _0xEB
+;     {
 ;        if (symbol != ' ')
 	CPI  R26,LOW(0x20)
 	BREQ _0xEC
 ;         {
-;           if (!argc){
+;           if (!argc)
 	TST  R10
 	BRNE _0xED
+;           {
 ;              argv[0] = buf;
 	CALL SUBOPT_0x17
 ;              argc++;
 	INC  R10
 ;           }
 ;
-;           if (flag){
+;           if (flag)
 _0xED:
 	TST  R12
 	BREQ _0xEE
-;              if (argc < AMOUNT_PAR){
+;           {
+;              if (argc < AMOUNT_PAR)
 	LDI  R30,LOW(10)
 	CP   R10,R30
 	BRSH _0xEF
+;              {
 ;                 argv[argc] = &buf[i];
 	MOV  R30,R10
 	LDI  R26,LOW(_argv)
@@ -4749,9 +4756,10 @@ _0xEE:
 	RJMP _0xF0
 _0xEC:
 ;         {                 // "space" - is divider
-;           if (!flag){
+;           if (!flag)
 	TST  R12
 	BRNE _0xF1
+;           {
 ;              buf[i] = 0;
 	CALL SUBOPT_0x19
 	LDI  R26,LOW(0)
@@ -4774,8 +4782,9 @@ _0xEB:
 ;     return;
 	RJMP _0x20C000E
 ;   }
-;   else{
+;   else
 _0xEA:
+;   {
 ;      buf[i] = 0;
 	CALL SUBOPT_0x19
 	LDI  R26,LOW(0)
@@ -7740,16 +7749,23 @@ _RingBuff_TX:
 ;//Область задач
 ;//============================================================================
 ;
-;void Task_Start (void)
+;
+;
+;DECLARE_TASK(Task_Start)
 ;{
 _Task_Start:
-;
 ;SetTimerTask(Task_LedOff,100); //запуск мигалки-антизависалки
 	CALL SUBOPT_0x3E
 ;}
 	RET
 ;
-;void Task_LedOff (void)
+;/*
+;void Task_Start (void)
+;{
+;SetTimerTask(Task_LedOff,100); //запуск мигалки-антизависалки
+;}
+;  */
+;DECLARE_TASK (Task_LedOff)
 ;{
 _Task_LedOff:
 ;SetTimerTask(Task_LedOn,900);
@@ -7765,7 +7781,7 @@ _Task_LedOff:
 ;}
 	RET
 ;
-;void Task_LedOn (void)
+;DECLARE_TASK (Task_LedOn)
 ;{
 _Task_LedOn:
 ;SetTimerTask(Task_LedOff,100);
@@ -9402,7 +9418,7 @@ _0x264:
 ;      StopRTOS; //так как передача по UART-у может быть медленной,RTOS на время замедляется (Ибо внешний интерфейс приоритетнее)
 	LDI  R30,LOW(_StopRTOS)
 	LDI  R31,HIGH(_StopRTOS)
-;        USART_Send_Str(Interface_Num, argv[3]);
+;        USART_Send_Str(Interface_Num, argv[3]); //TODO проверить реальную задержку
 	ST   -Y,R18
 	CALL SUBOPT_0x61
 	CALL _USART_Send_Str
@@ -9720,7 +9736,7 @@ _0x243:
 	LDI  R30,LOW(_ok*2)
 	LDI  R31,HIGH(_ok*2)
 	MOVW R16,R30
-;        if (!strcmpf(argv[0], "E")){SetTask(EEP_StartWrite); response = ok;}  // Запускаем процесс записи в ЕЕПРОМ.
+;    if (!strcmpf(argv[0], "E")){SetTask(EEP_StartWrite); response = ok;}  // Запускаем процесс записи в ЕЕПРОМ.
 _0x244:
 	CALL SUBOPT_0x4A
 	__POINTW1FN _0x0,466
@@ -9761,52 +9777,56 @@ _0x1F5:
 ;
 ;// G_vars are here
 ;
+;
+;//TODO переписать парсер команд в конечный автомат как в http://habrahabr.ru/post/241941/
+;
+;
 ;void main(void)
-; 0000 0018 {
+; 0000 001C {
 
 	.CSEG
 _main:
-; 0000 0019 char i;
-; 0000 001A char str[7];
-; 0000 001B 
-; 0000 001C HARDWARE_init();
+; 0000 001D char i;
+; 0000 001E char str[7];
+; 0000 001F 
+; 0000 0020 HARDWARE_init();
 	SBIW R28,7
 ;	i -> R17
 ;	str -> Y+0
 	RCALL _HARDWARE_init
-; 0000 001D SOFTWARE_init();
+; 0000 0021 SOFTWARE_init();
 	RCALL _SOFTWARE_init
-; 0000 001E 
-; 0000 001F #ifdef DEBUG
-; 0000 0020     DDRD.7=1;//PORTD.7=1;  //Led VD2
+; 0000 0022 
+; 0000 0023 #ifdef DEBUG
+; 0000 0024     DDRD.7=1;//PORTD.7=1;  //Led VD2
 	SBI  0x11,7
-; 0000 0021     //DDRD.6=1;//PORTD.6=1;    //Led VD1
-; 0000 0022     USART_Send_StrFl(USART_1,start);
+; 0000 0025     //DDRD.6=1;//PORTD.6=1;    //Led VD1
+; 0000 0026     USART_Send_StrFl(USART_1,start);
 	LDI  R30,LOW(1)
 	ST   -Y,R30
 	LDI  R30,LOW(_start*2)
 	LDI  R31,HIGH(_start*2)
 	CALL SUBOPT_0x33
-; 0000 0023     USART_Send_StrFl(SYSTEM_USART,start);
+; 0000 0027     USART_Send_StrFl(SYSTEM_USART,start);
 	LDI  R30,LOW(_start*2)
 	LDI  R31,HIGH(_start*2)
 	CALL SUBOPT_0x34
-; 0000 0024 #endif
-; 0000 0025 
-; 0000 0026 
-; 0000 0027 //#asm("sei") // Global enable interrupts Upd-1
-; 0000 0028 //sprintf(lcd_buf, "Z=%d", v_u32_SYS_TICK); ;LcdString(1,3); LcdUpdate();
-; 0000 0029 RunRTOS();			// Старт ядра.
+; 0000 0028 #endif
+; 0000 0029 
 ; 0000 002A 
-; 0000 002B //delay_ms(1000);// Запуск фоновых задач.
-; 0000 002C SetTask(Task_Start);     //290uS (50/50) and (10/10) но при 1/1 таск 1 лагает
+; 0000 002B //#asm("sei") // Global enable interrupts Upd-1
+; 0000 002C //sprintf(lcd_buf, "Z=%d", v_u32_SYS_TICK); ;LcdString(1,3); LcdUpdate();
+; 0000 002D RunRTOS();			// Старт ядра.
+; 0000 002E 
+; 0000 002F //delay_ms(1000);// Запуск фоновых задач.
+; 0000 0030 SetTask(Task_Start);     //290uS (50/50) and (10/10) но при 1/1 таск 1 лагает
 	LDI  R30,LOW(_Task_Start)
 	LDI  R31,HIGH(_Task_Start)
 	CALL SUBOPT_0x1A
-; 0000 002D 
-; 0000 002E ///-----------------Upd-7-----------------------------
-; 0000 002F // первичный запуск всех задач
-; 0000 0030 SetTimerTask(Task_pars_cmd, 25); //Upd-6
+; 0000 0031 
+; 0000 0032 ///-----------------Upd-7-----------------------------
+; 0000 0033 // первичный запуск всех задач
+; 0000 0034 SetTimerTask(Task_pars_cmd, 25); //Upd-6
 	LDI  R30,LOW(_Task_pars_cmd)
 	LDI  R31,HIGH(_Task_pars_cmd)
 	ST   -Y,R31
@@ -9814,32 +9834,32 @@ _main:
 	LDI  R30,LOW(25)
 	LDI  R31,HIGH(25)
 	CALL SUBOPT_0x5
-; 0000 0031 #ifdef DEBUG                    //Upd-6
-; 0000 0032 SetTimerTask(Task_LogOut,50);
+; 0000 0035 #ifdef DEBUG                    //Upd-6
+; 0000 0036 SetTimerTask(Task_LogOut, 50);
 	CALL SUBOPT_0x44
-; 0000 0033 SetTask(Task_LcdGreetImage);    //Upd-4
+; 0000 0037 SetTask(Task_LcdGreetImage);    //Upd-4
 	LDI  R30,LOW(_Task_LcdGreetImage)
 	LDI  R31,HIGH(_Task_LcdGreetImage)
 	CALL SUBOPT_0x1A
-; 0000 0034 //SetTimerTask(Task_ADC_test,5000);   //Upd-6
-; 0000 0035 //SetTimerTask(Task_AdcOnLcd, 6000);
-; 0000 0036 //SetTimerTask(Task_BuffOut,5);
-; 0000 0037 #endif
-; 0000 0038 ///---------------------------------------------------
-; 0000 0039 
-; 0000 003A 
-; 0000 003B 
-; 0000 003C 
-; 0000 003D //delay_ms(1000); //?
-; 0000 003E while (1)
+; 0000 0038 //SetTimerTask(Task_ADC_test,5000);   //Upd-6
+; 0000 0039 //SetTimerTask(Task_AdcOnLcd, 6000);
+; 0000 003A //SetTimerTask(Task_BuffOut,5);
+; 0000 003B #endif
+; 0000 003C ///---------------------------------------------------
+; 0000 003D 
+; 0000 003E 
+; 0000 003F 
+; 0000 0040 
+; 0000 0041 //delay_ms(1000); //?
+; 0000 0042 while (1)
 _0x248:
-; 0000 003F  {
-; 0000 0040 //wdt_reset();	// Сброс собачьего таймера
-; 0000 0041 TaskManager();	// Вызов диспетчера
+; 0000 0043  {
+; 0000 0044 //wdt_reset();	// Сброс собачьего таймера
+; 0000 0045 TaskManager();	// Вызов диспетчера
 	RCALL _TaskManager
-; 0000 0042  }
+; 0000 0046  }
 	RJMP _0x248
-; 0000 0043 } //END MAIN
+; 0000 0047 } //END MAIN
 _0x24B:
 	RJMP _0x24B
 ;
@@ -9847,16 +9867,16 @@ _0x24B:
 ;
 ;// Timer2 interrupt service routine
 ;interrupt [RTOS_ISR] void timer2_comp_isr(void)//RTOS Interrupt 1mS
-; 0000 0049 {
+; 0000 004D {
 _timer2_comp_isr:
 	CALL SUBOPT_0x1E
-; 0000 004A  TimerService();
+; 0000 004E  TimerService();
 	RCALL _TimerService
-; 0000 004B  v_u32_SYS_TICK++;
+; 0000 004F  v_u32_SYS_TICK++;
 	LDI  R26,LOW(_v_u32_SYS_TICK)
 	LDI  R27,HIGH(_v_u32_SYS_TICK)
 	CALL SUBOPT_0x13
-; 0000 004C }
+; 0000 0050 }
 	LD   R30,Y+
 	OUT  SREG,R30
 	LD   R31,Y+
@@ -9917,53 +9937,54 @@ _timer2_comp_isr:
 ;						{
 ;                            uint16_t Time;					// Выдержка в мс
 ;						    TPTR GoToTask; 						// Указатель перехода
+;                            //TODO добавить параметр и отладить
 ;						}
 ;						MainTimer[MainTimerQueueSize+1];	// Очередь таймеров
 ;
 ;
 ;// RTOS Подготовка. Очистка очередей
 ;  void InitRTOS(void)
-; 0001 002A {
+; 0001 002B {
 
 	.CSEG
 _InitRTOS:
-; 0001 002B uint8_t	index;
-; 0001 002C 
-; 0001 002D       for(index=0;index!=MainTimerQueueSize+1;index++) // Обнуляем все таймеры.
+; 0001 002C uint8_t	index;
+; 0001 002D 
+; 0001 002E       for(index=0;index!=MainTimerQueueSize+1;index++) // Обнуляем все таймеры.
 	ST   -Y,R17
 ;	index -> R17
 	LDI  R17,LOW(0)
 _0x20004:
 	CPI  R17,31
 	BREQ _0x20005
-; 0001 002E     {
-; 0001 002F 	    MainTimer[index].GoToTask = Idle;
+; 0001 002F     {
+; 0001 0030 	    MainTimer[index].GoToTask = Idle;
 	CALL SUBOPT_0x64
 	CALL SUBOPT_0x65
-; 0001 0030 	    MainTimer[index].Time = 0;
+; 0001 0031 	    MainTimer[index].Time = 0;
 	CALL SUBOPT_0x64
 	CALL SUBOPT_0x66
-; 0001 0031 	 }
+; 0001 0032 	 }
 	SUBI R17,-1
 	RJMP _0x20004
 _0x20005:
-; 0001 0032 }
+; 0001 0033 }
 	RJMP _0x20C0004
 ;
 ;
 ;//Пустая процедура - простой ядра.
 ;  void  Idle(void)
-; 0001 0037 {
+; 0001 0038 {
 _Idle:
-; 0001 0038   #warning наполнить полезным функционалом
-; 0001 0039 }
+; 0001 0039   #warning наполнить полезным функционалом
+; 0001 003A }
 	RET
 ;
 ; //UPDATE
 ; void SetTask(TPTR TS){  // Поставить задачу в очередь для немедленного выполнения
-; 0001 003C void SetTask(TPTR TS){
+; 0001 003D void SetTask(TPTR TS){
 _SetTask:
-; 0001 003D  SetTimerTask(TS,0);
+; 0001 003E  SetTimerTask(TS,0);
 ;	*TS -> Y+0
 	LD   R30,Y
 	LDD  R31,Y+1
@@ -9972,7 +9993,7 @@ _SetTask:
 	LDI  R30,LOW(0)
 	LDI  R31,HIGH(0)
 	CALL SUBOPT_0x5
-; 0001 003E }
+; 0001 003F }
 	ADIW R28,2
 	RET
 ;
@@ -9981,12 +10002,12 @@ _SetTask:
 ;// Время выдержки в тиках системного таймера. Возвращет код ошибки.
 ;
 ;void SetTimerTask(TPTR TS, unsigned int NewTime)    //1 task ~12words
-; 0001 0045 {
+; 0001 0046 {
 _SetTimerTask:
-; 0001 0046 uint8_t		index=0;
-; 0001 0047 uint8_t		nointerrupted = 0;
-; 0001 0048 
-; 0001 0049 if (STATUS_REG & (1<<Interrupt_Flag)) 			// Проверка запрета прерывания, аналогично функции выше
+; 0001 0047 uint8_t		index=0;
+; 0001 0048 uint8_t		nointerrupted = 0;
+; 0001 0049 
+; 0001 004A if (STATUS_REG & (1<<Interrupt_Flag)) 			// Проверка запрета прерывания, аналогично функции выше
 	ST   -Y,R17
 	ST   -Y,R16
 ;	*TS -> Y+4
@@ -9998,22 +10019,22 @@ _SetTimerTask:
 	IN   R30,0x3F
 	SBRS R30,7
 	RJMP _0x20006
-; 0001 004A 	{
-; 0001 004B 	_disable_interrupts()
+; 0001 004B 	{
+; 0001 004C 	_disable_interrupts()
 	cli
-; 0001 004C 	nointerrupted = 1;
+; 0001 004D 	nointerrupted = 1;
 	LDI  R16,LOW(1)
-; 0001 004D 	}
-; 0001 004E //====================================================================
-; 0001 004F // My UPDATE - not optimized
-; 0001 0050   for(index=0;index!=MainTimerQueueSize+1;++index)	//Прочесываем очередь таймеров
+; 0001 004E 	}
+; 0001 004F //====================================================================
+; 0001 0050 // My UPDATE - not optimized
+; 0001 0051   for(index=0;index!=MainTimerQueueSize+1;++index)	//Прочесываем очередь таймеров
 _0x20006:
 	LDI  R17,LOW(0)
 _0x20008:
 	CPI  R17,31
 	BREQ _0x20009
-; 0001 0051 	{
-; 0001 0052 	if(MainTimer[index].GoToTask == TS)				// Если уже есть запись с таким адресом
+; 0001 0052 	{
+; 0001 0053 	if(MainTimer[index].GoToTask == TS)				// Если уже есть запись с таким адресом
 	CALL SUBOPT_0x64
 	CALL SUBOPT_0x67
 	MOVW R26,R30
@@ -10022,35 +10043,35 @@ _0x20008:
 	CP   R30,R26
 	CPC  R31,R27
 	BRNE _0x2000A
-; 0001 0053 		{
-; 0001 0054 		MainTimer[index].Time = NewTime;			// Перезаписываем ей выдержку
+; 0001 0054 		{
+; 0001 0055 		MainTimer[index].Time = NewTime;			// Перезаписываем ей выдержку
 	CALL SUBOPT_0x64
 	CALL SUBOPT_0x68
-; 0001 0055 		if (nointerrupted) 	_enable_interrupts()		// Разрешаем прерывания если не были запрещены.
+; 0001 0056 		if (nointerrupted) 	_enable_interrupts()	// Разрешаем прерывания если не были запрещены.
 	BREQ _0x2000B
 	sei
-; 0001 0056 		return;										// Выходим. Раньше был код успешной операции. Пока убрал
+; 0001 0057 		return;										// Выходим. Раньше был код успешной операции. Пока убрал
 _0x2000B:
 	RJMP _0x20C0005
-; 0001 0057 		}
-; 0001 0058 	}
+; 0001 0058 		}
+; 0001 0059 	}
 _0x2000A:
 	SUBI R17,-LOW(1)
 	RJMP _0x20008
 _0x20009:
-; 0001 0059   for(index=0;index!=MainTimerQueueSize+1;++index)	// Если не находим похожий таймер, то ищем любой пустой
+; 0001 005A   for(index=0;index!=MainTimerQueueSize+1;++index)	// Если не находим похожий таймер, то ищем любой пустой
 	LDI  R17,LOW(0)
 _0x2000D:
 	CPI  R17,31
 	BREQ _0x2000E
-; 0001 005A 	{
-; 0001 005B 	if (MainTimer[index].GoToTask == Idle)
+; 0001 005B 	{
+; 0001 005C 	if (MainTimer[index].GoToTask == Idle)
 	CALL SUBOPT_0x64
 	CALL SUBOPT_0x67
 	CALL SUBOPT_0x69
 	BRNE _0x2000F
-; 0001 005C 		{
-; 0001 005D 		MainTimer[index].GoToTask = TS;			// Заполняем поле перехода задачи
+; 0001 005D 		{
+; 0001 005E 		MainTimer[index].GoToTask = TS;			// Заполняем поле перехода задачи
 	CALL SUBOPT_0x64
 	ADD  R30,R26
 	ADC  R31,R27
@@ -10059,45 +10080,45 @@ _0x2000D:
 	LDD  R27,Y+4+1
 	STD  Z+0,R26
 	STD  Z+1,R27
-; 0001 005E 		MainTimer[index].Time = NewTime;		// И поле выдержки времени
+; 0001 005F 		MainTimer[index].Time = NewTime;		// И поле выдержки времени
 	CALL SUBOPT_0x64
 	CALL SUBOPT_0x68
-; 0001 005F 		if (nointerrupted) 	_enable_interrupts()	// Разрешаем прерывания
+; 0001 0060 		if (nointerrupted) 	_enable_interrupts()	// Разрешаем прерывания
 	BREQ _0x20010
 	sei
-; 0001 0060 		return;									// Выход.
+; 0001 0061 		return;									// Выход.
 _0x20010:
 	RJMP _0x20C0005
-; 0001 0061 		}
-; 0001 0062 
-; 0001 0063 	}
+; 0001 0062 		}
+; 0001 0063 
+; 0001 0064 	}
 _0x2000F:
 	SUBI R17,-LOW(1)
 	RJMP _0x2000D
 _0x2000E:
-; 0001 0064 //====================================================================
-; 0001 0065 /*
-; 0001 0066   for(index=0;index!=MainTimerQueueSize+1;++index)	//Прочесываем очередь таймеров
-; 0001 0067 	{
-; 0001 0068 	if(MainTimer[index].GoToTask == TS)				// Если уже есть запись с таким адресом
-; 0001 0069 		{
-; 0001 006A 		MainTimer[index].Time = NewTime;			// Перезаписываем ей выдержку
-; 0001 006B 		if (nointerrupted) 	_enable_interrupts()		// Разрешаем прерывания если не были запрещены.
-; 0001 006C 		return;										// Выходим. Раньше был код успешной операции. Пока убрал
-; 0001 006D 		}
-; 0001 006E 	}
-; 0001 006F   for(index=0;index!=MainTimerQueueSize+1;++index)	// Если не находим похожий таймер, то ищем любой пустой
-; 0001 0070 	{
-; 0001 0071 	if (MainTimer[index].GoToTask == Idle)
-; 0001 0072 		{
-; 0001 0073 		MainTimer[index].GoToTask = TS;			// Заполняем поле перехода задачи
-; 0001 0074 		MainTimer[index].Time = NewTime;		// И поле выдержки времени
-; 0001 0075 		if (nointerrupted) 	_enable_interrupts()	// Разрешаем прерывания
-; 0001 0076 		return;									// Выход.
-; 0001 0077 		}
-; 0001 0078 
-; 0001 0079 	}	*/								// тут можно сделать return c кодом ошибки - нет свободных таймеров
-; 0001 007A }
+; 0001 0065 //====================================================================
+; 0001 0066 /*
+; 0001 0067   for(index=0;index!=MainTimerQueueSize+1;++index)	//Прочесываем очередь таймеров
+; 0001 0068 	{
+; 0001 0069 	if(MainTimer[index].GoToTask == TS)				// Если уже есть запись с таким адресом
+; 0001 006A 		{
+; 0001 006B 		MainTimer[index].Time = NewTime;			// Перезаписываем ей выдержку
+; 0001 006C 		if (nointerrupted) 	_enable_interrupts()		// Разрешаем прерывания если не были запрещены.
+; 0001 006D 		return;										// Выходим. Раньше был код успешной операции. Пока убрал
+; 0001 006E 		}
+; 0001 006F 	}
+; 0001 0070   for(index=0;index!=MainTimerQueueSize+1;++index)	// Если не находим похожий таймер, то ищем любой пустой
+; 0001 0071 	{
+; 0001 0072 	if (MainTimer[index].GoToTask == Idle)
+; 0001 0073 		{
+; 0001 0074 		MainTimer[index].GoToTask = TS;			// Заполняем поле перехода задачи
+; 0001 0075 		MainTimer[index].Time = NewTime;		// И поле выдержки времени
+; 0001 0076 		if (nointerrupted) 	_enable_interrupts()	// Разрешаем прерывания
+; 0001 0077 		return;									// Выход.
+; 0001 0078 		}
+; 0001 0079 
+; 0001 007A 	}	*/								// тут можно сделать return c кодом ошибки - нет свободных таймеров
+; 0001 007B }
 _0x20C0005:
 	LDD  R17,Y+1
 	LDD  R16,Y+0
@@ -10109,12 +10130,12 @@ _0x20C0005:
 ;*/
 ;
 ;inline void TaskManager(void)
-; 0001 0081 {
+; 0001 0082 {
 _TaskManager:
-; 0001 0082 uint8_t		index=0;
-; 0001 0083 TPTR task;
-; 0001 0084 
-; 0001 0085   for(index=0;index!=MainTimerQueueSize+1;++index) {  // Прочесываем очередь в поисках нужной задачи
+; 0001 0083 uint8_t		index=0;
+; 0001 0084 TPTR task;                 //TODO сделать глобальными регистровыми!
+; 0001 0085 
+; 0001 0086   for(index=0;index!=MainTimerQueueSize+1;++index) {  // Прочесываем очередь в поисках нужной задачи
 	CALL __SAVELOCR4
 ;	index -> R17
 ;	*task -> R18,R19
@@ -10123,7 +10144,7 @@ _TaskManager:
 _0x20012:
 	CPI  R17,31
 	BREQ _0x20013
-; 0001 0086 		if ((MainTimer[index].GoToTask != Idle)&&(MainTimer[index].Time==0)) { // пропускаем пустые задачи и те, время которых еще не подошло
+; 0001 0087 		if ((MainTimer[index].GoToTask != Idle)&&(MainTimer[index].Time==0)) // пропускаем пустые задачи и те, время которых еще не подошло
 	CALL SUBOPT_0x64
 	CALL SUBOPT_0x67
 	CALL SUBOPT_0x69
@@ -10137,35 +10158,36 @@ _0x20012:
 _0x20015:
 	RJMP _0x20014
 _0x20016:
-; 0001 0087 		    task=MainTimer[index].GoToTask;             // запомним задачу
+; 0001 0088 		{
+; 0001 0089             task=MainTimer[index].GoToTask;             // запомним задачу
 	CALL SUBOPT_0x64
 	ADD  R26,R30
 	ADC  R27,R31
 	ADIW R26,2
 	LD   R18,X+
 	LD   R19,X
-; 0001 0088 		    MainTimer[index].GoToTask = Idle;           // ставим затычку
+; 0001 008A 		    MainTimer[index].GoToTask = Idle;           // ставим затычку
 	CALL SUBOPT_0x64
 	CALL SUBOPT_0x65
-; 0001 0089             _enable_interrupts()							// Разрешаем прерывания
+; 0001 008B             _enable_interrupts()							// Разрешаем прерывания
 	sei
-; 0001 008A             (task)();								    // Переходим к задаче
+; 0001 008C             (task)();								    // Переходим к задаче
 	MOVW R30,R18
 	ICALL
-; 0001 008B             return;                                     // выход до следующего цикла
+; 0001 008D             return;                                     // выход до следующего цикла
 	CALL __LOADLOCR4
 	RJMP _0x20C0003
-; 0001 008C 		}
-; 0001 008D 	}
+; 0001 008E 		}
+; 0001 008F 	}
 _0x20014:
 	SUBI R17,-LOW(1)
 	RJMP _0x20012
 _0x20013:
-; 0001 008E     _enable_interrupts()							// Разрешаем прерывания
+; 0001 0090     _enable_interrupts()							// Разрешаем прерывания
 	sei
-; 0001 008F 	Idle();                                     // обошли задачи, нужных нет - простой
+; 0001 0091 	Idle();                                     // обошли задачи, нужных нет - простой
 	RCALL _Idle
-; 0001 0090 }
+; 0001 0092 }
 	CALL __LOADLOCR4
 	RJMP _0x20C0003
 ;
@@ -10177,22 +10199,22 @@ _0x20013:
 ;В этом случае не забыть добавить проверку прерывания.
 ;*/
 ;inline void TimerService(void)
-; 0001 009A {
+; 0001 009C {
 _TimerService:
-; 0001 009B uint8_t index;
-; 0001 009C 
-; 0001 009D for(index=0;index!=MainTimerQueueSize+1;index++)		// Прочесываем очередь таймеров
+; 0001 009D uint8_t index;
+; 0001 009E 
+; 0001 009F for(index=0;index!=MainTimerQueueSize+1;index++)		// Прочесываем очередь таймеров
 	ST   -Y,R17
 ;	index -> R17
 	LDI  R17,LOW(0)
 _0x20018:
 	CPI  R17,31
 	BREQ _0x20019
-; 0001 009E 	{
-; 0001 009F //==========================================================================
-; 0001 00A0 //UPDATE
-; 0001 00A1          if((MainTimer[index].GoToTask != Idle) && 		    // Если не пустышка и
-; 0001 00A2            (MainTimer[index].Time > 0)) {					// таймер не выщелкал, то
+; 0001 00A0 	{
+; 0001 00A1 //==========================================================================
+; 0001 00A2 //UPDATE
+; 0001 00A3          if((MainTimer[index].GoToTask != Idle) && 		    // Если не пустышка и
+; 0001 00A4            (MainTimer[index].Time > 0)) {					// таймер не выщелкал, то
 	CALL SUBOPT_0x64
 	CALL SUBOPT_0x67
 	CALL SUBOPT_0x69
@@ -10207,7 +10229,7 @@ _0x20018:
 _0x2001B:
 	RJMP _0x2001A
 _0x2001C:
-; 0001 00A3             MainTimer[index].Time--;						// щелкаем еще раз.
+; 0001 00A5             MainTimer[index].Time--;						// щелкаем еще раз.
 	CALL SUBOPT_0x64
 	ADD  R26,R30
 	ADC  R27,R31
@@ -10216,24 +10238,24 @@ _0x2001C:
 	SBIW R30,1
 	ST   -X,R31
 	ST   -X,R30
-; 0001 00A4 		};
+; 0001 00A6 		};
 _0x2001A:
-; 0001 00A5 	}
+; 0001 00A7 	}
 	SUBI R17,-1
 	RJMP _0x20018
 _0x20019:
-; 0001 00A6 }
+; 0001 00A8 }
 _0x20C0004:
 	LD   R17,Y+
 	RET
 ;
 ;//добавление от sniuk 7.1.14
 ;void ClearTimerTask(TPTR TS)  //обнуление таймера
-; 0001 00AA {
+; 0001 00AC {
 _ClearTimerTask:
-; 0001 00AB uint8_t	 index=0;
-; 0001 00AC uint8_t nointerrupted = 0;
-; 0001 00AD if (STATUS_REG & (1<<Interrupt_Flag))
+; 0001 00AD uint8_t	 index=0;
+; 0001 00AE uint8_t nointerrupted = 0;
+; 0001 00AF if (STATUS_REG & (1<<Interrupt_Flag))
 	ST   -Y,R17
 	ST   -Y,R16
 ;	*TS -> Y+2
@@ -10244,20 +10266,20 @@ _ClearTimerTask:
 	IN   R30,0x3F
 	SBRS R30,7
 	RJMP _0x2001D
-; 0001 00AE {
-; 0001 00AF _disable_interrupts();
+; 0001 00B0 {
+; 0001 00B1 _disable_interrupts();
 	cli
-; 0001 00B0 nointerrupted = 1;
+; 0001 00B2 nointerrupted = 1;
 	LDI  R16,LOW(1)
-; 0001 00B1 }
-; 0001 00B2     for(index=0; index!=MainTimerQueueSize+1; ++index)
+; 0001 00B3 }
+; 0001 00B4     for(index=0; index!=MainTimerQueueSize+1; ++index)
 _0x2001D:
 	LDI  R17,LOW(0)
 _0x2001F:
 	CPI  R17,31
 	BREQ _0x20020
-; 0001 00B3     {
-; 0001 00B4         if(MainTimer[index].GoToTask == TS)
+; 0001 00B5     {
+; 0001 00B6         if(MainTimer[index].GoToTask == TS)
 	CALL SUBOPT_0x64
 	CALL SUBOPT_0x67
 	MOVW R26,R30
@@ -10266,27 +10288,27 @@ _0x2001F:
 	CP   R30,R26
 	CPC  R31,R27
 	BRNE _0x20021
-; 0001 00B5         {
-; 0001 00B6             MainTimer[index].GoToTask = Idle;
+; 0001 00B7         {
+; 0001 00B8             MainTimer[index].GoToTask = Idle;
 	CALL SUBOPT_0x64
 	CALL SUBOPT_0x65
-; 0001 00B7             MainTimer[index].Time = 0; // Обнуляем время
+; 0001 00B9             MainTimer[index].Time = 0; // Обнуляем время
 	CALL SUBOPT_0x64
 	CALL SUBOPT_0x66
-; 0001 00B8             if (nointerrupted) _enable_interrupts();
+; 0001 00BA             if (nointerrupted) _enable_interrupts();
 	CPI  R16,0
 	BREQ _0x20022
 	sei
-; 0001 00B9             return;
+; 0001 00BB             return;
 _0x20022:
 	RJMP _0x20C0002
-; 0001 00BA         }
-; 0001 00BB     }
+; 0001 00BC         }
+; 0001 00BD     }
 _0x20021:
 	SUBI R17,-LOW(1)
 	RJMP _0x2001F
 _0x20020:
-; 0001 00BC }
+; 0001 00BE }
 _0x20C0002:
 	LDD  R17,Y+1
 	LDD  R16,Y+0
@@ -10295,7 +10317,7 @@ _0x20C0003:
 	RET
 ;
 ;
-;
+;  //TODO look at http://we.easyelectronics.ru/Soft/minimalistichnaya-ochered-zadach-na-c.html
 ;#include "RTOS/EERTOSHAL.h"
 	#ifndef __SLEEP_DEFINED__
 	#define __SLEEP_DEFINED__

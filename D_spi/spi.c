@@ -42,7 +42,7 @@ static volatile uint16_t Spi1_rxBufTail = 0;
 static volatile uint16_t Spi1_rxBufHead = 0;
 static volatile uint16_t Spi1_rxCount = 0;
 
-bool TX_flag = 0;
+bool TX_flag = 0; 
 bool RX_flag = 0;
 
 

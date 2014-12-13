@@ -5,19 +5,26 @@
 //Область задач
 //============================================================================
 
-void Task_Start (void)
-{
 
+
+DECLARE_TASK(Task_Start)
+{
 SetTimerTask(Task_LedOff,100); //запуск мигалки-антизависалки
 }
 
-void Task_LedOff (void)
+/*
+void Task_Start (void)
+{
+SetTimerTask(Task_LedOff,100); //запуск мигалки-антизависалки
+}
+  */
+DECLARE_TASK (Task_LedOff) 
 {
 SetTimerTask(Task_LedOn,900);
 LED_PORT  &= ~(1<<LED2);
 }
 
-void Task_LedOn (void)
+DECLARE_TASK (Task_LedOn)
 {
 SetTimerTask(Task_LedOff,100);
 LED_PORT  |= (1<<LED2);

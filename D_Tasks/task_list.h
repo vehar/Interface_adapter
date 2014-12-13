@@ -1,26 +1,23 @@
 #include "adapter.h"
 
+#define DECLARE_TASK(t_name)         void t_name (void)
 
 // Прототипы задач ============================================================
-void Task_Start (void);
-void Task_LedOff (void);
-void Task_LedOn (void);
-void Task_ADC_test (void); //Upd-6
-void Task5 (void);
-void Task6 (void);
-void Task7 (void);
-void Task8 (void);
-void Task9 (void);
+DECLARE_TASK(Task_Start);    //new syntax
+//void Task_Start (void);    //old syntax
 
-void Task_LcdGreetImage (void);
-void Task_LcdLines (void);
+DECLARE_TASK(Task_LedOff);
+DECLARE_TASK(Task_LedOn);
+DECLARE_TASK(Task_ADC_test);      //Upd-6
+DECLARE_TASK(Task_LcdGreetImage);
+DECLARE_TASK(Task_LcdLines);
 
 
-void Task_pars_cmd (void);      //Запуск парсера
-void Task_LogOut (void);        // Выброс логов
-void Task_BuffOut (void);       // Вывод содержимого кольцевого буффера
-void Task_Flush_WorkLog(void);  //очистка лог буффера
-void Task_SPI_ClrBuf (void);    //очистка rx/tx буфферов SPI
+DECLARE_TASK(Task_pars_cmd);      //Запуск парсера
+DECLARE_TASK(Task_LogOut);        // Выброс логов
+DECLARE_TASK(Task_BuffOut);       // Вывод содержимого кольцевого буффера
+DECLARE_TASK(Task_Flush_WorkLog);  //очистка лог буффера
+DECLARE_TASK(Task_SPI_ClrBuf);    //очистка rx/tx буфферов SPI
 
 //======================I2C===================================
 // Прототипы задач ============================================================

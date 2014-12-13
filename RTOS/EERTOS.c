@@ -32,7 +32,8 @@ DI HALT:
 volatile static struct
 						{     
                             uint16_t Time;					// Выдержка в мс
-						    TPTR GoToTask; 						// Указатель перехода						    
+						    TPTR GoToTask; 						// Указатель перехода		
+                            //TODO добавить параметр и отладить				    
 						}
 						MainTimer[MainTimerQueueSize+1];	// Очередь таймеров
 
@@ -82,7 +83,7 @@ if (STATUS_REG & (1<<Interrupt_Flag)) 			// Проверка запрета прерывания, аналоги
 	if(MainTimer[index].GoToTask == TS)				// Если уже есть запись с таким адресом
 		{
 		MainTimer[index].Time = NewTime;			// Перезаписываем ей выдержку
-		if (nointerrupted) 	_enable_interrupts()		// Разрешаем прерывания если не были запрещены.
+		if (nointerrupted) 	_enable_interrupts()	// Разрешаем прерывания если не были запрещены.
 		return;										// Выходим. Раньше был код успешной операции. Пока убрал
 		}
 	}
@@ -128,11 +129,12 @@ if (STATUS_REG & (1<<Interrupt_Flag)) 			// Проверка запрета прерывания, аналоги
 inline void TaskManager(void)
 {
 uint8_t		index=0;
-TPTR task;
+TPTR task;                 //TODO сделать глобальными регистровыми!
 
   for(index=0;index!=MainTimerQueueSize+1;++index) {  // Прочесываем очередь в поисках нужной задачи
-		if ((MainTimer[index].GoToTask != Idle)&&(MainTimer[index].Time==0)) { // пропускаем пустые задачи и те, время которых еще не подошло
-		    task=MainTimer[index].GoToTask;             // запомним задачу
+		if ((MainTimer[index].GoToTask != Idle)&&(MainTimer[index].Time==0)) // пропускаем пустые задачи и те, время которых еще не подошло
+		{
+            task=MainTimer[index].GoToTask;             // запомним задачу
 		    MainTimer[index].GoToTask = Idle;           // ставим затычку
             _enable_interrupts()							// Разрешаем прерывания
             (task)();								    // Переходим к задаче
@@ -188,4 +190,4 @@ nointerrupted = 1;
 }
 
 
-  
+  //TODO look at http://we.easyelectronics.ru/Soft/minimalistichnaya-ochered-zadach-na-c.html

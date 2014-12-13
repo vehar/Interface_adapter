@@ -71,4 +71,5 @@ char USART_Get_Char(uint8_t sel);                           //прочитать приемный
 void USART_GetBuf(uint8_t num, char *buf);          //скопировать приемный буфер usart`a
 
 uint16_t usart_calc_BufData (uint16_t BufTail, uint16_t BufHead);  //считает кол-во данных в кольцевом буфере
+void UartTxBufOvf_Handler(void); //обработчик переполнения передающего буфера UART //TODO add parameter
 #endif //USART_H

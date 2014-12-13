@@ -3339,7 +3339,8 @@
 ;PCODE: $000006F6 VOL: 0
 ;
 ;
-;uint16_t Calk_safe_baud(uint8_t mode, uint16_t input_baud){   //Проверка возможности работі на заданой скорости
+;uint16_t Calk_safe_baud(uint8_t mode, uint16_t input_baud)   //Проверка возможности работі на заданой скорости
+;{
 ;PCODE: $000006F7 VOL: 0
 ;PCODE: $000006F8 VOL: 0
 ; uint8_t max_total_err = 52; //порог ошибки, если больше - комуникация невозможна. 52 соответствует 2.1%
@@ -4093,21 +4094,22 @@
 ;PCODE: $000008D8 VOL: 0
 ;
 ;
-;char USART_Get_Char(uint8_t sel) //чтение буфера
+;char USART_Get_Char(uint8_t Uart_sel) //чтение буфера
 ;{
 ;PCODE: $000008D9 VOL: 0
 ;PCODE: $000008DA VOL: 0
 ;  unsigned char symbol;
 ;  uint8_t saved_state;
-;if(!sel){
+;if(!Uart_sel)
 ;PCODE: $000008DB VOL: 0
 ;PCODE: $000008DC VOL: 0
-;	sel -> Y+2
+;	Uart_sel -> Y+2
 ;	symbol -> R17
 ;	saved_state -> R16
 ;PCODE: $000008DD VOL: 0
 ;PCODE: $000008DE VOL: 0
 ;PCODE: $000008DF VOL: 0
+;{
 ;  if (Usart0_rxCount > 0)        //если приемный буфер не пустой
 ;PCODE: $000008E0 VOL: 1
 ;PCODE: $000008E1 VOL: 0
@@ -4167,7 +4169,7 @@
 ;PCODE: $0000090C VOL: 0
 ;PCODE: $0000090D VOL: 0
 ;PCODE: $0000090E VOL: 0
-;  }
+;}
 ;  else
 ;PCODE: $0000090F VOL: 0
 ;  {
@@ -4476,23 +4478,26 @@
 ;{
 ;PCODE: $000009BB VOL: 0
 ;PCODE: $000009BC VOL: 0
-;   if (symbol !='\r'){               //'\r' //end of string
+;   if (symbol !='\r')    //'\r' //end of string
 ;	symbol -> Y+0
 ;PCODE: $000009BD VOL: 0
 ;PCODE: $000009BE VOL: 0
 ;PCODE: $000009BF VOL: 0
-;     if (i < SIZE_RECEIVE_BUF - 1){
+;   {
+;     if (i < SIZE_RECEIVE_BUF - 1)
 ;PCODE: $000009C0 VOL: 0
 ;PCODE: $000009C1 VOL: 0
 ;PCODE: $000009C2 VOL: 0
+;     {
 ;        if (symbol != ' ')
 ;PCODE: $000009C3 VOL: 0
 ;PCODE: $000009C4 VOL: 0
 ;PCODE: $000009C5 VOL: 0
 ;         {
-;           if (!argc){
+;           if (!argc)
 ;PCODE: $000009C6 VOL: 0
 ;PCODE: $000009C7 VOL: 0
+;           {
 ;              argv[0] = buf;
 ;PCODE: $000009C8 VOL: 0
 ;PCODE: $000009C9 VOL: 0
@@ -4500,14 +4505,16 @@
 ;PCODE: $000009CA VOL: 0
 ;           }
 ;
-;           if (flag){
+;           if (flag)
 ;PCODE: $000009CB VOL: 0
 ;PCODE: $000009CC VOL: 0
 ;PCODE: $000009CD VOL: 0
-;              if (argc < AMOUNT_PAR){
+;           {
+;              if (argc < AMOUNT_PAR)
 ;PCODE: $000009CE VOL: 0
 ;PCODE: $000009CF VOL: 0
 ;PCODE: $000009D0 VOL: 0
+;              {
 ;                 argv[argc] = &buf[i];
 ;PCODE: $000009D1 VOL: 0
 ;PCODE: $000009D2 VOL: 0
@@ -4540,9 +4547,10 @@
 ;PCODE: $000009E4 VOL: 0
 ;PCODE: $000009E5 VOL: 0
 ;         {                 // "space" - is divider
-;           if (!flag){
+;           if (!flag)
 ;PCODE: $000009E6 VOL: 0
 ;PCODE: $000009E7 VOL: 0
+;           {
 ;              buf[i] = 0;
 ;PCODE: $000009E8 VOL: 0
 ;PCODE: $000009E9 VOL: 0
@@ -4570,8 +4578,9 @@
 ;PCODE: $000009F8 VOL: 0
 ;PCODE: $000009F9 VOL: 0
 ;   }
-;   else{
+;   else
 ;PCODE: $000009FA VOL: 0
+;   {
 ;      buf[i] = 0;
 ;PCODE: $000009FB VOL: 0
 ;PCODE: $000009FC VOL: 0
@@ -8654,11 +8663,12 @@ _0x1D1:
 ;//Область задач
 ;//============================================================================
 ;
-;void Task_Start (void)
+;
+;
+;DECLARE_TASK(Task_Start)
 ;{
 ;PCODE: $000012C8 VOL: 0
 ;PCODE: $000012C9 VOL: 0
-;
 ;SetTimerTask(Task_LedOff,100); //запуск мигалки-антизависалки
 ;PCODE: $000012CA VOL: 0
 ;PCODE: $000012CB VOL: 0
@@ -8669,7 +8679,13 @@ _0x1D1:
 ;PCODE: $000012CF VOL: 0
 ;PCODE: $000012D0 VOL: 0
 ;
-;void Task_LedOff (void)
+;/*
+;void Task_Start (void)
+;{
+;SetTimerTask(Task_LedOff,100); //запуск мигалки-антизависалки
+;}
+;  */
+;DECLARE_TASK (Task_LedOff)
 ;{
 ;PCODE: $000012D1 VOL: 0
 ;PCODE: $000012D2 VOL: 0
@@ -8686,7 +8702,7 @@ _0x1D1:
 ;PCODE: $000012DA VOL: 0
 ;PCODE: $000012DB VOL: 0
 ;
-;void Task_LedOn (void)
+;DECLARE_TASK (Task_LedOn)
 ;{
 ;PCODE: $000012DC VOL: 0
 ;PCODE: $000012DD VOL: 0
@@ -11016,7 +11032,7 @@ _0x1D1:
 ;      {
 ;      StopRTOS; //так как передача по UART-у может быть медленной,RTOS на время замедляется (Ибо внешний интерфейс приоритетнее)
 ;PCODE: $00001905 VOL: 0
-;        USART_Send_Str(Interface_Num, argv[3]);
+;        USART_Send_Str(Interface_Num, argv[3]); //TODO проверить реальную задержку
 ;PCODE: $00001906 VOL: 0
 ;PCODE: $00001907 VOL: 0
 ;PCODE: $00001908 VOL: 0
@@ -11410,7 +11426,7 @@ _0x1D1:
 ;PCODE: $00001A11 VOL: 0
 ;PCODE: $00001A12 VOL: 0
 ;PCODE: $00001A13 VOL: 0
-;        if (!strcmpf(argv[0], "E")){SetTask(EEP_StartWrite); response = ok;}  // Запускаем процесс записи в ЕЕПРОМ.
+;    if (!strcmpf(argv[0], "E")){SetTask(EEP_StartWrite); response = ok;}  // Запускаем процесс записи в ЕЕПРОМ.
 ;PCODE: $00001A14 VOL: 0
 ;PCODE: $00001A15 VOL: 0
 ;PCODE: $00001A16 VOL: 0
@@ -11454,92 +11470,96 @@ _0x1F5:
 ;
 ;// G_vars are here
 ;
+;
+;//TODO переписать парсер команд в конечный автомат как в http://habrahabr.ru/post/241941/
+;
+;
 ;void main(void)
-; 0000 0018 {
+; 0000 001C {
 
 	.CSEG
 ;PCODE: $00001A2D VOL: 0
-; 0000 0019 char i;
-; 0000 001A char str[7];
-; 0000 001B 
-; 0000 001C HARDWARE_init();
+; 0000 001D char i;
+; 0000 001E char str[7];
+; 0000 001F 
+; 0000 0020 HARDWARE_init();
 ;PCODE: $00001A2E VOL: 0
 ;	i -> R17
 ;	str -> Y+0
 ;PCODE: $00001A2F VOL: 0
-; 0000 001D SOFTWARE_init();
+; 0000 0021 SOFTWARE_init();
 ;PCODE: $00001A30 VOL: 0
-; 0000 001E 
-; 0000 001F #ifdef DEBUG
-; 0000 0020     DDRD.7=1;//PORTD.7=1;  //Led VD2
+; 0000 0022 
+; 0000 0023 #ifdef DEBUG
+; 0000 0024     DDRD.7=1;//PORTD.7=1;  //Led VD2
 ;PCODE: $00001A31 VOL: 0
 ;PCODE: $00001A32 VOL: 0
-; 0000 0021     //DDRD.6=1;//PORTD.6=1;    //Led VD1
-; 0000 0022     USART_Send_StrFl(USART_1,start);
+; 0000 0025     //DDRD.6=1;//PORTD.6=1;    //Led VD1
+; 0000 0026     USART_Send_StrFl(USART_1,start);
 ;PCODE: $00001A33 VOL: 0
 ;PCODE: $00001A34 VOL: 0
 ;PCODE: $00001A35 VOL: 0
 ;PCODE: $00001A36 VOL: 0
 ;PCODE: $00001A37 VOL: 0
-; 0000 0023     USART_Send_StrFl(SYSTEM_USART,start);
+; 0000 0027     USART_Send_StrFl(SYSTEM_USART,start);
 ;PCODE: $00001A38 VOL: 0
 ;PCODE: $00001A39 VOL: 0
 ;PCODE: $00001A3A VOL: 0
 ;PCODE: $00001A3B VOL: 0
 ;PCODE: $00001A3C VOL: 0
-; 0000 0024 #endif
-; 0000 0025 
-; 0000 0026 
-; 0000 0027 //#asm("sei") // Global enable interrupts Upd-1
-; 0000 0028 //sprintf(lcd_buf, "Z=%d", v_u32_SYS_TICK); ;LcdString(1,3); LcdUpdate();
-; 0000 0029 RunRTOS();			// Старт ядра.
-;PCODE: $00001A3D VOL: 0
+; 0000 0028 #endif
+; 0000 0029 
 ; 0000 002A 
-; 0000 002B //delay_ms(1000);// Запуск фоновых задач.
-; 0000 002C SetTask(Task_Start);     //290uS (50/50) and (10/10) но при 1/1 таск 1 лагает
+; 0000 002B //#asm("sei") // Global enable interrupts Upd-1
+; 0000 002C //sprintf(lcd_buf, "Z=%d", v_u32_SYS_TICK); ;LcdString(1,3); LcdUpdate();
+; 0000 002D RunRTOS();			// Старт ядра.
+;PCODE: $00001A3D VOL: 0
+; 0000 002E 
+; 0000 002F //delay_ms(1000);// Запуск фоновых задач.
+; 0000 0030 SetTask(Task_Start);     //290uS (50/50) and (10/10) но при 1/1 таск 1 лагает
 ;PCODE: $00001A3E VOL: 0
 ;PCODE: $00001A3F VOL: 0
 ;PCODE: $00001A40 VOL: 0
-; 0000 002D 
-; 0000 002E ///-----------------Upd-7-----------------------------
-; 0000 002F // первичный запуск всех задач
-; 0000 0030 SetTimerTask(Task_pars_cmd, 25); //Upd-6
+; 0000 0031 
+; 0000 0032 ///-----------------Upd-7-----------------------------
+; 0000 0033 // первичный запуск всех задач
+; 0000 0034 SetTimerTask(Task_pars_cmd, 25); //Upd-6
 ;PCODE: $00001A41 VOL: 0
 ;PCODE: $00001A42 VOL: 0
 ;PCODE: $00001A43 VOL: 0
 ;PCODE: $00001A44 VOL: 0
 ;PCODE: $00001A45 VOL: 0
-; 0000 0031 #ifdef DEBUG                    //Upd-6
-; 0000 0032 SetTimerTask(Task_LogOut,50);
+; 0000 0035 #ifdef DEBUG                    //Upd-6
+; 0000 0036 SetTimerTask(Task_LogOut, 50);
 ;PCODE: $00001A46 VOL: 0
 ;PCODE: $00001A47 VOL: 0
 ;PCODE: $00001A48 VOL: 0
 ;PCODE: $00001A49 VOL: 0
 ;PCODE: $00001A4A VOL: 0
-; 0000 0033 SetTask(Task_LcdGreetImage);    //Upd-4
+; 0000 0037 SetTask(Task_LcdGreetImage);    //Upd-4
 ;PCODE: $00001A4B VOL: 0
 ;PCODE: $00001A4C VOL: 0
 ;PCODE: $00001A4D VOL: 0
-; 0000 0034 //SetTimerTask(Task_ADC_test,5000);   //Upd-6
-; 0000 0035 //SetTimerTask(Task_AdcOnLcd, 6000);
-; 0000 0036 //SetTimerTask(Task_BuffOut,5);
-; 0000 0037 #endif
-; 0000 0038 ///---------------------------------------------------
-; 0000 0039 
-; 0000 003A 
-; 0000 003B 
-; 0000 003C 
-; 0000 003D //delay_ms(1000); //?
-; 0000 003E while (1)
+; 0000 0038 //SetTimerTask(Task_ADC_test,5000);   //Upd-6
+; 0000 0039 //SetTimerTask(Task_AdcOnLcd, 6000);
+; 0000 003A //SetTimerTask(Task_BuffOut,5);
+; 0000 003B #endif
+; 0000 003C ///---------------------------------------------------
+; 0000 003D 
+; 0000 003E 
+; 0000 003F 
+; 0000 0040 
+; 0000 0041 //delay_ms(1000); //?
+; 0000 0042 while (1)
 ;PCODE: $00001A4E VOL: 0
-; 0000 003F  {
-; 0000 0040 //wdt_reset();	// Сброс собачьего таймера
-; 0000 0041 TaskManager();	// Вызов диспетчера
+; 0000 0043  {
+; 0000 0044 //wdt_reset();	// Сброс собачьего таймера
+; 0000 0045 TaskManager();	// Вызов диспетчера
 ;PCODE: $00001A4F VOL: 0
-; 0000 0042  }
+; 0000 0046  }
 ;PCODE: $00001A50 VOL: 0
 ;PCODE: $00001A51 VOL: 0
-; 0000 0043 } //END MAIN
+; 0000 0047 } //END MAIN
 ;PCODE: $00001A52 VOL: 0
 ;PCODE: $00001A53 VOL: 0
 ;PCODE: $00001A54 VOL: 0
@@ -11549,17 +11569,17 @@ _0x1F5:
 ;
 ;// Timer2 interrupt service routine
 ;interrupt [RTOS_ISR] void timer2_comp_isr(void)//RTOS Interrupt 1mS
-; 0000 0049 {
+; 0000 004D {
 ;PCODE: $00001A56 VOL: 0
 ;PCODE: $00001A57 VOL: 0
-; 0000 004A  TimerService();
+; 0000 004E  TimerService();
 ;PCODE: $00001A58 VOL: 0
-; 0000 004B  v_u32_SYS_TICK++;
+; 0000 004F  v_u32_SYS_TICK++;
 ;PCODE: $00001A59 VOL: 1
 ;PCODE: $00001A5A VOL: 0
 ;PCODE: $00001A5B VOL: 0
 ;PCODE: $00001A5C VOL: 0
-; 0000 004C }
+; 0000 0050 }
 ;PCODE: $00001A5D VOL: 0
 ;PCODE: $00001A5E VOL: 0
 ;PCODE: $00001A5F VOL: 0

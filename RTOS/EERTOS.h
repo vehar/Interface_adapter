@@ -7,6 +7,9 @@
 extern void InitRTOS(void);
 extern void Idle(void);
 
+typedef uint8_t T_ARG;
+typedef void (*T_PTR)(T_ARG);//заготовка для задач с параметром
+
 typedef void (*TPTR)(void);
 
 extern void SetTask(TPTR TS);
