@@ -6,6 +6,20 @@
 //============================================================================
 
 
+DECLARE_TASK(Task_LoadTest)
+{
+ // LED_PORT  &= ~(1<<LED2);
+ //delay_ms(10);      
+ // LED_PORT |= (1<<LED2);
+ //delay_ms(10);
+          
+  LcdClear();    
+  sprintf (lcd_buf, "T=%i",v_u32_SYS_TICK);  
+ LcdString(1,2);      
+ LcdUpdate();    
+ 
+SetTimerTask(Task_LoadTest,2000);; //запуск тестового таска для проверки загрузки цп
+}
 
 DECLARE_TASK(Task_Start)
 {
@@ -32,7 +46,7 @@ LED_PORT  |= (1<<LED2);
 
 
 
-void Task_ADC_test (void) //Upd-6     //для проверки освещённоси помещения
+DECLARE_TASK (Task_ADC_test) //Upd-6     //для проверки освещённоси помещения
  {
  #warning no Lcd_out// sprintf (lcd_buf, "DummyADC=%d ",volt);      // вывод на экран результата
  LcdString(1,1);   LcdUpdate();

@@ -54,7 +54,8 @@ uint8_t	index;
 //Пустая процедура - простой ядра.
   void  Idle(void)
 {
-  #warning наполнить полезным функционалом
+  #warning наполнить полезным функционалом  
+ LED_PORT  &= ~(1<<LED1);   //Для отслеживания загрузки системы
 }
 
  //UPDATE
@@ -70,6 +71,7 @@ void SetTimerTask(TPTR TS, unsigned int NewTime)    //1 task ~12words
 {
 uint8_t		index=0;
 uint8_t		nointerrupted = 0;
+
 
 if (STATUS_REG & (1<<Interrupt_Flag)) 			// Проверка запрета прерывания, аналогично функции выше
 	{
@@ -130,6 +132,8 @@ inline void TaskManager(void)
 {
 uint8_t		index=0;
 TPTR task;                 //TODO сделать глобальными регистровыми!
+
+LED_PORT  |= (1<<LED1);  //Для отслеживания загрузки системы
 
   for(index=0;index!=MainTimerQueueSize+1;++index) {  // Прочесываем очередь в поисках нужной задачи
 		if ((MainTimer[index].GoToTask != Idle)&&(MainTimer[index].Time==0)) // пропускаем пустые задачи и те, время которых еще не подошло

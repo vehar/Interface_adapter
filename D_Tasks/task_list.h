@@ -3,6 +3,9 @@
 #define DECLARE_TASK(t_name)         void t_name (void)
 
 // Прототипы задач ============================================================
+DECLARE_TASK(Task_LoadTest);
+
+
 DECLARE_TASK(Task_Start);    //new syntax
 //void Task_Start (void);    //old syntax
 
