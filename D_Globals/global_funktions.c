@@ -40,23 +40,23 @@ uint8_t check_after_pow_on(void)     /*need optimisation*/
 information on which reset source caused an MCU Reset*/
 if (MCUCSR & (1<<PORF))// Power-on Reset
    {
-    printf("porf\r\n");
+    Put_In_Log("porf\r\n");
    }
 else if (MCUCSR & (1<<EXTRF))// External Reset
    {
-    printf("extrf\r\n");
+    Put_In_Log("extrf\r\n");
    }
 else if (MCUCSR & (1<<BORF))// Brown-Out Reset
    {
-    printf("borf\r\n");
+   Put_In_Log("borf\r\n");
    }
 else if (MCUCSR & (1<<WDRF))// Watchdog Reset
    {
-    printf("wdrf\r\n");
+    Put_In_Log("wdrf\r\n");
    }
 else if (MCUCSR & (1<<JTRF))// JTAG Reset
    {
-    printf("JTRF\r\n");
+    Put_In_Log("JTRF\r\n");
    }
 
 MCUCSR&=~((1<<JTRF) | (1<<WDRF) | (1<<BORF) | (1<<EXTRF) | (1<<PORF));//clear register
@@ -218,7 +218,7 @@ while (v_u32_SYS_TICK < timecnt){}
 
 
 /**
-void cust_itoa(long int n, char *str;)
+void cust_ltoa(long int n, char *str;)
 {
 unsigned long i;
 unsigned char j,p;

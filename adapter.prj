@@ -203,7 +203,7 @@ WarningUnknownPragma=1
 LinkerWarnings=1
 DebugBootLoader=0
 WatchAVR8LAutoVariables=0
-Build=745
+Build=760
 UseEEPROMLocation0=1
 ExternalInterruptVectors=0
 IncludePath0=
@@ -1792,11 +1792,11 @@ BK9=-1
 [FoldedCode60]
 Blocks=0
 [Bookmarks79]
-TimeStamp=1153416372
-Row=130
-Column=11
+TimeStamp=1167235953
+Row=41
+Column=35
 ScrollPosX=0
-ScrollPosY=63
+ScrollPosY=24
 BK0=-1
 BK1=-1
 BK2=-1
@@ -1999,8 +1999,6 @@ Blocks=0
 Blocks=0
 [FoldedCode26]
 Blocks=0
-[FoldedCode79]
-Blocks=0
 [FoldedCode82]
 Blocks=0
 [FoldedCode47]
@@ -2071,6 +2069,8 @@ Blocks=0
 Blocks=0
 [FoldedCode75]
 Blocks=0
+[FoldedCode79]
+Blocks=0
 [HeadersList]
 Files=3
 F1=C:\Users\veha\Dropbox\ADAPTER_CV_PROJ_v7 - current\adapter.c
@@ -2089,14 +2089,14 @@ F8=C:\Program Files\CV_avr\inc\stdarg.h
 F9=C:\Program Files\CV_avr\inc\delay.h
 F10=C:\Program Files\CV_avr\inc\string.h
 F11=C:\Program Files\CV_avr\inc\stdlib.h
-F12=C:\Program Files\CV_avr\inc\stdint.h
-F13=C:\Program Files\CV_avr\inc\stdbool.h
-F14=compilers.h
-F15=C:\Program Files\CV_avr\inc\io.h
-F16=D_avrlib\avrlibtypes.h
-F17=my_debug.c
-F18=D_Globals\global_defines.h
-F19=D_Globals\global_variables.h
+F12=C:\Program Files\CV_avr\inc\stdbool.h
+F13=compilers.h
+F14=C:\Program Files\CV_avr\inc\io.h
+F15=D_avrlib\avrlibtypes.h
+F16=my_debug.c
+F17=D_Globals\global_defines.h
+F18=D_Globals\global_variables.h
+F19=C:\Program Files\CV_avr\inc\stdint.h
 F20=D_usart\usart.h
 F21=RTOS\EERTOS.h
 F22=RTOS\HAL.h

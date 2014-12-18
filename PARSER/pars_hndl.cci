@@ -1,4 +1,0 @@
-VERSION:3 SOURCE_TIMESTAMP:457C0397
-NODE:I LEVEL:0 LINE:3 "adapter.h"
-NODE:I LEVEL:0 LINE:7 "RTOS\EERTOSHAL.h"
-NODE:F LEVEL:0 LINE:9 "PARS_Handler(uint8_t argc,unsigned char * [] argv)"

@@ -1,6 +1,0 @@
-VERSION:3 SOURCE_TIMESTAMP:444E941B
-NODE:I LEVEL:0 LINE:1 "D_i2c_AT24C_EEP\i2c_AT24C_EEP.h"
-NODE:M LEVEL:0 LINE:4 "HI"
-NODE:M LEVEL:0 LINE:5 "LO"
-NODE:F LEVEL:0 LINE:7 "i2c_eep_WriteByte(uint8_t SAddr,uint16_t Addr,uint8_t Byte,IIC_F WhatDo)"
-NODE:F LEVEL:0 LINE:35 "i2c_eep_ReadByte(uint8_t SAddr,uint16_t Addr,uint8_t ByteNumber,IIC_F WhatDo)"

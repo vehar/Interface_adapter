@@ -34,7 +34,7 @@ LED_PORT  |= (1<<LED2);
 
 void Task_ADC_test (void) //Upd-6     //для проверки освещённоси помещения
  {
- sprintf (lcd_buf, "DummyADC=%d ",volt);      // вывод на экран результата
+ #warning no Lcd_out// sprintf (lcd_buf, "DummyADC=%d ",volt);      // вывод на экран результата
  LcdString(1,1);   LcdUpdate();
  SetTimerTask(Task_ADC_test,5000);
  }
@@ -44,15 +44,16 @@ void Task_LcdGreetImage (void) //Greeting image on start    //Upd-4
 //SetTask(Task_LcdLines);
  //LcdImage(rad1Image);  SetTimerTask(LcdClear,3000);
       
-  sprintf (lcd_buf, "  Interface   ");    
+ //sprintf (lcd_buf, "  Interface   ");    
+ strncpy (lcd_buf, "  Interface   ", 15);
  LcdStringBig(1,1);  
-  sprintf (lcd_buf, " Monitor v2.1 ");    
+  strncpy(lcd_buf, " Monitor v2.1 ", 15);    
  LcdString(1,3);    
-  sprintf (lcd_buf, " Хмелевськой  ");    
+ strncpy (lcd_buf, " Хмелевськой  ", 15);    
  LcdString(1,4);  
-  sprintf (lcd_buf, "  Владислав   ");    
+ strncpy (lcd_buf, "  Владислав   ", 15);    
  LcdString(1,5);   
-   sprintf (lcd_buf, "  АЕ - 104    ");    
+ strncpy (lcd_buf, "  АЕ - 104    ", 15);    
  LcdString(1,6);  
 LcdUpdate();
 //SetTimerTask(LcdClear,7000);
@@ -85,11 +86,11 @@ void Task_AdcOnLcd (void)
  LcdString(1,4);  */
  LcdClear();    
  ADC_use();
- sprintf (lcd_buf, "Напряжение на");  
+#warning disabled sprintf (lcd_buf, "Напряжение на");  
  LcdString(1,2);   
-  sprintf (lcd_buf, "  канале 0");  
+#warning disabled sprintf (lcd_buf, "  канале 0");  
  LcdString(1,3); 
-  sprintf (lcd_buf, "= %d мВ",adc_result);  
+#warning disabled sprintf (lcd_buf, "= %d мВ",adc_result);  
  LcdString(1,4);
  
  LcdUpdate();
