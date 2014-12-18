@@ -1065,7 +1065,7 @@ __DELAY_USW_LOOP:
 	.DEF _LcdCacheIdx=R7
 	.DEF _argc=R10
 	.DEF _i=R9
-	.DEF _flag=R12
+	.DEF _devider_f=R12
 	.DEF _TX_flag=R11
 	.DEF _RX_flag=R14
 
@@ -4674,7 +4674,7 @@ _0xE6:
 ;uint8_t argc;
 ;
 ;uint8_t i = 0;
-;uint8_t flag = 0;
+;uint8_t devider_f = 0;
 ;
 ;void PARSER_Init(void)
 ;{
@@ -4683,7 +4683,7 @@ _PARSER_Init:
 	CLR  R10
 ;  argv[0] = buf;
 	CALL SUBOPT_0x17
-;  flag = FALSE;
+;  devider_f = FALSE;
 	CLR  R12
 ;  i = 0;
 	CLR  R9
@@ -4718,7 +4718,7 @@ _PARS_Parser:
 	INC  R10
 ;           }
 ;
-;           if (flag)
+;           if (devider_f)
 _0xED:
 	TST  R12
 	BREQ _0xEE
@@ -4739,7 +4739,7 @@ _0xED:
 ;                 argc++;
 	INC  R10
 ;              }
-;              flag = FALSE;
+;              devider_f = FALSE;
 _0xEF:
 	CLR  R12
 ;            }
@@ -4756,7 +4756,7 @@ _0xEE:
 	RJMP _0xF0
 _0xEC:
 ;         {                 // "space" - is divider
-;           if (!flag)
+;           if (!devider_f)
 	TST  R12
 	BRNE _0xF1
 ;           {
@@ -4766,7 +4766,7 @@ _0xEC:
 	STD  Z+0,R26
 ;              i++;
 	INC  R9
-;              flag = TRUE;
+;              devider_f = TRUE;
 	LDI  R30,LOW(1)
 	MOV  R12,R30
 ;           }
@@ -4801,13 +4801,10 @@ _0xEA:
 	ST   -Y,R30
 	CALL _PARS_Handler
 ;           }
-;      //   else{
-;                  //сюда можно что-то добавить  ");
-;       //      }
 ;      argc = 0;
 _0xF3:
 	CLR  R10
-;      flag = FALSE;
+;      devider_f = FALSE;
 	CLR  R12
 ;      i = 0;
 	CLR  R9
@@ -7422,7 +7419,8 @@ _0x1C5:
 	ST   -Y,R30
 	__POINTW1MN _0x1C3,23
 	CALL SUBOPT_0x4
-;    ltoa(i,str);
+;    itoa(i,str);
+	CALL SUBOPT_0x8
 	CALL SUBOPT_0x35
 ;    USART_Send_Str(USART_0,str); //convert dec to str
 ;
@@ -7431,7 +7429,7 @@ _0x1C5:
 	ST   -Y,R30
 	__POINTW1MN _0x1C3,29
 	CALL SUBOPT_0x4
-;    ltoa(RAM_settings.MODE_of_Uart[i],str);
+;    itoa(RAM_settings.MODE_of_Uart[i],str);
 	__POINTW2MN _RAM_settings,4
 	CALL SUBOPT_0x36
 ;    USART_Send_Str(USART_0,str); //convert dec to str
@@ -7441,11 +7439,11 @@ _0x1C5:
 	ST   -Y,R30
 	__POINTW1MN _0x1C3,37
 	CALL SUBOPT_0x4
-;    ltoa(RAM_settings.baud_of_Uart[i],str);
+;    itoa(RAM_settings.baud_of_Uart[i],str);
 	MOV  R30,R17
 	CALL SUBOPT_0x37
 	CALL __GETW1P
-	CALL SUBOPT_0x38
+	CALL SUBOPT_0x35
 ;    USART_Send_Str(USART_0,str); //convert dec to str
 ;
 ;    USART_Send_Str(USART_0,"\r--------\r");
@@ -7474,7 +7472,8 @@ _0x1C8:
 	ST   -Y,R30
 	__POINTW1MN _0x1C3,72
 	CALL SUBOPT_0x4
-;    ltoa(i,str);
+;    itoa(i,str);
+	CALL SUBOPT_0x8
 	CALL SUBOPT_0x35
 ;    USART_Send_Str(USART_0,str); //convert dec to str
 ;
@@ -7483,7 +7482,7 @@ _0x1C8:
 	ST   -Y,R30
 	__POINTW1MN _0x1C3,77
 	CALL SUBOPT_0x4
-;    ltoa(RAM_settings.MODE_of_Spi[i],str);
+;    itoa(RAM_settings.MODE_of_Spi[i],str);
 	__POINTW2MN _RAM_settings,6
 	CALL SUBOPT_0x36
 ;    USART_Send_Str(USART_0,str); //convert dec to str
@@ -7493,7 +7492,7 @@ _0x1C8:
 	ST   -Y,R30
 	__POINTW1MN _0x1C3,85
 	CALL SUBOPT_0x4
-;    ltoa(RAM_settings.prescaller_of_Spi[i],str);
+;    itoa(RAM_settings.prescaller_of_Spi[i],str);
 	__POINTW2MN _RAM_settings,10
 	CALL SUBOPT_0x36
 ;    USART_Send_Str(USART_0,str); //convert dec to str
@@ -7548,7 +7547,8 @@ _0x1CC:
 	ST   -Y,R30
 	__POINTW1MN _0x1CA,26
 	CALL SUBOPT_0x4
-;    ltoa(i,str);
+;    itoa(i,str);
+	CALL SUBOPT_0x8
 	CALL SUBOPT_0x35
 ;    USART_Send_Str(USART_0,str); //convert dec to str
 ;
@@ -7557,9 +7557,9 @@ _0x1CC:
 	ST   -Y,R30
 	__POINTW1MN _0x1CA,32
 	CALL SUBOPT_0x4
-;    ltoa(EE_settings.MODE_of_Uart[i],str);
+;    itoa(EE_settings.MODE_of_Uart[i],str);
+	CALL SUBOPT_0x38
 	CALL SUBOPT_0x39
-	CALL SUBOPT_0x3A
 ;    USART_Send_Str(USART_0,str); //convert dec to str
 ;
 ;    USART_Send_Str(USART_0,"\r Speed ");
@@ -7567,13 +7567,13 @@ _0x1CC:
 	ST   -Y,R30
 	__POINTW1MN _0x1CA,40
 	CALL SUBOPT_0x4
-;    ltoa(EE_settings.baud_of_Uart[i],str);
+;    itoa(EE_settings.baud_of_Uart[i],str);
 	MOV  R30,R17
 	LDI  R26,LOW(_EE_settings)
 	LDI  R27,HIGH(_EE_settings)
 	CALL SUBOPT_0x18
 	CALL __EEPROMRDW
-	CALL SUBOPT_0x38
+	CALL SUBOPT_0x35
 ;    USART_Send_Str(USART_0,str); //convert dec to str
 ;
 ;    USART_Send_Str(USART_0,"\r--------\r");
@@ -7602,7 +7602,8 @@ _0x1CF:
 	ST   -Y,R30
 	__POINTW1MN _0x1CA,75
 	CALL SUBOPT_0x4
-;    ltoa(i,str);
+;    itoa(i,str);
+	CALL SUBOPT_0x8
 	CALL SUBOPT_0x35
 ;    USART_Send_Str(USART_0,str); //convert dec to str
 ;
@@ -7611,9 +7612,9 @@ _0x1CF:
 	ST   -Y,R30
 	__POINTW1MN _0x1CA,80
 	CALL SUBOPT_0x4
-;    ltoa(EE_settings.MODE_of_Spi[i],str);
-	CALL SUBOPT_0x3B
+;    itoa(EE_settings.MODE_of_Spi[i],str);
 	CALL SUBOPT_0x3A
+	CALL SUBOPT_0x39
 ;    USART_Send_Str(USART_0,str); //convert dec to str
 ;
 ;    USART_Send_Str(USART_0,"\r Prescaller ");
@@ -7621,9 +7622,9 @@ _0x1CF:
 	ST   -Y,R30
 	__POINTW1MN _0x1CA,88
 	CALL SUBOPT_0x4
-;    ltoa(EE_settings.prescaller_of_Spi[i],str);
-	CALL SUBOPT_0x3C
-	CALL SUBOPT_0x3A
+;    itoa(EE_settings.prescaller_of_Spi[i],str);
+	CALL SUBOPT_0x3B
+	CALL SUBOPT_0x39
 ;    USART_Send_Str(USART_0,str); //convert dec to str
 ;
 ;    USART_Send_Str(USART_0,"\r--------\r");
@@ -7660,12 +7661,10 @@ _print_sys:
 	ST   -Y,R30
 	__POINTW1MN _0x1D1,0
 	CALL SUBOPT_0x4
-;ltoa(v_u32_RX_CNT,str);
+;itoa(v_u32_RX_CNT,str);
 	LDS  R30,_v_u32_RX_CNT
 	LDS  R31,_v_u32_RX_CNT+1
-	LDS  R22,_v_u32_RX_CNT+2
-	LDS  R23,_v_u32_RX_CNT+3
-	CALL SUBOPT_0x3D
+	CALL SUBOPT_0x3C
 ;USART_Send_Str(USART_0,str); //convert dec to str
 ;
 ;USART_Send_Str(USART_0,"\rButes_TX ");
@@ -7673,12 +7672,10 @@ _print_sys:
 	ST   -Y,R30
 	__POINTW1MN _0x1D1,11
 	CALL SUBOPT_0x4
-;ltoa(v_u32_TX_CNT,str);
+;itoa(v_u32_TX_CNT,str);
 	LDS  R30,_v_u32_TX_CNT
 	LDS  R31,_v_u32_TX_CNT+1
-	LDS  R22,_v_u32_TX_CNT+2
-	LDS  R23,_v_u32_TX_CNT+3
-	CALL SUBOPT_0x3D
+	CALL SUBOPT_0x3C
 ;USART_Send_Str(USART_0,str); //convert dec to str
 ;}
 	ADIW R28,5
@@ -7717,7 +7714,7 @@ _RingBuff_TX:
 ;
 ;
 ;/**
-;void cust_ltoa(long int n, char *str;)
+;void cust_itoa(long int n, char *str;)
 ;{
 ;unsigned long i;
 ;unsigned char j,p;
@@ -7755,7 +7752,7 @@ _RingBuff_TX:
 ;{
 _Task_Start:
 ;SetTimerTask(Task_LedOff,100); //запуск мигалки-антизависалки
-	CALL SUBOPT_0x3E
+	CALL SUBOPT_0x3D
 ;}
 	RET
 ;
@@ -7785,7 +7782,7 @@ _Task_LedOff:
 ;{
 _Task_LedOn:
 ;SetTimerTask(Task_LedOff,100);
-	CALL SUBOPT_0x3E
+	CALL SUBOPT_0x3D
 ;LED_PORT  |= (1<<LED2);
 	SBI  0x12,7
 ;}
@@ -7807,34 +7804,34 @@ _Task_LcdGreetImage:
 ; //LcdImage(rad1Image);  SetTimerTask(LcdClear,3000);
 ;
 ;  sprintf (lcd_buf, "  Interface   ");
-	CALL SUBOPT_0x3F
+	CALL SUBOPT_0x3E
 	__POINTW1FN _0x0,172
-	CALL SUBOPT_0x40
+	CALL SUBOPT_0x3F
 ; LcdStringBig(1,1);
 	LDI  R30,LOW(1)
 	ST   -Y,R30
 	CALL _LcdStringBig
 ;  sprintf (lcd_buf, " Monitor v2.1 ");
-	CALL SUBOPT_0x3F
+	CALL SUBOPT_0x3E
 	__POINTW1FN _0x0,187
-	CALL SUBOPT_0x40
+	CALL SUBOPT_0x3F
 ; LcdString(1,3);
-	CALL SUBOPT_0x41
+	CALL SUBOPT_0x40
 ;  sprintf (lcd_buf, " Хмелевськой  ");
 	__POINTW1FN _0x0,202
-	CALL SUBOPT_0x40
+	CALL SUBOPT_0x3F
 ; LcdString(1,4);
 	LDI  R30,LOW(4)
-	CALL SUBOPT_0x42
+	CALL SUBOPT_0x41
 ;  sprintf (lcd_buf, "  Владислав   ");
 	__POINTW1FN _0x0,217
-	CALL SUBOPT_0x40
+	CALL SUBOPT_0x3F
 ; LcdString(1,5);
 	LDI  R30,LOW(5)
-	CALL SUBOPT_0x42
+	CALL SUBOPT_0x41
 ;   sprintf (lcd_buf, "  АЕ - 104    ");
 	__POINTW1FN _0x0,232
-	CALL SUBOPT_0x40
+	CALL SUBOPT_0x3F
 ; LcdString(1,6);
 	LDI  R30,LOW(6)
 	RJMP _0x20C0007
@@ -7873,24 +7870,26 @@ _Task_AdcOnLcd:
 ; ADC_use();
 	RCALL _ADC_use
 ; sprintf (lcd_buf, "Напряжение на");
-	CALL SUBOPT_0x3F
+	CALL SUBOPT_0x3E
 	__POINTW1FN _0x0,247
-	CALL SUBOPT_0x40
+	CALL SUBOPT_0x3F
 ; LcdString(1,2);
 	LDI  R30,LOW(2)
-	CALL SUBOPT_0x42
+	CALL SUBOPT_0x41
 ;  sprintf (lcd_buf, "  канале 0");
 	__POINTW1FN _0x0,261
-	CALL SUBOPT_0x40
+	CALL SUBOPT_0x3F
 ; LcdString(1,3);
-	CALL SUBOPT_0x41
+	CALL SUBOPT_0x40
 ;  sprintf (lcd_buf, "= %d мВ",adc_result);
 	__POINTW1FN _0x0,272
 	ST   -Y,R31
 	ST   -Y,R30
 	LDS  R30,_adc_result
 	LDS  R31,_adc_result+1
-	CALL SUBOPT_0x43
+	CLR  R22
+	CLR  R23
+	CALL __PUTPARD1
 	LDI  R24,4
 	CALL _sprintf
 	ADIW R28,8
@@ -7955,7 +7954,7 @@ _0x1D9:
 ;{
 _Task_LogOut:
 ;SetTimerTask(Task_LogOut,50);
-	CALL SUBOPT_0x44
+	CALL SUBOPT_0x42
 ;if(LogIndex){LogOut();} //если что-то есть в лог буфере - вывести
 	LDS  R30,_LogIndex_G000
 	LDS  R31,_LogIndex_G000+1
@@ -8044,7 +8043,7 @@ _Task_BuffOut:
 ;  SetTimerTask(Task_BuffOut,50);
 	LDI  R30,LOW(_Task_BuffOut)
 	LDI  R31,HIGH(_Task_BuffOut)
-	CALL SUBOPT_0x45
+	CALL SUBOPT_0x43
 ;  RingBuff_TX();
 	RCALL _RingBuff_TX
 ; }
@@ -8081,7 +8080,7 @@ _EEP_StartWrite:
 ;    SetTimerTask(EEP_StartWrite,50);                        // Повторить попытку через 50мс
 	LDI  R30,LOW(_EEP_StartWrite)
 	LDI  R31,HIGH(_EEP_StartWrite)
-	CALL SUBOPT_0x45
+	CALL SUBOPT_0x43
 ;    }
 ;}
 _0x1E3:
@@ -8092,7 +8091,7 @@ _0x1E3:
 ;{
 _EEP_Writed:
 ;i2c_Do &= i2c_Free;                                            // Освобождаем шину
-	CALL SUBOPT_0x46
+	CALL SUBOPT_0x44
 ;
 ;if(i2c_Do & (i2c_ERR_NA|i2c_ERR_BF))                        // Если запись не удалась
 	BREQ _0x1E4
@@ -8100,7 +8099,7 @@ _EEP_Writed:
 ;    SetTimerTask(EEP_StartWrite,20);                        // повторяем попытку
 	LDI  R30,LOW(_EEP_StartWrite)
 	LDI  R31,HIGH(_EEP_StartWrite)
-	CALL SUBOPT_0x47
+	CALL SUBOPT_0x45
 ;    }
 ;else
 	RJMP _0x1E5
@@ -8178,7 +8177,7 @@ _0x1E6:
 ;{
 _IIC_SendeD_Addr_ToSlave:
 ;i2c_Do &= i2c_Free;							// Освобождаем шину
-	CALL SUBOPT_0x46
+	CALL SUBOPT_0x44
 ;
 ;if(i2c_Do & (i2c_ERR_NA|i2c_ERR_BF))		// Если адресат нас не услышал или был сбой на линии
 	BREQ _0x1E7
@@ -8186,7 +8185,7 @@ _IIC_SendeD_Addr_ToSlave:
 ;	SetTimerTask(IIC_Send_Addr_ToSlave,20);		// Повторить попытку
 	LDI  R30,LOW(_IIC_Send_Addr_ToSlave)
 	LDI  R31,HIGH(_IIC_Send_Addr_ToSlave)
-	CALL SUBOPT_0x47
+	CALL SUBOPT_0x45
 ;	}
 ;}
 _0x1E7:
@@ -8436,12 +8435,12 @@ _0x1E9:
 	ADD  R30,R26
 	ADC  R31,R27
 	MOVW R0,R30
-	CALL SUBOPT_0x39
+	CALL SUBOPT_0x38
 	MOVW R26,R0
 	ST   X,R30
 ;        RAM_settings.baud_of_Uart[i] = EE_settings.baud_of_Uart[i];
 	MOV  R30,R17
-	CALL SUBOPT_0x48
+	CALL SUBOPT_0x46
 	MOVW R0,R30
 	MOV  R30,R17
 	LDI  R26,LOW(_EE_settings)
@@ -8467,7 +8466,7 @@ _0x1EC:
 	ADD  R30,R26
 	ADC  R31,R27
 	MOVW R0,R30
-	CALL SUBOPT_0x3B
+	CALL SUBOPT_0x3A
 	MOVW R26,R0
 	ST   X,R30
 ;        RAM_settings.prescaller_of_Spi[i] =  EE_settings.prescaller_of_Spi[i];
@@ -8476,7 +8475,7 @@ _0x1EC:
 	ADD  R30,R26
 	ADC  R31,R27
 	MOVW R0,R30
-	CALL SUBOPT_0x3C
+	CALL SUBOPT_0x3B
 	MOVW R26,R0
 	ST   X,R30
 ;    }
@@ -8563,14 +8562,14 @@ _SOFTWARE_init:
 	ST   -Y,R30
 	LDS  R30,_RAM_settings
 	LDS  R31,_RAM_settings+1
-	CALL SUBOPT_0x49
+	CALL SUBOPT_0x47
 ;USART_Init(USART_1, RAM_settings.MODE_of_Uart[USART_1], RAM_settings.baud_of_Uart[USART_1]);
 	LDI  R30,LOW(1)
 	ST   -Y,R30
 	__GETB1MN _RAM_settings,5
 	ST   -Y,R30
 	__GETW1MN _RAM_settings,2
-	CALL SUBOPT_0x49
+	CALL SUBOPT_0x47
 ;
 ;//Soft_SPI_Master_Init();
 ;//Hard_SPI_Master_Init_default();
@@ -8706,17 +8705,17 @@ _PARS_Handler:
 	LDI  R18,0
 	LDI  R21,0
 	LDI  R20,0
-	CALL SUBOPT_0x4A
+	CALL SUBOPT_0x48
 	LDI  R30,LOW(_Set*2)
 	LDI  R31,HIGH(_Set*2)
-	CALL SUBOPT_0x4B
+	CALL SUBOPT_0x49
 	BREQ PC+3
 	JMP _0x1F4
 ; {
 ;#ifdef DEBUG
 ; Put_In_Log("\r Set");
 	__POINTW1MN _0x1F5,0
-	CALL SUBOPT_0x4C
+	CALL SUBOPT_0x4A
 ;#endif
 ;   if (argc > 1)
 	CPI  R26,LOW(0x2)
@@ -8726,17 +8725,17 @@ _PARS_Handler:
 ;//////////////////////////////////////////////////////////////////
 ;/////////////////////UART_SET_START///////////////////////////////
 ;      if (!strcmpf(argv[1], Uart))
-	CALL SUBOPT_0x4D
+	CALL SUBOPT_0x4B
 	LDI  R30,LOW(_Uart*2)
 	LDI  R31,HIGH(_Uart*2)
-	CALL SUBOPT_0x4B
+	CALL SUBOPT_0x49
 	BREQ PC+3
 	JMP _0x1F7
 ;     {
 ;#ifdef DEBUG
 ;   Put_In_Log("\r Uart");
 	__POINTW1MN _0x1F5,6
-	CALL SUBOPT_0x4C
+	CALL SUBOPT_0x4A
 ;#endif
 ;
 ;       if (argc > 2)
@@ -8745,16 +8744,16 @@ _PARS_Handler:
 	JMP _0x1F8
 ;        {
 ;          tmp = PARS_StrToUint(argv[2]);//Get number of interface
-	CALL SUBOPT_0x4E
-	CALL SUBOPT_0x4F
+	CALL SUBOPT_0x4C
+	CALL SUBOPT_0x4D
 ;          if (tmp <= COUNT_OF_UARTS){Interface_Num = tmp; response = ok;
-	CALL SUBOPT_0x50
+	CALL SUBOPT_0x4E
 	BRSH _0x1F9
-	CALL SUBOPT_0x51
+	CALL SUBOPT_0x4F
 ;#ifdef DEBUG
 ;  Put_In_Log("\r Num");
 	__POINTW1MN _0x1F5,13
-	CALL SUBOPT_0x52
+	CALL SUBOPT_0x50
 ;#endif
 ;          }
 ;          else{response = largeValue; goto exit;}
@@ -8772,14 +8771,14 @@ _0x1FA:
 	JMP _0x1FC
 ;        {
 ;             if (!strcmpf(argv[3], Mode))
-	CALL SUBOPT_0x53
+	CALL SUBOPT_0x51
 	BRNE _0x1FD
 ;             {
 ;               tmp = PARS_StrToUchar(argv[4]); //Get uart mode
-	CALL SUBOPT_0x54
+	CALL SUBOPT_0x52
 ;              if (tmp==1 || tmp==0){RAM_settings.MODE_of_Uart[Interface_Num] = tmp; response = ok;
 	BREQ _0x1FF
-	CALL SUBOPT_0x55
+	CALL SUBOPT_0x53
 	CALL __CPD02
 	BRNE _0x1FE
 _0x1FF:
@@ -8794,7 +8793,7 @@ _0x1FF:
 ;#ifdef DEBUG
 ;  Put_In_Log("\r Mode");
 	__POINTW1MN _0x1F5,19
-	CALL SUBOPT_0x52
+	CALL SUBOPT_0x50
 ;#endif
 ;               i = 2; //go to next param "speed"
 	LDI  R19,LOW(2)
@@ -8809,7 +8808,7 @@ _0x1FE:
 ; //USART_Send_Str(SYSTEM_USART,"\rM EXIT");
 ; Put_In_Log("\rM EXIT");
 	__POINTW1MN _0x1F5,26
-	CALL SUBOPT_0x52
+	CALL SUBOPT_0x50
 ;#endif
 ;            goto exit;}
 	RJMP _0x1FB
@@ -8818,32 +8817,32 @@ _0x201:
 ;
 ;             if (!strcmpf(argv[3+i], Speed)) //may be 3 or 5th param
 _0x1FD:
-	CALL SUBOPT_0x56
-	CALL SUBOPT_0x57
+	CALL SUBOPT_0x54
+	CALL SUBOPT_0x55
 	LDI  R30,LOW(_Speed*2)
 	LDI  R31,HIGH(_Speed*2)
-	CALL SUBOPT_0x4B
+	CALL SUBOPT_0x49
 	BRNE _0x202
 ;             {
 ;              tmp = PARS_StrToUint(argv[4+i]); //get Baud Rate
-	CALL SUBOPT_0x58
-	CALL SUBOPT_0x57
-	CALL SUBOPT_0x4F
+	CALL SUBOPT_0x56
+	CALL SUBOPT_0x55
+	CALL SUBOPT_0x4D
 ;              if (tmp <= MAX_BAUD_RATE)
-	CALL SUBOPT_0x59
+	CALL SUBOPT_0x57
 	BRSH _0x203
 ;              {
 ;              RAM_settings.baud_of_Uart[Interface_Num] = tmp;
 	MOV  R30,R18
-	CALL SUBOPT_0x48
-	CALL SUBOPT_0x5A
+	CALL SUBOPT_0x46
+	CALL SUBOPT_0x58
 ;              response = ok; i = 0;
 ;#ifdef DEBUG
 ;  Put_In_Log("\r ");
 	__POINTW1MN _0x1F5,34
-	CALL SUBOPT_0x52
+	CALL SUBOPT_0x50
 ;  Put_In_LogFl(Speed);
-	CALL SUBOPT_0x5B
+	CALL SUBOPT_0x59
 ;#endif
 ;              }
 ;              else{response = largeValue;
@@ -8855,7 +8854,7 @@ _0x203:
 ;#ifdef DEBUG
 ; Put_In_Log("\rM EXIT");
 	__POINTW1MN _0x1F5,37
-	CALL SUBOPT_0x52
+	CALL SUBOPT_0x50
 ;#endif
 ;             goto exit;}
 	RJMP _0x1FB
@@ -8864,9 +8863,9 @@ _0x204:
 ;
 ;     USART_Init(Interface_Num, RAM_settings.MODE_of_Uart[Interface_Num], RAM_settings.baud_of_Uart[Interface_Num]);
 _0x202:
-	CALL SUBOPT_0x5C
+	CALL SUBOPT_0x5A
 	CALL __GETW1P
-	CALL SUBOPT_0x49
+	CALL SUBOPT_0x47
 ;     Interface_Num = 0;
 	LDI  R18,LOW(0)
 ;
@@ -8876,7 +8875,7 @@ _0x202:
 	__POINTW2MN _EE_settings,4
 	MOV  R30,R18
 	CALL SUBOPT_0x1D
-	CALL SUBOPT_0x5D
+	CALL SUBOPT_0x5B
 ;     EE_settings.baud_of_Uart[Interface_Num] = RAM_settings.baud_of_Uart[Interface_Num];
 	CALL __GETW1P
 	MOVW R26,R0
@@ -8886,7 +8885,7 @@ _0x202:
 ;#ifdef DEBUG          //не переносятся настройки!!!
 ; Put_In_Log("\r Uart_init");
 	__POINTW1MN _0x1F5,45
-	CALL SUBOPT_0x52
+	CALL SUBOPT_0x50
 ; //print_settings_ram();
 ;#endif
 ;      }
@@ -8907,17 +8906,17 @@ _0x1F8:
 ;/////////////////////SPI_SET_START////////////////////////////////
 ;     if (!strcmpf(argv[1], Spi))
 _0x1F7:
-	CALL SUBOPT_0x4D
+	CALL SUBOPT_0x4B
 	LDI  R30,LOW(_Spi*2)
 	LDI  R31,HIGH(_Spi*2)
-	CALL SUBOPT_0x4B
+	CALL SUBOPT_0x49
 	BREQ PC+3
 	JMP _0x205
 ;     {
 ;#ifdef DEBUG
 ;    Put_In_Log("\r Spi");
 	__POINTW1MN _0x1F5,57
-	CALL SUBOPT_0x4C
+	CALL SUBOPT_0x4A
 ;#endif
 ;       if (argc > 2)
 	CPI  R26,LOW(0x3)
@@ -8927,15 +8926,15 @@ _0x1F7:
 ;#ifdef DEBUG
 ;  Put_In_Log("\rS Num");
 	__POINTW1MN _0x1F5,63
-	CALL SUBOPT_0x52
+	CALL SUBOPT_0x50
 ;#endif
 ;          tmp = PARS_StrToUchar(argv[2]);//Get number of interface
-	CALL SUBOPT_0x4E
-	CALL SUBOPT_0x5E
+	CALL SUBOPT_0x4C
+	CALL SUBOPT_0x5C
 ;          if (tmp <= COUNT_OF_SPI){Interface_Num = tmp; response = ok;}
-	CALL SUBOPT_0x50
+	CALL SUBOPT_0x4E
 	BRSH _0x207
-	CALL SUBOPT_0x51
+	CALL SUBOPT_0x4F
 ;          else{response = largeValue; goto exit;}
 	RJMP _0x208
 _0x207:
@@ -8951,14 +8950,14 @@ _0x208:
 	JMP _0x209
 ;      {
 ;         if (!strcmpf(argv[3], Mode))
-	CALL SUBOPT_0x53
+	CALL SUBOPT_0x51
 	BRNE _0x20A
 ;         {
 ;            tmp = PARS_StrToUchar(argv[4]); //Get spi mode
-	CALL SUBOPT_0x54
+	CALL SUBOPT_0x52
 ;            if (tmp==1 || tmp==0){RAM_settings.MODE_of_Spi[Interface_Num] = tmp;
 	BREQ _0x20C
-	CALL SUBOPT_0x55
+	CALL SUBOPT_0x53
 	CALL __CPD02
 	BRNE _0x20B
 _0x20C:
@@ -8976,7 +8975,7 @@ _0x20C:
 ; #ifdef DEBUG
 ;Put_In_Log("\rS Mode-");
 	__POINTW1MN _0x1F5,70
-	CALL SUBOPT_0x52
+	CALL SUBOPT_0x50
 ;#endif
 ;            }
 ;            else{response = largeValue; goto exit;}
@@ -8990,17 +8989,17 @@ _0x20E:
 ;
 ;          if (!strcmpf(argv[3+i], Prescaller)) //Prescaller, may be 3 or 5th param
 _0x20A:
-	CALL SUBOPT_0x56
-	CALL SUBOPT_0x57
+	CALL SUBOPT_0x54
+	CALL SUBOPT_0x55
 	LDI  R30,LOW(_Prescaller*2)
 	LDI  R31,HIGH(_Prescaller*2)
-	CALL SUBOPT_0x4B
+	CALL SUBOPT_0x49
 	BRNE _0x20F
 ;         {
 ;            tmp = PARS_StrToUchar(argv[4+i]); //get SPI prescaller Rate
-	CALL SUBOPT_0x58
-	CALL SUBOPT_0x57
-	CALL SUBOPT_0x5E
+	CALL SUBOPT_0x56
+	CALL SUBOPT_0x55
+	CALL SUBOPT_0x5C
 ;            if (tmp <= MAX_SPI_PRESCALLER){RAM_settings.prescaller_of_Spi[Interface_Num] = tmp;
 	__CPD2N 0x81
 	BRSH _0x210
@@ -9018,7 +9017,7 @@ _0x20A:
 ;#ifdef DEBUG
 ;Put_In_Log("\rS Presc-");
 	__POINTW1MN _0x1F5,79
-	CALL SUBOPT_0x52
+	CALL SUBOPT_0x50
 ;#endif
 ;            }
 ;            else{response = largeValue; goto exit;}
@@ -9032,22 +9031,22 @@ _0x211:
 ;
 ;          if (!strcmpf(argv[3+i], PhaPol)) //may be 3 or 5 or 7th  param
 _0x20F:
-	CALL SUBOPT_0x56
-	CALL SUBOPT_0x57
+	CALL SUBOPT_0x54
+	CALL SUBOPT_0x55
 	LDI  R30,LOW(_PhaPol*2)
 	LDI  R31,HIGH(_PhaPol*2)
-	CALL SUBOPT_0x4B
+	CALL SUBOPT_0x49
 	BREQ PC+3
 	JMP _0x212
 ;         {
 ;            tmp = PARS_StrToUchar(argv[4+i]);//get phase/polarity mode (0-3)
-	CALL SUBOPT_0x58
-	CALL SUBOPT_0x57
-	CALL SUBOPT_0x5E
+	CALL SUBOPT_0x56
+	CALL SUBOPT_0x55
+	CALL SUBOPT_0x5C
 ;           if (tmp>=0 && tmp <= 3)
 	CALL __CPD20
 	BRLO _0x214
-	CALL SUBOPT_0x55
+	CALL SUBOPT_0x53
 	__CPD2N 0x4
 	BRLO _0x215
 _0x214:
@@ -9102,7 +9101,7 @@ _0x218:
 ;#ifdef DEBUG
 ; Put_In_Log("\rS PhaPol-");
 	__POINTW1MN _0x1F5,89
-	CALL SUBOPT_0x52
+	CALL SUBOPT_0x50
 ;#endif
 ;            RAM_settings.PhaPol_of_Spi[Interface_Num] = tmp; //Upd - 1
 	__POINTW2MN _RAM_settings,8
@@ -9122,11 +9121,11 @@ _0x21E:
 ;     SPI_init(Interface_Num, RAM_settings.MODE_of_Spi[Interface_Num], Tmp_param_2 ,Tmp_param_1, RAM_settings.prescaller_of_Spi[Interface_Num]);
 _0x212:
 	ST   -Y,R18
-	CALL SUBOPT_0x5F
+	CALL SUBOPT_0x5D
 	ST   -Y,R30
 	ST   -Y,R20
 	ST   -Y,R21
-	CALL SUBOPT_0x60
+	CALL SUBOPT_0x5E
 	ST   -Y,R30
 	CALL _SPI_init
 ;     i = 0; Tmp_param_1=0; Tmp_param_2=0;
@@ -9139,7 +9138,7 @@ _0x212:
 	MOV  R30,R18
 	CALL SUBOPT_0x1D
 	MOVW R0,R30
-	CALL SUBOPT_0x5F
+	CALL SUBOPT_0x5D
 	MOVW R26,R0
 	CALL __EEPROMWRB
 ;      EE_settings.PhaPol_of_Spi[Interface_Num] = RAM_settings.PhaPol_of_Spi[Interface_Num];//Upd - 1
@@ -9160,7 +9159,7 @@ _0x212:
 	MOV  R30,R18
 	CALL SUBOPT_0x1D
 	MOVW R0,R30
-	CALL SUBOPT_0x60
+	CALL SUBOPT_0x5E
 	MOVW R26,R0
 	CALL __EEPROMWRB
 ;
@@ -9168,7 +9167,7 @@ _0x212:
 ;#ifdef DEBUG
 ; Put_In_Log("\rS SpiInit");
 	__POINTW1MN _0x1F5,100
-	CALL SUBOPT_0x52
+	CALL SUBOPT_0x50
 ;#endif
 ;      }
 ;     }
@@ -9182,17 +9181,17 @@ _0x206:
 ;/////////////////////I2C_SET_START///////////////////////////////
 ;      if (!strcmpf(argv[1], I2c))
 _0x205:
-	CALL SUBOPT_0x4D
+	CALL SUBOPT_0x4B
 	LDI  R30,LOW(_I2c*2)
 	LDI  R31,HIGH(_I2c*2)
-	CALL SUBOPT_0x4B
+	CALL SUBOPT_0x49
 	BREQ PC+3
 	JMP _0x21F
 ;     {
 ;#ifdef DEBUG
 ;   Put_In_Log("\r I2c");
 	__POINTW1MN _0x1F5,111
-	CALL SUBOPT_0x4C
+	CALL SUBOPT_0x4A
 ;#endif
 ;
 ;       if (argc > 2)
@@ -9201,16 +9200,16 @@ _0x205:
 	JMP _0x220
 ;        {
 ;          tmp = PARS_StrToUint(argv[2]);//Get number of interface
-	CALL SUBOPT_0x4E
-	CALL SUBOPT_0x4F
+	CALL SUBOPT_0x4C
+	CALL SUBOPT_0x4D
 ;          if (tmp <= COUNT_OF_UARTS){Interface_Num = tmp; response = ok;
-	CALL SUBOPT_0x50
+	CALL SUBOPT_0x4E
 	BRSH _0x221
-	CALL SUBOPT_0x51
+	CALL SUBOPT_0x4F
 ;#ifdef DEBUG
 ;  Put_In_Log("\r Num");
 	__POINTW1MN _0x1F5,117
-	CALL SUBOPT_0x52
+	CALL SUBOPT_0x50
 ;#endif
 ;          }
 ;          else{response = largeValue; goto exit;}
@@ -9228,14 +9227,14 @@ _0x222:
 	JMP _0x223
 ;        {
 ;             if (!strcmpf(argv[3], Mode))
-	CALL SUBOPT_0x53
+	CALL SUBOPT_0x51
 	BRNE _0x224
 ;             {
 ;               tmp = PARS_StrToUchar(argv[4]); //Get uart mode
-	CALL SUBOPT_0x54
+	CALL SUBOPT_0x52
 ;              if (tmp==1 || tmp==0){RAM_settings.MODE_of_Uart[Interface_Num] = tmp; response = ok;
 	BREQ _0x226
-	CALL SUBOPT_0x55
+	CALL SUBOPT_0x53
 	CALL __CPD02
 	BRNE _0x225
 _0x226:
@@ -9250,7 +9249,7 @@ _0x226:
 ;#ifdef DEBUG
 ;  Put_In_Log("\r Mode");
 	__POINTW1MN _0x1F5,123
-	CALL SUBOPT_0x52
+	CALL SUBOPT_0x50
 ;#endif
 ;               i = 2; //go to next param "speed"
 	LDI  R19,LOW(2)
@@ -9265,7 +9264,7 @@ _0x225:
 ; //USART_Send_Str(SYSTEM_USART,"\rM EXIT");
 ; Put_In_Log("\rM EXIT");
 	__POINTW1MN _0x1F5,130
-	CALL SUBOPT_0x52
+	CALL SUBOPT_0x50
 ;#endif
 ;            goto exit;}
 	RJMP _0x1FB
@@ -9274,32 +9273,32 @@ _0x228:
 ;
 ;             if (!strcmpf(argv[3+i], Speed)) //may be 3 or 5th param
 _0x224:
-	CALL SUBOPT_0x56
-	CALL SUBOPT_0x57
+	CALL SUBOPT_0x54
+	CALL SUBOPT_0x55
 	LDI  R30,LOW(_Speed*2)
 	LDI  R31,HIGH(_Speed*2)
-	CALL SUBOPT_0x4B
+	CALL SUBOPT_0x49
 	BRNE _0x229
 ;             {
 ;              tmp = PARS_StrToUint(argv[4+i]); //get Baud Rate
-	CALL SUBOPT_0x58
-	CALL SUBOPT_0x57
-	CALL SUBOPT_0x4F
+	CALL SUBOPT_0x56
+	CALL SUBOPT_0x55
+	CALL SUBOPT_0x4D
 ;              if (tmp <= MAX_BAUD_RATE)
-	CALL SUBOPT_0x59
+	CALL SUBOPT_0x57
 	BRSH _0x22A
 ;              {
 ;              RAM_settings.baud_of_Uart[Interface_Num] = tmp;
 	MOV  R30,R18
-	CALL SUBOPT_0x48
-	CALL SUBOPT_0x5A
+	CALL SUBOPT_0x46
+	CALL SUBOPT_0x58
 ;              response = ok; i = 0;
 ;#ifdef DEBUG
 ;  Put_In_Log("\r ");
 	__POINTW1MN _0x1F5,138
-	CALL SUBOPT_0x52
+	CALL SUBOPT_0x50
 ;  Put_In_LogFl(Speed);
-	CALL SUBOPT_0x5B
+	CALL SUBOPT_0x59
 ;#endif
 ;              }
 ;              else{response = largeValue;
@@ -9311,7 +9310,7 @@ _0x22A:
 ;#ifdef DEBUG
 ; Put_In_Log("\rM EXIT");
 	__POINTW1MN _0x1F5,141
-	CALL SUBOPT_0x52
+	CALL SUBOPT_0x50
 ;#endif
 ;             goto exit;}
 	RJMP _0x1FB
@@ -9320,9 +9319,9 @@ _0x22B:
 ;
 ;     USART_Init(Interface_Num, RAM_settings.MODE_of_Uart[Interface_Num], RAM_settings.baud_of_Uart[Interface_Num]);
 _0x229:
-	CALL SUBOPT_0x5C
+	CALL SUBOPT_0x5A
 	CALL __GETW1P
-	CALL SUBOPT_0x49
+	CALL SUBOPT_0x47
 ;     Interface_Num = 0; //?
 	LDI  R18,LOW(0)
 ;
@@ -9330,7 +9329,7 @@ _0x229:
 	__POINTW2MN _EE_settings,4
 	MOV  R30,R18
 	CALL SUBOPT_0x1D
-	CALL SUBOPT_0x5D
+	CALL SUBOPT_0x5B
 ;     EE_settings.baud_of_Uart[Interface_Num] = RAM_settings.baud_of_Uart[Interface_Num];
 	CALL __GETW1P
 	MOVW R26,R0
@@ -9338,7 +9337,7 @@ _0x229:
 ;#ifdef DEBUG          //не переносятся настройки!!!
 ; Put_In_Log("\r I2c_init");
 	__POINTW1MN _0x1F5,149
-	CALL SUBOPT_0x52
+	CALL SUBOPT_0x50
 ; //print_settings_ram();
 ;#endif
 ;      }
@@ -9363,17 +9362,17 @@ _0x1F6:
 ;/////////////////////////////////////////////////////////////////
 ;if (!strcmpf(argv[0], W)) //Write
 _0x1F4:
-	CALL SUBOPT_0x4A
+	CALL SUBOPT_0x48
 	LDI  R30,LOW(_W*2)
 	LDI  R31,HIGH(_W*2)
-	CALL SUBOPT_0x4B
+	CALL SUBOPT_0x49
 	BREQ PC+3
 	JMP _0x22C
 ; {
 ; #ifdef DEBUG
 ; Put_In_Log("\r W");
 	__POINTW1MN _0x1F5,160
-	CALL SUBOPT_0x4C
+	CALL SUBOPT_0x4A
 ;#endif
 ;  if (argc > 1)
 	CPI  R26,LOW(0x2)
@@ -9383,10 +9382,10 @@ _0x1F4:
 ;///////////////////////////////////////////////////////////////////
 ;/////////////////////UART_WRITE_START//////////////////////////////
 ;      if (!strcmpf(argv[1], Uart))
-	CALL SUBOPT_0x4D
+	CALL SUBOPT_0x4B
 	LDI  R30,LOW(_Uart*2)
 	LDI  R31,HIGH(_Uart*2)
-	CALL SUBOPT_0x4B
+	CALL SUBOPT_0x49
 	BRNE _0x22E
 ;     {
 ;       if (argc > 2)
@@ -9395,10 +9394,10 @@ _0x1F4:
 	BRLO _0x22F
 ;        {
 ;          tmp = PARS_StrToUchar(argv[2]);//Get number of interface to write
-	CALL SUBOPT_0x4E
-	CALL SUBOPT_0x5E
+	CALL SUBOPT_0x4C
+	CALL SUBOPT_0x5C
 ;          if (tmp <= COUNT_OF_UARTS){Interface_Num = tmp; response = ok;}
-	CALL SUBOPT_0x50
+	CALL SUBOPT_0x4E
 	BRSH _0x230
 	LDD  R18,Y+12
 	LDI  R30,LOW(_ok*2)
@@ -9420,7 +9419,7 @@ _0x264:
 	LDI  R31,HIGH(_StopRTOS)
 ;        USART_Send_Str(Interface_Num, argv[3]); //TODO проверить реальную задержку
 	ST   -Y,R18
-	CALL SUBOPT_0x61
+	CALL SUBOPT_0x5F
 	CALL _USART_Send_Str
 ;      RunRTOS;
 	LDI  R30,LOW(_RunRTOS)
@@ -9428,10 +9427,9 @@ _0x264:
 ;      #ifdef DEBUG
 ;Put_In_Log("\r U D>TX ");
 	__POINTW1MN _0x1F5,164
-	CALL SUBOPT_0x52
-;  ltoa(PARS_StrToUint(argv[3]),str);
-	CALL SUBOPT_0x62
-	CALL SUBOPT_0x63
+	CALL SUBOPT_0x50
+;  itoa(PARS_StrToUint(argv[3]),str);
+	CALL SUBOPT_0x60
 ;Put_In_Log(str); //convert dec to str
 ;     #endif
 ;      }
@@ -9446,10 +9444,10 @@ _0x22F:
 ;/////////////////////SPI_WRITE-READ_START//////////////////////////
 ;    if (!strcmpf(argv[1], Spi))
 _0x22E:
-	CALL SUBOPT_0x4D
+	CALL SUBOPT_0x4B
 	LDI  R30,LOW(_Spi*2)
 	LDI  R31,HIGH(_Spi*2)
-	CALL SUBOPT_0x4B
+	CALL SUBOPT_0x49
 	BRNE _0x233
 ;     {
 ; #ifdef DEBUG
@@ -9461,10 +9459,10 @@ _0x22E:
 	BRLO _0x234
 ;        {
 ;          tmp = PARS_StrToUchar(argv[2]);//Get number of interface to write
-	CALL SUBOPT_0x4E
-	CALL SUBOPT_0x5E
+	CALL SUBOPT_0x4C
+	CALL SUBOPT_0x5C
 ;          if (tmp <= COUNT_OF_SPI){Interface_Num = tmp; response = ok;
-	CALL SUBOPT_0x50
+	CALL SUBOPT_0x4E
 	BRSH _0x235
 	LDD  R18,Y+12
 	LDI  R30,LOW(_ok*2)
@@ -9490,17 +9488,16 @@ _0x265:
 ;
 ;Put_In_Log("\r S D>TX ");
 	__POINTW1MN _0x1F5,174
-	CALL SUBOPT_0x52
-; ltoa(PARS_StrToUint(argv[3]),str);  //возможно вывести не > 65535
-	CALL SUBOPT_0x62
-	CALL SUBOPT_0x63
+	CALL SUBOPT_0x50
+; itoa(PARS_StrToUint(argv[3]),str);  //возможно вывести не > 65535
+	CALL SUBOPT_0x60
 ;Put_In_Log(str); //convert dec to str
 ; #endif
 ;
 ; SPI_RW_Buf(10/*array_size(argv[3])*/, argv[3], Spi0_RX_buf); //TODO определять кол-во автоматически
 	LDI  R30,LOW(10)
 	ST   -Y,R30
-	CALL SUBOPT_0x61
+	CALL SUBOPT_0x5F
 	LDI  R30,LOW(_Spi0_RX_buf_G000)
 	LDI  R31,HIGH(_Spi0_RX_buf_G000)
 	ST   -Y,R31
@@ -9510,11 +9507,11 @@ _0x265:
 ; #ifdef DEBUG
 ;Put_In_Log("\r S D<RX ");
 	__POINTW1MN _0x1F5,184
-	CALL SUBOPT_0x52
+	CALL SUBOPT_0x50
 ;Put_In_Log(Spi0_RX_buf);
 	LDI  R30,LOW(_Spi0_RX_buf_G000)
 	LDI  R31,HIGH(_Spi0_RX_buf_G000)
-	CALL SUBOPT_0x52
+	CALL SUBOPT_0x50
 ;//SetTimerTask(Task_SPI_ClrBuf, 10);
 ; // USART_Send_Str(SYSTEM_USART, Spi0_RX_buf);
 ;  #endif
@@ -9530,10 +9527,10 @@ _0x234:
 ;/////////////////////I2C_WRITE_START//////////////////////////////
 ;    if (!strcmpf(argv[1], I2c))
 _0x233:
-	CALL SUBOPT_0x4D
+	CALL SUBOPT_0x4B
 	LDI  R30,LOW(_I2c*2)
 	LDI  R31,HIGH(_I2c*2)
-	CALL SUBOPT_0x4B
+	CALL SUBOPT_0x49
 	BRNE _0x238
 ;     {
 ; #ifdef DEBUG
@@ -9545,10 +9542,10 @@ _0x233:
 	BRLO _0x239
 ;        {
 ;          tmp = PARS_StrToUchar(argv[2]);//Get number of interface to write
-	CALL SUBOPT_0x4E
-	CALL SUBOPT_0x5E
+	CALL SUBOPT_0x4C
+	CALL SUBOPT_0x5C
 ;          if (tmp <= COUNT_OF_I2C){Interface_Num = tmp; response = ok;
-	CALL SUBOPT_0x50
+	CALL SUBOPT_0x4E
 	BRSH _0x23A
 	LDD  R18,Y+12
 	LDI  R30,LOW(_ok*2)
@@ -9574,14 +9571,22 @@ _0x266:
 ;
 ;Put_In_Log("\r I2C D>TX ");
 	__POINTW1MN _0x1F5,194
-	CALL SUBOPT_0x52
-; ltoa(PARS_StrToUint(argv[3]),str);  //возможно вывести не > 65535
-	CALL SUBOPT_0x62
-	MOVW R30,R28
-	ADIW R30,10
+	CALL SUBOPT_0x50
+; itoa(PARS_StrToUint(argv[3]),str);  //возможно вывести не > 65535
+	LDD  R30,Y+16
+	LDD  R31,Y+16+1
+	LDD  R26,Z+6
+	LDD  R27,Z+7
+	ST   -Y,R27
+	ST   -Y,R26
+	CALL _PARS_StrToUint
 	ST   -Y,R31
 	ST   -Y,R30
-	CALL _ltoa
+	MOVW R30,R28
+	ADIW R30,8
+	ST   -Y,R31
+	ST   -Y,R30
+	CALL _itoa
 ; USART_Send_Str(SYSTEM_USART,str); //convert dec to str
 	LDI  R30,LOW(0)
 	ST   -Y,R30
@@ -9597,7 +9602,7 @@ _0x266:
 ; #ifdef DEBUG
 ;Put_In_Log("\r I2C D<RX ");
 	__POINTW1MN _0x1F5,206
-	CALL SUBOPT_0x52
+	CALL SUBOPT_0x50
 ;  USART_Send_Str(SYSTEM_USART, Spi0_RX_buf);
 	LDI  R30,LOW(0)
 	ST   -Y,R30
@@ -9636,9 +9641,9 @@ _0x22D:
 ;
 ;if (!strcmpf(argv[0], "y")){  SetTask(Task_BuffOut);  U1_in_buf_flag = 1; response = ok;}
 _0x22C:
-	CALL SUBOPT_0x4A
+	CALL SUBOPT_0x48
 	__POINTW1FN _0x0,458
-	CALL SUBOPT_0x4B
+	CALL SUBOPT_0x49
 	BRNE _0x23D
 	LDI  R30,LOW(_Task_BuffOut)
 	LDI  R31,HIGH(_Task_BuffOut)
@@ -9650,9 +9655,9 @@ _0x22C:
 	MOVW R16,R30
 ;if (!strcmpf(argv[0], "n")){  ClearTimerTask(Task_BuffOut);  U1_in_buf_flag = 0; response = ok;}
 _0x23D:
-	CALL SUBOPT_0x4A
+	CALL SUBOPT_0x48
 	__POINTW1FN _0x0,460
-	CALL SUBOPT_0x4B
+	CALL SUBOPT_0x49
 	BRNE _0x23E
 	LDI  R30,LOW(_Task_BuffOut)
 	LDI  R31,HIGH(_Task_BuffOut)
@@ -9666,9 +9671,9 @@ _0x23D:
 	MOVW R16,R30
 ;if (!strcmpf(argv[0], "a")){  SetTask(Task_AdcOnLcd);  response = ok;}
 _0x23E:
-	CALL SUBOPT_0x4A
+	CALL SUBOPT_0x48
 	__POINTW1FN _0x0,462
-	CALL SUBOPT_0x4B
+	CALL SUBOPT_0x49
 	BRNE _0x23F
 	LDI  R30,LOW(_Task_AdcOnLcd)
 	LDI  R31,HIGH(_Task_AdcOnLcd)
@@ -9679,10 +9684,10 @@ _0x23E:
 ;
 ;    if (!strcmpf(argv[0], Help)){ print_help(); response = ok; }
 _0x23F:
-	CALL SUBOPT_0x4A
+	CALL SUBOPT_0x48
 	LDI  R30,LOW(_Help*2)
 	LDI  R31,HIGH(_Help*2)
-	CALL SUBOPT_0x4B
+	CALL SUBOPT_0x49
 	BRNE _0x240
 	RCALL _print_help
 	LDI  R30,LOW(_ok*2)
@@ -9690,10 +9695,10 @@ _0x23F:
 	MOVW R16,R30
 ;    if (!strcmpf(argv[0], boot)){response = ok;#asm("call 0x1E00");}//Boot_reset "Goto bootloader"
 _0x240:
-	CALL SUBOPT_0x4A
+	CALL SUBOPT_0x48
 	LDI  R30,LOW(_boot*2)
 	LDI  R31,HIGH(_boot*2)
-	CALL SUBOPT_0x4B
+	CALL SUBOPT_0x49
 	BRNE _0x241
 	LDI  R30,LOW(_ok*2)
 	LDI  R31,HIGH(_ok*2)
@@ -9701,10 +9706,10 @@ _0x240:
 	call 0x1E00
 ;    if (!strcmpf(argv[0], reset)){response = ok;#asm("jmp 0x0000");} //reset
 _0x241:
-	CALL SUBOPT_0x4A
+	CALL SUBOPT_0x48
 	LDI  R30,LOW(_reset*2)
 	LDI  R31,HIGH(_reset*2)
-	CALL SUBOPT_0x4B
+	CALL SUBOPT_0x49
 	BRNE _0x242
 	LDI  R30,LOW(_ok*2)
 	LDI  R31,HIGH(_ok*2)
@@ -9713,10 +9718,10 @@ _0x241:
 ;    // dbg не успевает вывестись из-за прерывания ртос(вунужден временно останавливать, а с help всё ок.)
 ;    if (!strcmpf(argv[0], dbg)){StopRTOS(); print_settings_eeprom(); print_settings_ram(); print_sys(); response = ok; RunRTOS();}//stop=15kbt
 _0x242:
-	CALL SUBOPT_0x4A
+	CALL SUBOPT_0x48
 	LDI  R30,LOW(_dbg*2)
 	LDI  R31,HIGH(_dbg*2)
-	CALL SUBOPT_0x4B
+	CALL SUBOPT_0x49
 	BRNE _0x243
 	CALL _StopRTOS
 	RCALL _print_settings_eeprom
@@ -9728,9 +9733,9 @@ _0x242:
 	CALL _RunRTOS
 ;    if (!strcmpf(argv[0], "s")){ print_sys(); response = ok;}
 _0x243:
-	CALL SUBOPT_0x4A
+	CALL SUBOPT_0x48
 	__POINTW1FN _0x0,464
-	CALL SUBOPT_0x4B
+	CALL SUBOPT_0x49
 	BRNE _0x244
 	RCALL _print_sys
 	LDI  R30,LOW(_ok*2)
@@ -9738,9 +9743,9 @@ _0x243:
 	MOVW R16,R30
 ;    if (!strcmpf(argv[0], "E")){SetTask(EEP_StartWrite); response = ok;}  // Запускаем процесс записи в ЕЕПРОМ.
 _0x244:
-	CALL SUBOPT_0x4A
+	CALL SUBOPT_0x48
 	__POINTW1FN _0x0,466
-	CALL SUBOPT_0x4B
+	CALL SUBOPT_0x49
 	BRNE _0x245
 	LDI  R30,LOW(_EEP_StartWrite)
 	LDI  R31,HIGH(_EEP_StartWrite)
@@ -9836,7 +9841,7 @@ _main:
 	CALL SUBOPT_0x5
 ; 0000 0035 #ifdef DEBUG                    //Upd-6
 ; 0000 0036 SetTimerTask(Task_LogOut, 50);
-	CALL SUBOPT_0x44
+	CALL SUBOPT_0x42
 ; 0000 0037 SetTask(Task_LcdGreetImage);    //Upd-4
 	LDI  R30,LOW(_Task_LcdGreetImage)
 	LDI  R31,HIGH(_Task_LcdGreetImage)
@@ -9959,11 +9964,11 @@ _0x20004:
 	BREQ _0x20005
 ; 0001 002F     {
 ; 0001 0030 	    MainTimer[index].GoToTask = Idle;
-	CALL SUBOPT_0x64
-	CALL SUBOPT_0x65
+	CALL SUBOPT_0x61
+	CALL SUBOPT_0x62
 ; 0001 0031 	    MainTimer[index].Time = 0;
-	CALL SUBOPT_0x64
-	CALL SUBOPT_0x66
+	CALL SUBOPT_0x61
+	CALL SUBOPT_0x63
 ; 0001 0032 	 }
 	SUBI R17,-1
 	RJMP _0x20004
@@ -10035,8 +10040,8 @@ _0x20008:
 	BREQ _0x20009
 ; 0001 0052 	{
 ; 0001 0053 	if(MainTimer[index].GoToTask == TS)				// Если уже есть запись с таким адресом
+	CALL SUBOPT_0x61
 	CALL SUBOPT_0x64
-	CALL SUBOPT_0x67
 	MOVW R26,R30
 	LDD  R30,Y+4
 	LDD  R31,Y+4+1
@@ -10045,8 +10050,8 @@ _0x20008:
 	BRNE _0x2000A
 ; 0001 0054 		{
 ; 0001 0055 		MainTimer[index].Time = NewTime;			// Перезаписываем ей выдержку
-	CALL SUBOPT_0x64
-	CALL SUBOPT_0x68
+	CALL SUBOPT_0x61
+	CALL SUBOPT_0x65
 ; 0001 0056 		if (nointerrupted) 	_enable_interrupts()	// Разрешаем прерывания если не были запрещены.
 	BREQ _0x2000B
 	sei
@@ -10066,13 +10071,13 @@ _0x2000D:
 	BREQ _0x2000E
 ; 0001 005B 	{
 ; 0001 005C 	if (MainTimer[index].GoToTask == Idle)
+	CALL SUBOPT_0x61
 	CALL SUBOPT_0x64
-	CALL SUBOPT_0x67
-	CALL SUBOPT_0x69
+	CALL SUBOPT_0x66
 	BRNE _0x2000F
 ; 0001 005D 		{
 ; 0001 005E 		MainTimer[index].GoToTask = TS;			// Заполняем поле перехода задачи
-	CALL SUBOPT_0x64
+	CALL SUBOPT_0x61
 	ADD  R30,R26
 	ADC  R31,R27
 	ADIW R30,2
@@ -10081,8 +10086,8 @@ _0x2000D:
 	STD  Z+0,R26
 	STD  Z+1,R27
 ; 0001 005F 		MainTimer[index].Time = NewTime;		// И поле выдержки времени
-	CALL SUBOPT_0x64
-	CALL SUBOPT_0x68
+	CALL SUBOPT_0x61
+	CALL SUBOPT_0x65
 ; 0001 0060 		if (nointerrupted) 	_enable_interrupts()	// Разрешаем прерывания
 	BREQ _0x20010
 	sei
@@ -10145,11 +10150,11 @@ _0x20012:
 	CPI  R17,31
 	BREQ _0x20013
 ; 0001 0087 		if ((MainTimer[index].GoToTask != Idle)&&(MainTimer[index].Time==0)) // пропускаем пустые задачи и те, время которых еще не подошло
+	CALL SUBOPT_0x61
 	CALL SUBOPT_0x64
-	CALL SUBOPT_0x67
-	CALL SUBOPT_0x69
+	CALL SUBOPT_0x66
 	BREQ _0x20015
-	CALL SUBOPT_0x64
+	CALL SUBOPT_0x61
 	ADD  R26,R30
 	ADC  R27,R31
 	CALL __GETW1P
@@ -10160,15 +10165,15 @@ _0x20015:
 _0x20016:
 ; 0001 0088 		{
 ; 0001 0089             task=MainTimer[index].GoToTask;             // запомним задачу
-	CALL SUBOPT_0x64
+	CALL SUBOPT_0x61
 	ADD  R26,R30
 	ADC  R27,R31
 	ADIW R26,2
 	LD   R18,X+
 	LD   R19,X
 ; 0001 008A 		    MainTimer[index].GoToTask = Idle;           // ставим затычку
-	CALL SUBOPT_0x64
-	CALL SUBOPT_0x65
+	CALL SUBOPT_0x61
+	CALL SUBOPT_0x62
 ; 0001 008B             _enable_interrupts()							// Разрешаем прерывания
 	sei
 ; 0001 008C             (task)();								    // Переходим к задаче
@@ -10215,11 +10220,11 @@ _0x20018:
 ; 0001 00A2 //UPDATE
 ; 0001 00A3          if((MainTimer[index].GoToTask != Idle) && 		    // Если не пустышка и
 ; 0001 00A4            (MainTimer[index].Time > 0)) {					// таймер не выщелкал, то
+	CALL SUBOPT_0x61
 	CALL SUBOPT_0x64
-	CALL SUBOPT_0x67
-	CALL SUBOPT_0x69
+	CALL SUBOPT_0x66
 	BREQ _0x2001B
-	CALL SUBOPT_0x64
+	CALL SUBOPT_0x61
 	ADD  R26,R30
 	ADC  R27,R31
 	CALL __GETW1P
@@ -10230,7 +10235,7 @@ _0x2001B:
 	RJMP _0x2001A
 _0x2001C:
 ; 0001 00A5             MainTimer[index].Time--;						// щелкаем еще раз.
-	CALL SUBOPT_0x64
+	CALL SUBOPT_0x61
 	ADD  R26,R30
 	ADC  R27,R31
 	LD   R30,X+
@@ -10280,8 +10285,8 @@ _0x2001F:
 	BREQ _0x20020
 ; 0001 00B5     {
 ; 0001 00B6         if(MainTimer[index].GoToTask == TS)
+	CALL SUBOPT_0x61
 	CALL SUBOPT_0x64
-	CALL SUBOPT_0x67
 	MOVW R26,R30
 	LDD  R30,Y+2
 	LDD  R31,Y+2+1
@@ -10290,11 +10295,11 @@ _0x2001F:
 	BRNE _0x20021
 ; 0001 00B7         {
 ; 0001 00B8             MainTimer[index].GoToTask = Idle;
-	CALL SUBOPT_0x64
-	CALL SUBOPT_0x65
+	CALL SUBOPT_0x61
+	CALL SUBOPT_0x62
 ; 0001 00B9             MainTimer[index].Time = 0; // Обнуляем время
-	CALL SUBOPT_0x64
-	CALL SUBOPT_0x66
+	CALL SUBOPT_0x61
+	CALL SUBOPT_0x63
 ; 0001 00BA             if (nointerrupted) _enable_interrupts();
 	CPI  R16,0
 	BREQ _0x20022
@@ -10473,7 +10478,7 @@ _0x2020016:
 	LDI  R17,LOW(1)
 	RJMP _0x202001E
 _0x202001D:
-	CALL SUBOPT_0x6A
+	CALL SUBOPT_0x67
 _0x202001E:
 	RJMP _0x202001B
 _0x202001C:
@@ -10481,7 +10486,7 @@ _0x202001C:
 	BRNE _0x202001F
 	CPI  R18,37
 	BRNE _0x2020020
-	CALL SUBOPT_0x6A
+	CALL SUBOPT_0x67
 	RJMP _0x20200C9
 _0x2020020:
 	LDI  R17,LOW(2)
@@ -10538,26 +10543,26 @@ _0x2020029:
 	MOV  R30,R18
 	CPI  R30,LOW(0x63)
 	BRNE _0x202002F
-	CALL SUBOPT_0x6B
+	CALL SUBOPT_0x68
 	LDD  R30,Y+16
 	LDD  R31,Y+16+1
 	LDD  R26,Z+4
 	ST   -Y,R26
-	CALL SUBOPT_0x6C
+	CALL SUBOPT_0x69
 	RJMP _0x2020030
 _0x202002F:
 	CPI  R30,LOW(0x73)
 	BRNE _0x2020032
-	CALL SUBOPT_0x6B
-	CALL SUBOPT_0x6D
+	CALL SUBOPT_0x68
+	CALL SUBOPT_0x6A
 	CALL _strlen
 	MOV  R17,R30
 	RJMP _0x2020033
 _0x2020032:
 	CPI  R30,LOW(0x70)
 	BRNE _0x2020035
-	CALL SUBOPT_0x6B
-	CALL SUBOPT_0x6D
+	CALL SUBOPT_0x68
+	CALL SUBOPT_0x6A
 	CALL _strlenf
 	MOV  R17,R30
 	ORI  R16,LOW(8)
@@ -10602,8 +10607,8 @@ _0x2020040:
 _0x202003D:
 	SBRS R16,2
 	RJMP _0x2020042
+	CALL SUBOPT_0x68
 	CALL SUBOPT_0x6B
-	CALL SUBOPT_0x6E
 	LDD  R26,Y+11
 	TST  R26
 	BRPL _0x2020043
@@ -10623,8 +10628,8 @@ _0x2020044:
 _0x2020045:
 	RJMP _0x2020046
 _0x2020042:
+	CALL SUBOPT_0x68
 	CALL SUBOPT_0x6B
-	CALL SUBOPT_0x6E
 _0x2020046:
 _0x2020036:
 	SBRC R16,0
@@ -10647,7 +10652,7 @@ _0x202004D:
 _0x202004B:
 	LDI  R18,LOW(32)
 _0x202004E:
-	CALL SUBOPT_0x6A
+	CALL SUBOPT_0x67
 	SUBI R21,LOW(1)
 	RJMP _0x2020048
 _0x202004A:
@@ -10673,7 +10678,7 @@ _0x2020053:
 	STD  Y+6,R26
 	STD  Y+6+1,R27
 _0x2020054:
-	CALL SUBOPT_0x6A
+	CALL SUBOPT_0x67
 	CPI  R21,0
 	BREQ _0x2020055
 	SUBI R21,LOW(1)
@@ -10752,7 +10757,7 @@ _0x20200CA:
 	RJMP _0x202006A
 	ANDI R16,LOW(251)
 	ST   -Y,R20
-	CALL SUBOPT_0x6C
+	CALL SUBOPT_0x69
 	CPI  R21,0
 	BREQ _0x202006B
 	SUBI R21,LOW(1)
@@ -10760,7 +10765,7 @@ _0x202006B:
 _0x202006A:
 _0x2020069:
 _0x2020061:
-	CALL SUBOPT_0x6A
+	CALL SUBOPT_0x67
 	CPI  R21,0
 	BREQ _0x202006C
 	SUBI R21,LOW(1)
@@ -10782,7 +10787,7 @@ _0x202006E:
 	SUBI R21,LOW(1)
 	LDI  R30,LOW(32)
 	ST   -Y,R30
-	CALL SUBOPT_0x6C
+	CALL SUBOPT_0x69
 	RJMP _0x202006E
 _0x2020070:
 _0x202006D:
@@ -10804,7 +10809,7 @@ _sprintf:
 	MOV  R15,R24
 	SBIW R28,6
 	CALL __SAVELOCR4
-	CALL SUBOPT_0x6F
+	CALL SUBOPT_0x6C
 	SBIW R30,0
 	BRNE _0x2020072
 	LDI  R30,LOW(65535)
@@ -10815,7 +10820,7 @@ _0x2020072:
 	ADIW R26,6
 	CALL __ADDW2R15
 	MOVW R16,R26
-	CALL SUBOPT_0x6F
+	CALL SUBOPT_0x6C
 	STD  Y+6,R30
 	STD  Y+6+1,R31
 	LDI  R30,LOW(0)
@@ -10824,7 +10829,7 @@ _0x2020072:
 	MOVW R26,R28
 	ADIW R26,10
 	CALL __ADDW2R15
-	CALL SUBOPT_0x57
+	CALL SUBOPT_0x55
 	ST   -Y,R17
 	ST   -Y,R16
 	LDI  R30,LOW(_put_buff_G101)
@@ -10901,58 +10906,58 @@ strlenf1:
     ret
 
 	.CSEG
-_ltoa:
-	SBIW R28,4
-	ST   -Y,R17
-	ST   -Y,R16
-	__GETD1N 0x3B9ACA00
-	__PUTD1S 2
-	LDI  R16,LOW(0)
-	LDD  R26,Y+11
-	TST  R26
-	BRPL _0x2060003
-	__GETD1S 8
-	CALL __ANEGD1
-	__PUTD1S 8
-	CALL SUBOPT_0x70
-	LDI  R30,LOW(45)
-	ST   X,R30
-_0x2060003:
-_0x2060005:
-	CALL SUBOPT_0x71
-	CALL __DIVD21U
-	MOV  R17,R30
-	CPI  R17,0
-	BRNE _0x2060008
-	CPI  R16,0
-	BRNE _0x2060008
-	__GETD2S 2
-	__CPD2N 0x1
-	BRNE _0x2060007
-_0x2060008:
-	CALL SUBOPT_0x70
-	MOV  R30,R17
-	SUBI R30,-LOW(48)
-	ST   X,R30
-	LDI  R16,LOW(1)
-_0x2060007:
-	CALL SUBOPT_0x71
-	CALL __MODD21U
-	__PUTD1S 8
-	__GETD2S 2
-	__GETD1N 0xA
-	CALL __DIVD21U
-	__PUTD1S 2
-	CALL __CPD10
-	BRNE _0x2060005
-	LDD  R26,Y+6
-	LDD  R27,Y+6+1
-	LDI  R30,LOW(0)
-	ST   X,R30
-	LDD  R17,Y+1
-	LDD  R16,Y+0
-	ADIW R28,12
-	RET
+_itoa:
+    ld   r26,y+
+    ld   r27,y+
+    ld   r30,y+
+    ld   r31,y+
+    adiw r30,0
+    brpl __itoa0
+    com  r30
+    com  r31
+    adiw r30,1
+    ldi  r22,'-'
+    st   x+,r22
+__itoa0:
+    clt
+    ldi  r24,low(10000)
+    ldi  r25,high(10000)
+    rcall __itoa1
+    ldi  r24,low(1000)
+    ldi  r25,high(1000)
+    rcall __itoa1
+    ldi  r24,100
+    clr  r25
+    rcall __itoa1
+    ldi  r24,10
+    rcall __itoa1
+    mov  r22,r30
+    rcall __itoa5
+    clr  r22
+    st   x,r22
+    ret
+
+__itoa1:
+    clr	 r22
+__itoa2:
+    cp   r30,r24
+    cpc  r31,r25
+    brlo __itoa3
+    inc  r22
+    sub  r30,r24
+    sbc  r31,r25
+    brne __itoa2
+__itoa3:
+    tst  r22
+    brne __itoa4
+    brts __itoa5
+    ret
+__itoa4:
+    set
+__itoa5:
+    subi r22,-0x30
+    st   x+,r22
+    ret
 
 	.DSEG
 
@@ -11148,7 +11153,7 @@ SUBOPT_0x7:
 	__GETWRN 16,17,0
 	RET
 
-;OPTIMIZER ADDED SUBROUTINE, CALLED 13 TIMES, CODE SIZE REDUCTION:21 WORDS
+;OPTIMIZER ADDED SUBROUTINE, CALLED 17 TIMES, CODE SIZE REDUCTION:29 WORDS
 SUBOPT_0x8:
 	MOV  R30,R17
 	LDI  R31,0
@@ -11547,44 +11552,29 @@ SUBOPT_0x34:
 	CALL _USART_Send_StrFl
 	JMP  _RunRTOS
 
-;OPTIMIZER ADDED SUBROUTINE, CALLED 4 TIMES, CODE SIZE REDUCTION:45 WORDS
+;OPTIMIZER ADDED SUBROUTINE, CALLED 12 TIMES, CODE SIZE REDUCTION:129 WORDS
 SUBOPT_0x35:
-	MOV  R30,R17
-	CLR  R31
-	CLR  R22
-	CLR  R23
-	CALL __PUTPARD1
-	MOVW R30,R28
-	ADIW R30,5
 	ST   -Y,R31
 	ST   -Y,R30
-	CALL _ltoa
+	MOVW R30,R28
+	ADIW R30,3
+	ST   -Y,R31
+	ST   -Y,R30
+	CALL _itoa
 	LDI  R30,LOW(0)
 	ST   -Y,R30
 	MOVW R30,R28
 	ADIW R30,2
 	RJMP SUBOPT_0x4
 
-;OPTIMIZER ADDED SUBROUTINE, CALLED 3 TIMES, CODE SIZE REDUCTION:35 WORDS
+;OPTIMIZER ADDED SUBROUTINE, CALLED 3 TIMES, CODE SIZE REDUCTION:11 WORDS
 SUBOPT_0x36:
 	CLR  R30
 	ADD  R26,R17
 	ADC  R27,R30
 	LD   R30,X
-	CLR  R31
-	CLR  R22
-	CLR  R23
-	CALL __PUTPARD1
-	MOVW R30,R28
-	ADIW R30,5
-	ST   -Y,R31
-	ST   -Y,R30
-	CALL _ltoa
-	LDI  R30,LOW(0)
-	ST   -Y,R30
-	MOVW R30,R28
-	ADIW R30,2
-	RJMP SUBOPT_0x4
+	LDI  R31,0
+	RJMP SUBOPT_0x35
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 5 TIMES, CODE SIZE REDUCTION:5 WORDS
 SUBOPT_0x37:
@@ -11592,24 +11582,8 @@ SUBOPT_0x37:
 	LDI  R27,HIGH(_RAM_settings)
 	RJMP SUBOPT_0x18
 
-;OPTIMIZER ADDED SUBROUTINE, CALLED 2 TIMES, CODE SIZE REDUCTION:11 WORDS
-SUBOPT_0x38:
-	CLR  R22
-	CLR  R23
-	CALL __PUTPARD1
-	MOVW R30,R28
-	ADIW R30,5
-	ST   -Y,R31
-	ST   -Y,R30
-	CALL _ltoa
-	LDI  R30,LOW(0)
-	ST   -Y,R30
-	MOVW R30,R28
-	ADIW R30,2
-	RJMP SUBOPT_0x4
-
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 2 TIMES, CODE SIZE REDUCTION:2 WORDS
-SUBOPT_0x39:
+SUBOPT_0x38:
 	__POINTW2MN _EE_settings,4
 	CLR  R30
 	ADD  R26,R17
@@ -11617,25 +11591,13 @@ SUBOPT_0x39:
 	CALL __EEPROMRDB
 	RET
 
-;OPTIMIZER ADDED SUBROUTINE, CALLED 3 TIMES, CODE SIZE REDUCTION:27 WORDS
-SUBOPT_0x3A:
-	CLR  R31
-	CLR  R22
-	CLR  R23
-	CALL __PUTPARD1
-	MOVW R30,R28
-	ADIW R30,5
-	ST   -Y,R31
-	ST   -Y,R30
-	CALL _ltoa
-	LDI  R30,LOW(0)
-	ST   -Y,R30
-	MOVW R30,R28
-	ADIW R30,2
-	RJMP SUBOPT_0x4
+;OPTIMIZER ADDED SUBROUTINE, CALLED 3 TIMES, CODE SIZE REDUCTION:3 WORDS
+SUBOPT_0x39:
+	LDI  R31,0
+	RJMP SUBOPT_0x35
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 2 TIMES, CODE SIZE REDUCTION:2 WORDS
-SUBOPT_0x3B:
+SUBOPT_0x3A:
 	__POINTW2MN _EE_settings,6
 	CLR  R30
 	ADD  R26,R17
@@ -11644,7 +11606,7 @@ SUBOPT_0x3B:
 	RET
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 2 TIMES, CODE SIZE REDUCTION:2 WORDS
-SUBOPT_0x3C:
+SUBOPT_0x3B:
 	__POINTW2MN _EE_settings,10
 	CLR  R30
 	ADD  R26,R17
@@ -11653,13 +11615,14 @@ SUBOPT_0x3C:
 	RET
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 2 TIMES, CODE SIZE REDUCTION:9 WORDS
-SUBOPT_0x3D:
-	CALL __PUTPARD1
-	MOVW R30,R28
-	ADIW R30,4
+SUBOPT_0x3C:
 	ST   -Y,R31
 	ST   -Y,R30
-	CALL _ltoa
+	MOVW R30,R28
+	ADIW R30,2
+	ST   -Y,R31
+	ST   -Y,R30
+	CALL _itoa
 	LDI  R30,LOW(0)
 	ST   -Y,R30
 	MOVW R30,R28
@@ -11667,7 +11630,7 @@ SUBOPT_0x3D:
 	RJMP SUBOPT_0x4
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 2 TIMES, CODE SIZE REDUCTION:3 WORDS
-SUBOPT_0x3E:
+SUBOPT_0x3D:
 	LDI  R30,LOW(_Task_LedOff)
 	LDI  R31,HIGH(_Task_LedOff)
 	ST   -Y,R31
@@ -11677,7 +11640,7 @@ SUBOPT_0x3E:
 	RJMP SUBOPT_0x5
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 8 TIMES, CODE SIZE REDUCTION:11 WORDS
-SUBOPT_0x3F:
+SUBOPT_0x3E:
 	LDI  R30,LOW(_lcd_buf)
 	LDI  R31,HIGH(_lcd_buf)
 	ST   -Y,R31
@@ -11685,7 +11648,7 @@ SUBOPT_0x3F:
 	RET
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 7 TIMES, CODE SIZE REDUCTION:33 WORDS
-SUBOPT_0x40:
+SUBOPT_0x3F:
 	ST   -Y,R31
 	ST   -Y,R30
 	LDI  R24,0
@@ -11696,27 +11659,20 @@ SUBOPT_0x40:
 	RET
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 2 TIMES, CODE SIZE REDUCTION:1 WORDS
-SUBOPT_0x41:
+SUBOPT_0x40:
 	LDI  R30,LOW(3)
 	ST   -Y,R30
 	CALL _LcdString
-	RJMP SUBOPT_0x3F
+	RJMP SUBOPT_0x3E
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 3 TIMES, CODE SIZE REDUCTION:3 WORDS
-SUBOPT_0x42:
+SUBOPT_0x41:
 	ST   -Y,R30
 	CALL _LcdString
-	RJMP SUBOPT_0x3F
-
-;OPTIMIZER ADDED SUBROUTINE, CALLED 4 TIMES, CODE SIZE REDUCTION:3 WORDS
-SUBOPT_0x43:
-	CLR  R22
-	CLR  R23
-	CALL __PUTPARD1
-	RET
+	RJMP SUBOPT_0x3E
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 2 TIMES, CODE SIZE REDUCTION:3 WORDS
-SUBOPT_0x44:
+SUBOPT_0x42:
 	LDI  R30,LOW(_Task_LogOut)
 	LDI  R31,HIGH(_Task_LogOut)
 	ST   -Y,R31
@@ -11726,7 +11682,7 @@ SUBOPT_0x44:
 	RJMP SUBOPT_0x5
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 2 TIMES, CODE SIZE REDUCTION:1 WORDS
-SUBOPT_0x45:
+SUBOPT_0x43:
 	ST   -Y,R31
 	ST   -Y,R30
 	LDI  R30,LOW(50)
@@ -11734,7 +11690,7 @@ SUBOPT_0x45:
 	RJMP SUBOPT_0x5
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 2 TIMES, CODE SIZE REDUCTION:3 WORDS
-SUBOPT_0x46:
+SUBOPT_0x44:
 	LDS  R30,_i2c_Do
 	ANDI R30,0xBF
 	STS  _i2c_Do,R30
@@ -11742,7 +11698,7 @@ SUBOPT_0x46:
 	RET
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 2 TIMES, CODE SIZE REDUCTION:1 WORDS
-SUBOPT_0x47:
+SUBOPT_0x45:
 	ST   -Y,R31
 	ST   -Y,R30
 	LDI  R30,LOW(20)
@@ -11750,7 +11706,7 @@ SUBOPT_0x47:
 	RJMP SUBOPT_0x5
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 3 TIMES, CODE SIZE REDUCTION:11 WORDS
-SUBOPT_0x48:
+SUBOPT_0x46:
 	LDI  R26,LOW(_RAM_settings)
 	LDI  R27,HIGH(_RAM_settings)
 	LDI  R31,0
@@ -11761,13 +11717,13 @@ SUBOPT_0x48:
 	RET
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 4 TIMES, CODE SIZE REDUCTION:3 WORDS
-SUBOPT_0x49:
+SUBOPT_0x47:
 	ST   -Y,R31
 	ST   -Y,R30
 	JMP  _USART_Init
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 11 TIMES, CODE SIZE REDUCTION:37 WORDS
-SUBOPT_0x4A:
+SUBOPT_0x48:
 	LDD  R26,Y+16
 	LDD  R27,Y+16+1
 	CALL __GETW1P
@@ -11776,7 +11732,7 @@ SUBOPT_0x4A:
 	RET
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 24 TIMES, CODE SIZE REDUCTION:66 WORDS
-SUBOPT_0x4B:
+SUBOPT_0x49:
 	ST   -Y,R31
 	ST   -Y,R30
 	CALL _strcmpf
@@ -11784,7 +11740,7 @@ SUBOPT_0x4B:
 	RET
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 5 TIMES, CODE SIZE REDUCTION:9 WORDS
-SUBOPT_0x4C:
+SUBOPT_0x4A:
 	ST   -Y,R31
 	ST   -Y,R30
 	CALL _Put_In_Log
@@ -11792,7 +11748,7 @@ SUBOPT_0x4C:
 	RET
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 6 TIMES, CODE SIZE REDUCTION:17 WORDS
-SUBOPT_0x4D:
+SUBOPT_0x4B:
 	LDD  R30,Y+16
 	LDD  R31,Y+16+1
 	LDD  R26,Z+2
@@ -11802,7 +11758,7 @@ SUBOPT_0x4D:
 	RET
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 6 TIMES, CODE SIZE REDUCTION:17 WORDS
-SUBOPT_0x4E:
+SUBOPT_0x4C:
 	LDD  R30,Y+16
 	LDD  R31,Y+16+1
 	LDD  R26,Z+4
@@ -11812,7 +11768,7 @@ SUBOPT_0x4E:
 	RET
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 4 TIMES, CODE SIZE REDUCTION:27 WORDS
-SUBOPT_0x4F:
+SUBOPT_0x4D:
 	CALL _PARS_StrToUint
 	CLR  R22
 	CLR  R23
@@ -11821,12 +11777,12 @@ SUBOPT_0x4F:
 	RET
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 6 TIMES, CODE SIZE REDUCTION:22 WORDS
-SUBOPT_0x50:
+SUBOPT_0x4E:
 	__CPD2N 0x3
 	RET
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 3 TIMES, CODE SIZE REDUCTION:1 WORDS
-SUBOPT_0x51:
+SUBOPT_0x4F:
 	LDD  R18,Y+12
 	LDI  R30,LOW(_ok*2)
 	LDI  R31,HIGH(_ok*2)
@@ -11834,13 +11790,13 @@ SUBOPT_0x51:
 	RET
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 25 TIMES, CODE SIZE REDUCTION:45 WORDS
-SUBOPT_0x52:
+SUBOPT_0x50:
 	ST   -Y,R31
 	ST   -Y,R30
 	JMP  _Put_In_Log
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 3 TIMES, CODE SIZE REDUCTION:13 WORDS
-SUBOPT_0x53:
+SUBOPT_0x51:
 	LDD  R30,Y+16
 	LDD  R31,Y+16+1
 	LDD  R26,Z+6
@@ -11849,10 +11805,10 @@ SUBOPT_0x53:
 	ST   -Y,R26
 	LDI  R30,LOW(_Mode*2)
 	LDI  R31,HIGH(_Mode*2)
-	RJMP SUBOPT_0x4B
+	RJMP SUBOPT_0x49
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 3 TIMES, CODE SIZE REDUCTION:45 WORDS
-SUBOPT_0x54:
+SUBOPT_0x52:
 	LDD  R30,Y+16
 	LDD  R31,Y+16+1
 	LDD  R26,Z+8
@@ -11869,12 +11825,12 @@ SUBOPT_0x54:
 	RET
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 10 TIMES, CODE SIZE REDUCTION:15 WORDS
-SUBOPT_0x55:
+SUBOPT_0x53:
 	__GETD2S 12
 	RET
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 4 TIMES, CODE SIZE REDUCTION:9 WORDS
-SUBOPT_0x56:
+SUBOPT_0x54:
 	MOV  R30,R19
 	SUBI R30,-LOW(3)
 	LDD  R26,Y+16
@@ -11882,14 +11838,14 @@ SUBOPT_0x56:
 	RJMP SUBOPT_0x18
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 9 TIMES, CODE SIZE REDUCTION:13 WORDS
-SUBOPT_0x57:
+SUBOPT_0x55:
 	CALL __GETW1P
 	ST   -Y,R31
 	ST   -Y,R30
 	RET
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 4 TIMES, CODE SIZE REDUCTION:9 WORDS
-SUBOPT_0x58:
+SUBOPT_0x56:
 	MOV  R30,R19
 	SUBI R30,-LOW(4)
 	LDD  R26,Y+16
@@ -11897,12 +11853,12 @@ SUBOPT_0x58:
 	RJMP SUBOPT_0x18
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 2 TIMES, CODE SIZE REDUCTION:2 WORDS
-SUBOPT_0x59:
+SUBOPT_0x57:
 	__CPD2N 0x481
 	RET
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 2 TIMES, CODE SIZE REDUCTION:3 WORDS
-SUBOPT_0x5A:
+SUBOPT_0x58:
 	LDD  R26,Y+12
 	LDD  R27,Y+12+1
 	STD  Z+0,R26
@@ -11914,7 +11870,7 @@ SUBOPT_0x5A:
 	RET
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 2 TIMES, CODE SIZE REDUCTION:1 WORDS
-SUBOPT_0x5B:
+SUBOPT_0x59:
 	LDI  R30,LOW(_Speed*2)
 	LDI  R31,HIGH(_Speed*2)
 	ST   -Y,R31
@@ -11922,7 +11878,7 @@ SUBOPT_0x5B:
 	JMP  _Put_In_LogFl
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 2 TIMES, CODE SIZE REDUCTION:6 WORDS
-SUBOPT_0x5C:
+SUBOPT_0x5A:
 	ST   -Y,R18
 	__POINTW2MN _RAM_settings,4
 	CLR  R30
@@ -11934,7 +11890,7 @@ SUBOPT_0x5C:
 	RJMP SUBOPT_0x37
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 2 TIMES, CODE SIZE REDUCTION:19 WORDS
-SUBOPT_0x5D:
+SUBOPT_0x5B:
 	MOVW R0,R30
 	__POINTW2MN _RAM_settings,4
 	CLR  R30
@@ -11956,16 +11912,16 @@ SUBOPT_0x5D:
 	RJMP SUBOPT_0x37
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 6 TIMES, CODE SIZE REDUCTION:42 WORDS
-SUBOPT_0x5E:
+SUBOPT_0x5C:
 	CALL _PARS_StrToUchar
 	CLR  R31
 	CLR  R22
 	CLR  R23
 	__PUTD1S 12
-	RJMP SUBOPT_0x55
+	RJMP SUBOPT_0x53
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 2 TIMES, CODE SIZE REDUCTION:1 WORDS
-SUBOPT_0x5F:
+SUBOPT_0x5D:
 	__POINTW2MN _RAM_settings,6
 	CLR  R30
 	ADD  R26,R18
@@ -11974,7 +11930,7 @@ SUBOPT_0x5F:
 	RET
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 2 TIMES, CODE SIZE REDUCTION:1 WORDS
-SUBOPT_0x60:
+SUBOPT_0x5E:
 	__POINTW2MN _RAM_settings,10
 	CLR  R30
 	ADD  R26,R18
@@ -11983,7 +11939,7 @@ SUBOPT_0x60:
 	RET
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 2 TIMES, CODE SIZE REDUCTION:1 WORDS
-SUBOPT_0x61:
+SUBOPT_0x5F:
 	LDD  R30,Y+17
 	LDD  R31,Y+17+1
 	LDD  R26,Z+6
@@ -11992,8 +11948,8 @@ SUBOPT_0x61:
 	ST   -Y,R26
 	RET
 
-;OPTIMIZER ADDED SUBROUTINE, CALLED 3 TIMES, CODE SIZE REDUCTION:13 WORDS
-SUBOPT_0x62:
+;OPTIMIZER ADDED SUBROUTINE, CALLED 2 TIMES, CODE SIZE REDUCTION:15 WORDS
+SUBOPT_0x60:
 	LDD  R30,Y+16
 	LDD  R31,Y+16+1
 	LDD  R26,Z+6
@@ -12001,21 +11957,19 @@ SUBOPT_0x62:
 	ST   -Y,R27
 	ST   -Y,R26
 	CALL _PARS_StrToUint
-	RJMP SUBOPT_0x43
-
-;OPTIMIZER ADDED SUBROUTINE, CALLED 2 TIMES, CODE SIZE REDUCTION:5 WORDS
-SUBOPT_0x63:
-	MOVW R30,R28
-	ADIW R30,10
 	ST   -Y,R31
 	ST   -Y,R30
-	CALL _ltoa
+	MOVW R30,R28
+	ADIW R30,8
+	ST   -Y,R31
+	ST   -Y,R30
+	CALL _itoa
 	MOVW R30,R28
 	ADIW R30,6
-	RJMP SUBOPT_0x52
+	RJMP SUBOPT_0x50
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 17 TIMES, CODE SIZE REDUCTION:93 WORDS
-SUBOPT_0x64:
+SUBOPT_0x61:
 	MOV  R30,R17
 	LDI  R26,LOW(_MainTimer_G001)
 	LDI  R27,HIGH(_MainTimer_G001)
@@ -12024,7 +11978,7 @@ SUBOPT_0x64:
 	RET
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 3 TIMES, CODE SIZE REDUCTION:7 WORDS
-SUBOPT_0x65:
+SUBOPT_0x62:
 	ADD  R26,R30
 	ADC  R27,R31
 	ADIW R26,2
@@ -12035,7 +11989,7 @@ SUBOPT_0x65:
 	RET
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 2 TIMES, CODE SIZE REDUCTION:1 WORDS
-SUBOPT_0x66:
+SUBOPT_0x63:
 	ADD  R26,R30
 	ADC  R27,R31
 	LDI  R30,LOW(0)
@@ -12045,7 +11999,7 @@ SUBOPT_0x66:
 	RET
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 5 TIMES, CODE SIZE REDUCTION:9 WORDS
-SUBOPT_0x67:
+SUBOPT_0x64:
 	ADD  R26,R30
 	ADC  R27,R31
 	ADIW R26,2
@@ -12053,7 +12007,7 @@ SUBOPT_0x67:
 	RET
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 2 TIMES, CODE SIZE REDUCTION:2 WORDS
-SUBOPT_0x68:
+SUBOPT_0x65:
 	ADD  R30,R26
 	ADC  R31,R27
 	LDD  R26,Y+2
@@ -12064,7 +12018,7 @@ SUBOPT_0x68:
 	RET
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 3 TIMES, CODE SIZE REDUCTION:3 WORDS
-SUBOPT_0x69:
+SUBOPT_0x66:
 	MOVW R26,R30
 	LDI  R30,LOW(_Idle)
 	LDI  R31,HIGH(_Idle)
@@ -12073,7 +12027,7 @@ SUBOPT_0x69:
 	RET
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 5 TIMES, CODE SIZE REDUCTION:21 WORDS
-SUBOPT_0x6A:
+SUBOPT_0x67:
 	ST   -Y,R18
 	LDD  R30,Y+13
 	LDD  R31,Y+13+1
@@ -12085,7 +12039,7 @@ SUBOPT_0x6A:
 	RET
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 5 TIMES, CODE SIZE REDUCTION:9 WORDS
-SUBOPT_0x6B:
+SUBOPT_0x68:
 	LDD  R30,Y+16
 	LDD  R31,Y+16+1
 	SBIW R30,4
@@ -12094,7 +12048,7 @@ SUBOPT_0x6B:
 	RET
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 3 TIMES, CODE SIZE REDUCTION:7 WORDS
-SUBOPT_0x6C:
+SUBOPT_0x69:
 	LDD  R30,Y+13
 	LDD  R31,Y+13+1
 	ST   -Y,R31
@@ -12105,7 +12059,7 @@ SUBOPT_0x6C:
 	RET
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 2 TIMES, CODE SIZE REDUCTION:6 WORDS
-SUBOPT_0x6D:
+SUBOPT_0x6A:
 	LDD  R26,Y+16
 	LDD  R27,Y+16+1
 	ADIW R26,4
@@ -12117,7 +12071,7 @@ SUBOPT_0x6D:
 	RET
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 2 TIMES, CODE SIZE REDUCTION:2 WORDS
-SUBOPT_0x6E:
+SUBOPT_0x6B:
 	LDD  R26,Y+16
 	LDD  R27,Y+16+1
 	ADIW R26,4
@@ -12127,27 +12081,11 @@ SUBOPT_0x6E:
 	RET
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 2 TIMES, CODE SIZE REDUCTION:1 WORDS
-SUBOPT_0x6F:
+SUBOPT_0x6C:
 	MOVW R26,R28
 	ADIW R26,12
 	CALL __ADDW2R15
 	CALL __GETW1P
-	RET
-
-;OPTIMIZER ADDED SUBROUTINE, CALLED 2 TIMES, CODE SIZE REDUCTION:1 WORDS
-SUBOPT_0x70:
-	LDD  R26,Y+6
-	LDD  R27,Y+6+1
-	ADIW R26,1
-	STD  Y+6,R26
-	STD  Y+6+1,R27
-	SBIW R26,1
-	RET
-
-;OPTIMIZER ADDED SUBROUTINE, CALLED 2 TIMES, CODE SIZE REDUCTION:3 WORDS
-SUBOPT_0x71:
-	__GETD1S 2
-	__GETD2S 8
 	RET
 
 
@@ -12178,16 +12116,6 @@ __ANEGW1:
 	NEG  R31
 	NEG  R30
 	SBCI R31,0
-	RET
-
-__ANEGD1:
-	COM  R31
-	COM  R22
-	COM  R23
-	NEG  R30
-	SBCI R31,-1
-	SBCI R22,-1
-	SBCI R23,-1
 	RET
 
 __LSRW12:

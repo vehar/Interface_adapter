@@ -107,15 +107,15 @@ USART_Send_Str(USART_0,"\rUART_SETTINGS\r");
   for(i=0;i<COUNT_OF_UARTS;i++)
     {
     USART_Send_Str(USART_0,"UART ");
-    ltoa(i,str);
+    itoa(i,str);
     USART_Send_Str(USART_0,str); //convert dec to str
 
     USART_Send_Str(USART_0,"\r Mode ");
-    ltoa(RAM_settings.MODE_of_Uart[i],str);
+    itoa(RAM_settings.MODE_of_Uart[i],str);
     USART_Send_Str(USART_0,str); //convert dec to str
 
     USART_Send_Str(USART_0,"\r Speed ");
-    ltoa(RAM_settings.baud_of_Uart[i],str);
+    itoa(RAM_settings.baud_of_Uart[i],str);
     USART_Send_Str(USART_0,str); //convert dec to str
 
     USART_Send_Str(USART_0,"\r--------\r");
@@ -125,15 +125,15 @@ USART_Send_Str(USART_0,"\rSPI_SETTINGS\r");
   for(i=0;i<COUNT_OF_SPI;i++)
     {
     USART_Send_Str(USART_0,"SPI ");
-    ltoa(i,str);
+    itoa(i,str);
     USART_Send_Str(USART_0,str); //convert dec to str
 
     USART_Send_Str(USART_0,"\r Mode ");
-    ltoa(RAM_settings.MODE_of_Spi[i],str);
+    itoa(RAM_settings.MODE_of_Spi[i],str);
     USART_Send_Str(USART_0,str); //convert dec to str
 
     USART_Send_Str(USART_0,"\r Prescaller ");
-    ltoa(RAM_settings.prescaller_of_Spi[i],str);
+    itoa(RAM_settings.prescaller_of_Spi[i],str);
     USART_Send_Str(USART_0,str); //convert dec to str
 
     USART_Send_Str(USART_0,"\r--------\r");
@@ -150,15 +150,15 @@ USART_Send_Str(USART_0,"\rUART_SETTINGS\r");
   for(i=0;i<COUNT_OF_UARTS;i++)
     {
     USART_Send_Str(USART_0,"UART ");
-    ltoa(i,str);
+    itoa(i,str);
     USART_Send_Str(USART_0,str); //convert dec to str
 
     USART_Send_Str(USART_0,"\r Mode ");
-    ltoa(EE_settings.MODE_of_Uart[i],str);
+    itoa(EE_settings.MODE_of_Uart[i],str);
     USART_Send_Str(USART_0,str); //convert dec to str
 
     USART_Send_Str(USART_0,"\r Speed ");
-    ltoa(EE_settings.baud_of_Uart[i],str);
+    itoa(EE_settings.baud_of_Uart[i],str);
     USART_Send_Str(USART_0,str); //convert dec to str
 
     USART_Send_Str(USART_0,"\r--------\r");
@@ -168,15 +168,15 @@ USART_Send_Str(USART_0,"\rSPI_SETTINGS\r");
   for(i=0;i<COUNT_OF_SPI;i++)
     {
     USART_Send_Str(USART_0,"SPI ");
-    ltoa(i,str);
+    itoa(i,str);
     USART_Send_Str(USART_0,str); //convert dec to str
 
     USART_Send_Str(USART_0,"\r Mode ");
-    ltoa(EE_settings.MODE_of_Spi[i],str);
+    itoa(EE_settings.MODE_of_Spi[i],str);
     USART_Send_Str(USART_0,str); //convert dec to str
 
     USART_Send_Str(USART_0,"\r Prescaller ");
-    ltoa(EE_settings.prescaller_of_Spi[i],str);
+    itoa(EE_settings.prescaller_of_Spi[i],str);
     USART_Send_Str(USART_0,str); //convert dec to str
 
     USART_Send_Str(USART_0,"\r--------\r");
@@ -189,11 +189,11 @@ void print_sys(void)
 {
 char str[5];
 USART_Send_Str(USART_0,"\rButes_RX ");
-ltoa(v_u32_RX_CNT,str);
+itoa(v_u32_RX_CNT,str);
 USART_Send_Str(USART_0,str); //convert dec to str
 
 USART_Send_Str(USART_0,"\rButes_TX ");
-ltoa(v_u32_TX_CNT,str);
+itoa(v_u32_TX_CNT,str);
 USART_Send_Str(USART_0,str); //convert dec to str
 }
 
@@ -218,7 +218,7 @@ while (v_u32_SYS_TICK < timecnt){}
 
 
 /**
-void cust_ltoa(long int n, char *str;)
+void cust_itoa(long int n, char *str;)
 {
 unsigned long i;
 unsigned char j,p;

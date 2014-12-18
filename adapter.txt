@@ -360,59 +360,59 @@ USART_Send_Str((char*)&dist); //convert dec to str
 
 /*
 USART_Send_Str(SYSTEM_USART,"\r 1-2400 0.1 ");
-ltoa(calk_safe_baud(1, 24),str);
+itoa(calk_safe_baud(1, 24),str);
 USART_Send_Str(USART_0,str); //convert dec to str
 
 USART_Send_Str(SYSTEM_USART,"\r 0-9600 0.2 ");
-ltoa(calk_safe_baud(0, 96),str);
+itoa(calk_safe_baud(0, 96),str);
 USART_Send_Str(USART_0,str); //convert dec to str
 
 USART_Send_Str(SYSTEM_USART,"\r 1-9600 0.2 ");
-ltoa(calk_safe_baud(1, 96),str);
+itoa(calk_safe_baud(1, 96),str);
 USART_Send_Str(USART_0,str); //convert dec to str
 
 USART_Send_Str(SYSTEM_USART,"\r 0-14400 -0.8 ");
-ltoa(calk_safe_baud(0, 144),str);
+itoa(calk_safe_baud(0, 144),str);
 USART_Send_Str(USART_0,str); //convert dec to str
 
 USART_Send_Str(SYSTEM_USART,"\r 1-14400 0.6 ");
-ltoa(calk_safe_baud(1, 144),str);
+itoa(calk_safe_baud(1, 144),str);
 USART_Send_Str(USART_0,str); //convert dec to str
 
 USART_Send_Str(SYSTEM_USART,"\r 0-28800 2.1 ");
-ltoa(calk_safe_baud(0, 288),str);
+itoa(calk_safe_baud(0, 288),str);
 USART_Send_Str(USART_0,str); //convert dec to str
 
 USART_Send_Str(SYSTEM_USART,"\r 1-28800 -0.8 ");
-ltoa(calk_safe_baud(1, 288),str);
+itoa(calk_safe_baud(1, 288),str);
 USART_Send_Str(USART_0,str); //convert dec to str
 
 USART_Send_Str(SYSTEM_USART,"\r 1-38400 0.2 ");
-ltoa(calk_safe_baud(1, 384),str);
+itoa(calk_safe_baud(1, 384),str);
 USART_Send_Str(USART_0,str); //convert dec to str
 
 USART_Send_Str(SYSTEM_USART,"\r 0-57600 -3.5 ");
-ltoa(calk_safe_baud(0, 576),str);
+itoa(calk_safe_baud(0, 576),str);
 USART_Send_Str(USART_0,str); //convert dec to str
 
 USART_Send_Str(SYSTEM_USART,"\r 1-57600 2.1 ");
-ltoa(calk_safe_baud(1, 576),str);
+itoa(calk_safe_baud(1, 576),str);
 USART_Send_Str(USART_0,str); //convert dec to str
 
 USART_Send_Str(SYSTEM_USART,"\r 0-76800 -7 ");
-ltoa(calk_safe_baud(0, 768),str);
+itoa(calk_safe_baud(0, 768),str);
 USART_Send_Str(USART_0,str); //convert dec to str
 
 USART_Send_Str(SYSTEM_USART,"\r 1-76800 0.2 ");
-ltoa(calk_safe_baud(1, 768),str);
+itoa(calk_safe_baud(1, 768),str);
 USART_Send_Str(USART_0,str); //convert dec to str
 
 USART_Send_Str(SYSTEM_USART,"\r 0-115200 8.5 ");
-ltoa(calk_safe_baud(0, 1152),str);
+itoa(calk_safe_baud(0, 1152),str);
 USART_Send_Str(USART_0,str); //convert dec to str
 
 USART_Send_Str(SYSTEM_USART,"\r 1-115200 -3.5 ");
-ltoa(calk_safe_baud(1, 1152),str);
+itoa(calk_safe_baud(1, 1152),str);
 USART_Send_Str(USART_0,str); //convert dec to str
 */
 

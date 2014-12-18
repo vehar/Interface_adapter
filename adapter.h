@@ -17,10 +17,10 @@
 #include <stdio.h> // Standard Input/Output functions
 
 #include <delay.h>
-#include <string.h>
+#include <string.h>   //for strcmpf & memcpy
 #include <stdlib.h>
 #include <stdint.h>
-#include <io.h>
+//#include <io.h>
 #include <stdbool.h>
 
 #include <compilers.h>

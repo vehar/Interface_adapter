@@ -300,7 +300,7 @@ if (!strcmpf(argv[0], W)) //Write
       RunRTOS;
       #ifdef DEBUG
 Put_In_Log("\r U D>TX ");
-  ltoa(PARS_StrToUint(argv[3]),str);
+  itoa(PARS_StrToUint(argv[3]),str);
 Put_In_Log(str); //convert dec to str
      #endif
       }
@@ -331,7 +331,7 @@ Put_In_Log(str); //convert dec to str
 #ifdef DEBUG
 
 Put_In_Log("\r S D>TX ");
- ltoa(PARS_StrToUint(argv[3]),str);  //возможно вывести не > 65535
+ itoa(PARS_StrToUint(argv[3]),str);  //возможно вывести не > 65535
 Put_In_Log(str); //convert dec to str
  #endif
 
@@ -371,7 +371,7 @@ Put_In_Log(Spi0_RX_buf);
 #ifdef DEBUG
 
 Put_In_Log("\r I2C D>TX ");
- ltoa(PARS_StrToUint(argv[3]),str);  //возможно вывести не > 65535
+ itoa(PARS_StrToUint(argv[3]),str);  //возможно вывести не > 65535
  USART_Send_Str(SYSTEM_USART,str); //convert dec to str
  #endif
 

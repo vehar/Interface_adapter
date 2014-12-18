@@ -76,6 +76,6 @@ disp_config                                                       R5           1
 LcdCacheIdx                                                       R7,R8        2
 argc                                                              R10          1
 i                                                                 R9           1
-flag                                                              R12          1
+devider_f                                                         R12          1
 TX_flag                                                           R11          1
 RX_flag                                                           R14          1
