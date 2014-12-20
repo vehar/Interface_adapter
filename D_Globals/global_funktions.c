@@ -40,23 +40,23 @@ uint8_t check_after_pow_on(void)     /*need optimisation*/
 information on which reset source caused an MCU Reset*/
 if (MCUCSR & (1<<PORF))// Power-on Reset
    {
-    Put_In_Log("porf\r\n");
+    Put_In_Log("porf"); //now \r\n concat in Put_In_Log
    }
 else if (MCUCSR & (1<<EXTRF))// External Reset
    {
-    Put_In_Log("extrf\r\n");
+    Put_In_Log("extrf");
    }
 else if (MCUCSR & (1<<BORF))// Brown-Out Reset
    {
-   Put_In_Log("borf\r\n");
+   Put_In_Log("borf");
    }
 else if (MCUCSR & (1<<WDRF))// Watchdog Reset
    {
-    Put_In_Log("wdrf\r\n");
+    Put_In_Log("wdrf");
    }
 else if (MCUCSR & (1<<JTRF))// JTAG Reset
    {
-    Put_In_Log("JTRF\r\n");
+    Put_In_Log("JTRF");
    }
 
 MCUCSR&=~((1<<JTRF) | (1<<WDRF) | (1<<BORF) | (1<<EXTRF) | (1<<PORF));//clear register

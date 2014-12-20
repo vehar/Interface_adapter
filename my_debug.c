@@ -31,7 +31,10 @@ void Put_In_LogFl (unsigned char __flash* data){
   }
 }
 
-void Put_In_Log (unsigned char * data){
+//#warning  -добавить после каждого слова прибавление \r\n для єкономии РАМ
+void Put_In_Log (unsigned char * data) 
+{
+  strcat(data,"\r\n"); //not tested!
   while(*data)
   {
     WorkLogPutChar(*data++);
@@ -50,3 +53,6 @@ SetTimerTask(Task_Flush_WorkLog,10);//очистка лог буффера
 LogIndex = 0;
 }
 /////////////
+
+#define _Led1_ON LED_PORT|=(1<<LED1)
+#define _Led1_OFF LED_PORT&=~(1<<LED1)

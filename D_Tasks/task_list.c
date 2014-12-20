@@ -8,16 +8,16 @@
 
 DECLARE_TASK(Task_LoadTest)
 {
- // LED_PORT  &= ~(1<<LED2);
- //delay_ms(10);      
- // LED_PORT |= (1<<LED2);
+  //LED_PORT  &= ~(1<<LED2);
  //delay_ms(10);
-          
-  LcdClear();    
-  sprintf (lcd_buf, "T=%i",v_u32_SYS_TICK);  
- LcdString(1,2);      
- LcdUpdate();    
- 
+ // LED_PORT |= (1<<LED2);
+// delay_ms(1000);
+
+  LcdClear();
+  sprintf (lcd_buf, "T=%i",v_u32_SYS_TICK);
+ LcdString(1,2);
+ LcdUpdate();
+
 SetTimerTask(Task_LoadTest,2000);; //запуск тестового таска для проверки загрузки цп
 }
 
@@ -32,7 +32,7 @@ void Task_Start (void)
 SetTimerTask(Task_LedOff,100); //запуск мигалки-антизависалки
 }
   */
-DECLARE_TASK (Task_LedOff) 
+DECLARE_TASK (Task_LedOff)
 {
 SetTimerTask(Task_LedOn,900);
 LED_PORT  &= ~(1<<LED2);
@@ -57,23 +57,23 @@ void Task_LcdGreetImage (void) //Greeting image on start    //Upd-4
 //SetTask(LcdClear);
 //SetTask(Task_LcdLines);
  //LcdImage(rad1Image);  SetTimerTask(LcdClear,3000);
-      
- //sprintf (lcd_buf, "  Interface   ");    
+
+ //sprintf (lcd_buf, "  Interface   ");
  strncpy (lcd_buf, "  Interface   ", 15);
- LcdStringBig(1,1);  
-  strncpy(lcd_buf, " Monitor v2.1 ", 15);    
- LcdString(1,3);    
- strncpy (lcd_buf, " Хмелевськой  ", 15);    
- LcdString(1,4);  
- strncpy (lcd_buf, "  Владислав   ", 15);    
- LcdString(1,5);   
- strncpy (lcd_buf, "  АЕ - 104    ", 15);    
- LcdString(1,6);  
+ LcdStringBig(1,1);
+  strncpy(lcd_buf, " Monitor v2.1 ", 15);
+ LcdString(1,3);
+ strncpy (lcd_buf, " Хмелевськой  ", 15);
+ LcdString(1,4);
+ strncpy (lcd_buf, "  Владислав   ", 15);
+ LcdString(1,5);
+ strncpy (lcd_buf, "  АЕ - 104    ", 15);
+ LcdString(1,6);
 LcdUpdate();
 //SetTimerTask(LcdClear,7000);
 
 // sprintf (lcd_buf, "Wait comand...");      //не работает
-// LcdStringBig(1,3);  
+// LcdStringBig(1,3);
 // SetTimerTask(LcdUpdate,8000);
 }
 
@@ -91,52 +91,54 @@ void Task_AdcOnLcd (void)
 {
 //SetTask(LcdClear);
  /*sprintf (lcd_buf, "vref=%d ",vref);      // вывод на экран результата
- LcdString(1,1);      
+ LcdString(1,1);
   sprintf (lcd_buf, "d=%d ",d);      // вывод на экран результата
  LcdString(1,2);
   sprintf (lcd_buf, "delta=%d ",delta);      // вывод на экран результата
  LcdString(1,3);
   sprintf (lcd_buf, "volt=%d ",volt);      // вывод на экран результата
  LcdString(1,4);  */
- LcdClear();    
+ LcdClear();
  ADC_use();
-#warning disabled sprintf (lcd_buf, "Напряжение на");  
- LcdString(1,2);   
-#warning disabled sprintf (lcd_buf, "  канале 0");  
- LcdString(1,3); 
-#warning disabled sprintf (lcd_buf, "= %d мВ",adc_result);  
+#warning disabled sprintf (lcd_buf, "Напряжение на");
+ LcdString(1,2);
+#warning disabled sprintf (lcd_buf, "  канале 0");
+ LcdString(1,3);
+#warning disabled sprintf (lcd_buf, "= %d мВ",adc_result);
  LcdString(1,4);
- 
+
  LcdUpdate();
 }
 
 //#error Проверить!
-void Task_pars_cmd (void)
+void Task_pars_cmd (void)         //300us? empty buff
 {
 char scan_interval = 100;
   if (USART_Get_rxCount(SYSTEM_USART) > 0) //если в приёмном буфере что-то есть
        {
         symbol = USART_Get_Char(SYSTEM_USART);
         PARS_Parser(symbol);
-        //SetTask(Task_pars_cmd);  //Проверить!    
+        //SetTask(Task_pars_cmd);  //Проверить!
         scan_interval = 10;
-       } 
+       }
  else{scan_interval = 100;};
 SetTimerTask(Task_pars_cmd, scan_interval); //25   //Проверить!
 }
 
 
-void Task_LogOut (void)
+void Task_LogOut (void)           //500us ?
 {
 SetTimerTask(Task_LogOut,50);
 if(LogIndex){LogOut();} //если что-то есть в лог буфере - вывести
 }
 
 
-void Task_Flush_WorkLog(void){ //очистка лог буффера
+void Task_Flush_WorkLog(void) //очистка лог буффера
+{
 uint16_t i = 0;
+LED_PORT |= (1<<LED1);
 while(i<512){WorkLog[i] = 0; i++;};
-PORTD.7^=1;
+LED_PORT &=~(1<<LED2);
 }
 
 /*
@@ -156,7 +158,7 @@ Spi0_TX_buf[i] = 0;
 
  void Task_BuffOut  (void)
  {
-  SetTimerTask(Task_BuffOut,50);   
+  SetTimerTask(Task_BuffOut,50);
   RingBuff_TX();
  }
 

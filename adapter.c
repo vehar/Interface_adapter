@@ -34,7 +34,7 @@ SOFTWARE_init();
 
 #ifdef DEBUG
     DDRD.7=1;//PORTD.7=1;  //Led VD2
-    //DDRD.6=1;//PORTD.6=1;    //Led VD1
+    DDRD.6=1;//PORTD.6=1;    //Led VD1
     USART_Send_StrFl(USART_1,start);
     USART_Send_StrFl(SYSTEM_USART,start);
 #endif
@@ -54,10 +54,10 @@ SetTask(Task_LoadTest); //запуск тестового таска для проверки загрузки цп
 SetTimerTask(Task_pars_cmd, 25); //Upd-6
 #ifdef DEBUG                    //Upd-6
 SetTimerTask(Task_LogOut, 50);
-SetTask(Task_LcdGreetImage);    //Upd-4
+//SetTask(Task_LcdGreetImage);    //Upd-4
 //SetTimerTask(Task_ADC_test,5000);   //Upd-6
 //SetTimerTask(Task_AdcOnLcd, 6000);
-//SetTimerTask(Task_BuffOut,5); 
+//SetTimerTask(Task_BuffOut,5);
 #endif
 ///---------------------------------------------------
 
@@ -77,6 +77,6 @@ TaskManager();	// Вызов диспетчера
 // Timer2 interrupt service routine
 interrupt [RTOS_ISR] void timer2_comp_isr(void)//RTOS Interrupt 1mS
 {
- TimerService();
  v_u32_SYS_TICK++;
+  TimerService();
 }

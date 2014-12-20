@@ -122,7 +122,8 @@ void LcdBar(int x1, int y1, int x2, int y2, unsigned char persent);		// рисует п
 void LcdBarLine(unsigned char line, unsigned char persent);			// рисуем прошресс-бар в указанной строке
 void LcdStringInv (unsigned char x, unsigned char y);                           // печатает строку в инверсном шрифте (удобно для настроек)
 
-const char table[0x0500] = 
+  #warning a lot of nulls -need to compressed!
+const char table[0x0500] =     
 {
 0x00, 0x00, 0x00, 0x00, 0x00,// 00
 0x00, 0x00, 0x5F, 0x00, 0x00,// 01

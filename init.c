@@ -131,8 +131,8 @@ uint8_t i = 0;
   for(i=0;i<COUNT_OF_UARTS;i++)
     {
 EE_settings.MODE_of_Uart[i] = USART_NORMAL;
-    }     
-    EE_settings.baud_of_Uart[0] = 576; //57600baud   
+    }
+    EE_settings.baud_of_Uart[0] = 576; //57600baud
     EE_settings.baud_of_Uart[1] = 288; //28800baud
   for(i=0;i<COUNT_OF_SPI;i++)
     {
@@ -166,7 +166,8 @@ void HARDWARE_init(void)
 // Project|Configure|C Compiler|Libraries|1 Wire IDE menu.
 }
 
-void SOFTWARE_init (void){
+void SOFTWARE_init (void)
+{
 #ifdef EEPROM_REINIT  //Upd-5
 First_EE_init();  //начальная инициализация еепром (выполняется 1 раз при компиляции)
 #endif

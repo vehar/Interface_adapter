@@ -52,7 +52,7 @@ static volatile uint16_t Usart1_rxCount = 0;
 
 
 void UartTxBufOvf_Handler(void) //обработчик переполнени€ передающего буфера UART
-{ 
+{
     PORTD.7=1;
 }
 
@@ -92,9 +92,9 @@ baudRate = baudRate * 100;
  {
    ubrrValue = (F_CPU+8UL*baudRate)/(16UL*baudRate) - 1;
  }    //Upd-12
-  else 
+  else
   {
-    ubrrValue = (F_CPU+4UL*baudRate)/(8UL*baudRate) - 1; //doubles speed 
+    ubrrValue = (F_CPU+4UL*baudRate)/(8UL*baudRate) - 1; //doubles speed
   } //Upd-12
 
 
@@ -240,7 +240,8 @@ uint16_t Tmp = Usart0_txBufTail; // use local variable instead of volatile
        ++Tmp;
        Usart0_txBufTail = Tmp;
        }
-       else{
+       else
+       {
     // PORTD.7=0;
          Usart0_txBufHead = 0; Usart0_txBufTail = 0;
         UCSR0B &= ~(1 << UDRIE0); // disable this int
@@ -254,6 +255,7 @@ v_u32_TX_CNT++;
 interrupt [USART1_DRE] void usart1_dre_my(void)  //USART Data Register Empty Interrupt
 {
 uint16_t Tmp = Usart1_txBufTail; // use local variable instead of volatile
+
         UDR1 = Usart1_TX_buf[Tmp & (SIZE_BUF_TX - 1)];
        ++Tmp;
        Usart1_txBufTail = Tmp;
@@ -365,7 +367,7 @@ data =  UDR0;// read to clear RxC flag
     {
        Usart0_RX_buf[Usart0_rxBufTail] = data;//зчитати символ до буфера
       Usart0_rxBufTail++;                    //зб≥льшити ≥ндекс к≥нц€ буферу
-      Usart0_rxCount++;                     
+      Usart0_rxCount++;
 #warning проверить необходимость следующего куска
      if (Usart0_rxBufTail == SIZE_BUF_RX)
       {
@@ -397,17 +399,17 @@ if(!U1_in_buf_flag)
       {
        Usart1_rxBufTail = 0;
       }
-     }  
+     }
   }
  else   //ѕри флаге - грузим в буфер системного юарта и сразу на вывод!
  {
     if((uint16_t)(Usart1_txBufHead - Usart1_txBufTail) <= (uint16_t) SIZE_BUF_TX) //если в буфере еще есть место
     {
       Usart0_TX_buf[Usart1_txBufHead & (SIZE_BUF_TX - 1)] = data;//!    //считать символ  в буфер
-      Usart0_txBufHead++;                    //увеличить индекс   буфера    
+      Usart0_txBufHead++;                    //увеличить индекс   буфера
       //UCSR0B |= (1 << UDRIE0); // TX int - on
       }
- }    
+ }
 }
 
 /*
