@@ -109,7 +109,7 @@ void LcdLine (int x1, int y1, int x2, int y2, unsigned char mode);  		//Draws a 
 void LcdCircle(char x, char y, char radius, unsigned char mode);		//рисуем круг с координатами центра и радиусом
 void LcdBatt(int x1, int y1, int x2, int y2, unsigned char persent);		//рисуем батарейку и заполняем ее на %
 void LcdGotoXYFont (unsigned char x, unsigned char y);   			//Sets cursor location to xy location. Range: 1,1 .. 14,6
-void clean_lcd_buf (void);							//очистка текстового буфера
+void LcdTextBufClean (void);							//очистка текстового буфера
 void LcdChr (int ch);								//Displays a character at current cursor location and increment cursor location
 void LcdString (unsigned char x, unsigned char y);				//Displays a string at current cursor location
 void LcdChrBold (int ch);							//Печатает символ на текущем месте, большой и жирный)
@@ -411,6 +411,7 @@ void LcdSend (unsigned char data, unsigned char cmd)    //Sends data to display 
         LCD_CPORT.LCD_CPIN = 1;                //Disable display controller
         }
 
+#warning need 7.05ms(!) to execute
 void LcdUpdate (void)   //Copies the LCD cache into the device RAM
         {
         int i;
@@ -741,7 +742,7 @@ void LcdGotoXYFont (unsigned char x, unsigned char y)   //Sets cursor location t
         if (x <= 14 && y <= 6) LcdCacheIdx = ( (int)(y) - 1 ) * 84 + ( (int)(x) - 1 ) * 6;
         }
 
-void clean_lcd_buf (void)	//очистка текстового буфера
+void LcdTextBufClean (void)	//очистка текстового буфера
 	{
 	char i;	
 	for (i=0; i<14; i++) lcd_buf[i] = 0;
@@ -770,7 +771,7 @@ void LcdString (unsigned char x, unsigned char y)	//Displays a string at current
 	if (x > 14 || y > 6) return;
 	LcdGotoXYFont (x, y);
 	for ( i = 0; i < 15-x; i++ ) if (lcd_buf[i]) LcdChr (lcd_buf[i]);
-	clean_lcd_buf(); 
+	LcdTextBufClean(); 
 	}
         
 void LcdStringInv (unsigned char x, unsigned char y)	//Displays a string at current cursor location
@@ -780,7 +781,7 @@ void LcdStringInv (unsigned char x, unsigned char y)	//Displays a string at curr
 	if (x > 14 || y > 6) return;
 	LcdGotoXYFont (x, y);
 	for ( i = 0; i < 15-x; i++ ) if (lcd_buf[i]) LcdChrInv (lcd_buf[i]);
-	clean_lcd_buf(); 
+	LcdTextBufClean(); 
 	}
 
 void LcdChrBold (int ch)	//Displays a bold character at current cursor location and increment cursor location
@@ -821,7 +822,7 @@ void LcdStringBold (unsigned char x, unsigned char y)	//Displays a string at cur
 	if (x > 13 || y > 5) return;
 	LcdGotoXYFont (x, y);
 	for ( i = 0; i < 14-x; i++ ) if (lcd_buf[i]) LcdChrBold (lcd_buf[i]); 
-	clean_lcd_buf();
+	LcdTextBufClean();
 	}
 	
 void LcdChrBig (int ch)	//Displays a character at current cursor location and increment cursor location
@@ -858,7 +859,7 @@ void LcdStringBig (unsigned char x, unsigned char y)	//Displays a string at curr
 	if (x > 14 || y > 5) return;
 	LcdGotoXYFont (x, y);
 	for ( i = 0; i < 15-x; i++ ) if (lcd_buf[i]) LcdChrBig (lcd_buf[i]); 
-	clean_lcd_buf();
+	LcdTextBufClean();
 	}
 
 #pragma used-   

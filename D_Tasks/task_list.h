@@ -14,7 +14,7 @@ DECLARE_TASK(Task_LedOn);
 DECLARE_TASK(Task_ADC_test);      //Upd-6
 DECLARE_TASK(Task_LcdGreetImage);
 DECLARE_TASK(Task_LcdLines);
-
+DECLARE_TASK(Task_AdcOnLcd);
 
 DECLARE_TASK(Task_pars_cmd);      //Запуск парсера
 DECLARE_TASK(Task_LogOut);        // Выброс логов

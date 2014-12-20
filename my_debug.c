@@ -34,25 +34,23 @@ void Put_In_LogFl (unsigned char __flash* data){
 //#warning  -добавить после каждого слова прибавление \r\n для єкономии РАМ
 void Put_In_Log (unsigned char * data) 
 {
-  strcat(data,"\r\n"); //not tested!
   while(*data)
   {
     WorkLogPutChar(*data++);
-  }
+  }  
+   WorkLogPutChar(10);//\r
+   WorkLogPutChar(13);//\n
 }
 
 void LogOut(void)				// Выброс логов
 {
-StopRTOS();
+//StopRTOS();
 WorkLog[LogIndex]= 0xFF;
 LogIndex++;
-USART_Send_Str(USART_0, WorkLog);
-RunRTOS();
+USART_Send_Str(SYSTEM_USART, WorkLog);
+//RunRTOS();
 
 SetTimerTask(Task_Flush_WorkLog,10);//очистка лог буффера
 LogIndex = 0;
 }
 /////////////
-
-#define _Led1_ON LED_PORT|=(1<<LED1)
-#define _Led1_OFF LED_PORT&=~(1<<LED1)

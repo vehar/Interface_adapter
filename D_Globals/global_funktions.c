@@ -102,41 +102,41 @@ void print_settings_ram(void){
 uint8_t i = 0;
 char str[10];
 
-USART_Send_Str(USART_0,"\r<RAM>");
-USART_Send_Str(USART_0,"\rUART_SETTINGS\r");
+USART_Send_Str(SYSTEM_USART,"\r<RAM>");
+USART_Send_Str(SYSTEM_USART,"\rUART_SETTINGS\r");
   for(i=0;i<COUNT_OF_UARTS;i++)
     {
-    USART_Send_Str(USART_0,"UART ");
+    USART_Send_Str(SYSTEM_USART,"UART ");
     itoa(i,str);
-    USART_Send_Str(USART_0,str); //convert dec to str
+    USART_Send_Str(SYSTEM_USART,str); //convert dec to str
 
-    USART_Send_Str(USART_0,"\r Mode ");
+    USART_Send_Str(SYSTEM_USART,"\r Mode ");
     itoa(RAM_settings.MODE_of_Uart[i],str);
     USART_Send_Str(USART_0,str); //convert dec to str
 
-    USART_Send_Str(USART_0,"\r Speed ");
+    USART_Send_Str(SYSTEM_USART,"\r Speed ");
     itoa(RAM_settings.baud_of_Uart[i],str);
-    USART_Send_Str(USART_0,str); //convert dec to str
+    USART_Send_Str(SYSTEM_USART,str); //convert dec to str
 
-    USART_Send_Str(USART_0,"\r--------\r");
+    USART_Send_Str(SYSTEM_USART,"\r--------\r");
     }
 
-USART_Send_Str(USART_0,"\rSPI_SETTINGS\r");
+USART_Send_Str(SYSTEM_USART,"\rSPI_SETTINGS\r");
   for(i=0;i<COUNT_OF_SPI;i++)
     {
-    USART_Send_Str(USART_0,"SPI ");
+    USART_Send_Str(SYSTEM_USART,"SPI ");
     itoa(i,str);
-    USART_Send_Str(USART_0,str); //convert dec to str
+    USART_Send_Str(SYSTEM_USART,str); //convert dec to str
 
-    USART_Send_Str(USART_0,"\r Mode ");
+    USART_Send_Str(SYSTEM_USART,"\r Mode ");
     itoa(RAM_settings.MODE_of_Spi[i],str);
-    USART_Send_Str(USART_0,str); //convert dec to str
+    USART_Send_Str(SYSTEM_USART,str); //convert dec to str
 
-    USART_Send_Str(USART_0,"\r Prescaller ");
+    USART_Send_Str(SYSTEM_USART,"\r Prescaller ");
     itoa(RAM_settings.prescaller_of_Spi[i],str);
-    USART_Send_Str(USART_0,str); //convert dec to str
+    USART_Send_Str(SYSTEM_USART,str); //convert dec to str
 
-    USART_Send_Str(USART_0,"\r--------\r");
+    USART_Send_Str(SYSTEM_USART,"\r--------\r");
     }
 //USART_FlushTxBuf(USART_0);
 }
@@ -188,13 +188,13 @@ USART_Send_Str(USART_0,"\rSPI_SETTINGS\r");
 void print_sys(void)
 {
 char str[5];
-USART_Send_Str(USART_0,"\rButes_RX ");
+USART_Send_Str(SYSTEM_USART,"\rButes_RX ");
 itoa(v_u32_RX_CNT,str);
-USART_Send_Str(USART_0,str); //convert dec to str
+USART_Send_Str(SYSTEM_USART,str); //convert dec to str
 
-USART_Send_Str(USART_0,"\rButes_TX ");
+USART_Send_Str(SYSTEM_USART,"\rButes_TX ");
 itoa(v_u32_TX_CNT,str);
-USART_Send_Str(USART_0,str); //convert dec to str
+USART_Send_Str(SYSTEM_USART,str); //convert dec to str
 }
 
 

@@ -6,19 +6,26 @@
 //============================================================================
 
 
+   
 DECLARE_TASK(Task_LoadTest)
 {
+ int Tick =0;
+ Tick = v_u32_SYS_TICK;
   //LED_PORT  &= ~(1<<LED2);
  //delay_ms(10);
  // LED_PORT |= (1<<LED2);
 // delay_ms(1000);
 
-  LcdClear();
-  sprintf (lcd_buf, "T=%i",v_u32_SYS_TICK);
- LcdString(1,2);
- LcdUpdate();
+Put_In_Log("Put_In_Log");
 
-SetTimerTask(Task_LoadTest,2000);; //запуск тестового таска для проверки загрузки цп
+  //LcdClear();      
+_LCD_SHOWVAL(Tick); // = sprintf (lcd_buf, "Tick=%i",v_u32_SYS_TICK);  // 500us
+ LcdString(1,2);    
+_LCD_STRINBUF("Ololo=)");
+ LcdString(1,4);
+ LcdUpdate();
+//#asm("sei");
+SetTimerTask(Task_LoadTest,1000);; //запуск тестового таска для проверки загрузки цп
 }
 
 DECLARE_TASK(Task_Start)
@@ -119,9 +126,9 @@ char scan_interval = 100;
         symbol = USART_Get_Char(SYSTEM_USART);
         PARS_Parser(symbol);
         //SetTask(Task_pars_cmd);  //Проверить!
-        scan_interval = 10;
+        scan_interval = 5;
        }
- else{scan_interval = 100;};
+ else{scan_interval = 155;};
 SetTimerTask(Task_pars_cmd, scan_interval); //25   //Проверить!
 }
 
@@ -136,7 +143,7 @@ if(LogIndex){LogOut();} //если что-то есть в лог буфере - вывести
 void Task_Flush_WorkLog(void) //очистка лог буффера
 {
 uint16_t i = 0;
-LED_PORT |= (1<<LED1);
+LED_PORT |= (1<<LED2);
 while(i<512){WorkLog[i] = 0; i++;};
 LED_PORT &=~(1<<LED2);
 }

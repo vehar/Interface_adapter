@@ -75,9 +75,13 @@ extern volatile uint8_t saved_state = 0;
 #define L_OFF            GICR&=~(1<<INT0);MCUCR&=~((1<<ISC00)|(1<<ISC01))
 #define _set_EXT_INT(X)  (X)
 
-#define SHOWVAL(val) printf(#val " = %d \n", (int)(val)) 
+#define _LCD_STRINBUF(val)    strncpy (lcd_buf,val, 15);
+#define _LCD_SHOWVAL(val)     sprintf(lcd_buf, #val"=%i\n", (int)(val)) 
 
 
+
+#define _Led1_ON LED_PORT|=(1<<LED1)
+#define _Led1_OFF LED_PORT&=~(1<<LED1)
 //----END OTHERS----//
 
 /*

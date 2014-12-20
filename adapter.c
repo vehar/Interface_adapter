@@ -45,7 +45,7 @@ SOFTWARE_init();
 RunRTOS();			// Старт ядра.
 
 //delay_ms(1000);// Запуск фоновых задач.
-SetTask(Task_Start);     //290uS (50/50) and (10/10) но при 1/1 таск 1 лагает
+//SetTask(Task_Start);     //290uS (50/50) and (10/10) но при 1/1 таск 1 лагает
 
 SetTask(Task_LoadTest); //запуск тестового таска для проверки загрузки цп
 
