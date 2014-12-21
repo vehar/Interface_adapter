@@ -28,7 +28,13 @@ void main(void)
 {
 char i;
 char str[7];
+#ifdef DEBUG   //синхронизация с протеусом
+    DDRD.LED2=1;LED_PORT |= (1<<LED2);  //Led VD2 
+    delay_ms(35);  
+    DDRD.LED2=0;LED_PORT  &= ~(1<<LED2); //Led VD2 
+#endif
 
+    
 HARDWARE_init();
 SOFTWARE_init();
 
@@ -62,14 +68,14 @@ SetTimerTask(Task_LogOut, 50);
 #endif
 ///---------------------------------------------------
 
- //load 1000 - 20; 25 - 1; 50+10 - 1; 1-1;1-1;1-1;1-1; = 100%
- SetTimerTask(Task_1ms, 75);   
- //SetTimerTask(Task2_1ms,75);      
- //SetTimerTask(Task3_1ms, 75);   
- //SetTimerTask(Task4_1ms,75);
+
+ SetTimerTask(Task_1ms, 85);   
+ SetTimerTask(Task2_1ms,85);      
+ SetTimerTask(Task3_1ms, 85);   
+ SetTimerTask(Task4_1ms,85);
  
- // SetTimerTask(Task5_1ms, 75);   
- //SetTimerTask(Task6_1ms,75);
+  SetTimerTask(Task5_1ms, 85);   
+ SetTimerTask(Task6_1ms,85);
 
 //delay_ms(1000); //?
 while (1)

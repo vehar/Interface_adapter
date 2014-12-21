@@ -10,7 +10,7 @@ DECLARE_TASK(Task_1ms)
 {
 //LED_PORT.LED2^=1;
 LED_PORT |= (1<<LED2);
-SetTimerTask(Task_1ms,1); //запуск мигалки-антизависалки
+SetTimerTask(Task_1ms,5); //запуск мигалки-антизависалки
 LED_PORT  &= ~(1<<LED2);
 }  
 
@@ -18,24 +18,28 @@ DECLARE_TASK(Task2_1ms)
 {
 //LED_PORT.LED2^=1;
 LED_PORT |= (1<<LED3);
-SetTimerTask(Task2_1ms,1); //запуск мигалки-антизависалки
+SetTimerTask(Task2_1ms,5); //запуск мигалки-антизависалки
 LED_PORT  &= ~(1<<LED3);
 }  
-DECLARE_TASK(Task3_1ms)
+DECLARE_TASK(Task3_1ms)   //на 4800 бод - 15символов перед за 50мс 
 {
-SetTimerTask(Task3_1ms,1); //запуск мигалки-антизависалки
+Put_In_Log("Task3_1ms");
+SetTimerTask(Task3_1ms,50); //при таких даніх почти безлаговая предача при разнесении во времени на 5мс
 }  
 DECLARE_TASK(Task4_1ms)
 {
-SetTimerTask(Task4_1ms,1); //запуск мигалки-антизависалки
+Put_In_Log("Task4_1ms");
+SetTimerTask(Task4_1ms,55); 
 }  
 DECLARE_TASK(Task5_1ms)
 {
-SetTimerTask(Task5_1ms,1); //запуск мигалки-антизависалки
+Put_In_Log("Task5_1ms");
+SetTimerTask(Task5_1ms,60); 
 }  
 DECLARE_TASK(Task6_1ms)
 {
-SetTimerTask(Task6_1ms,1); //запуск мигалки-антизависалки
+Put_In_Log("Task6_1ms");
+SetTimerTask(Task6_1ms,65); 
 }  
 
  
@@ -48,7 +52,7 @@ DECLARE_TASK(Task_LoadTest)
  // LED_PORT |= (1<<LED2);
 // delay_ms(1000);
 
-Put_In_Log("Put_In_Log");
+Put_In_Log("Task_LoadTest");
 
   //LcdClear();      
 _LCD_SHOWVAL(Tick); // = sprintf (lcd_buf, "Tick=%i",v_u32_SYS_TICK);  // 500us

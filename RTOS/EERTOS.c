@@ -66,11 +66,14 @@ uint8_t	index;
 
 //Функция установки задачи по таймеру. Передаваемые параметры - указатель на функцию,
 // Время выдержки в тиках системного таймера. Возвращет код ошибки.
-volatile static uint8_t		timers_cnt=0;
+
+volatile static uint8_t timers_search_lim = MainTimerQueueSize;
 void SetTimerTask(TPTR TS, unsigned int NewTime)    //1 task ~12words
 {
 uint8_t		index=0;
-//volatile static uint8_t		timers_cnt=0;
+static uint8_t		timers_cnt=0;
+static uint8_t	curr_timer_index=0;
+static uint8_t	prev_timers_index=0;
 uint8_t		nointerrupted = 0;
 
 
@@ -81,25 +84,24 @@ if (STATUS_REG & (1<<Interrupt_Flag)) 			// Проверка запрета прерывания, аналоги
 	}
 //====================================================================
 // My UPDATE - optimized
- /* for(index=0;index!=MainTimerQueueSize+1;++index)	//Прочесываем очередь таймеров
-	{
-	if(MainTimer[index].GoToTask == TS)				// Если уже есть запись с таким адресом
-		{
-		MainTimer[index].Time = NewTime;			// Перезаписываем ей выдержку
-		if (nointerrupted) {_enable_interrupts()}	// Разрешаем прерывания если не были запрещены.
-        return;										// Выходим. Раньше был код успешной операции. Пока убрал
-		}
-	}   */
-  for(index=0;index!=MainTimerQueueSize+1;++index)	// Если не находим похожий таймер, то ищем любой пустой
+
+  for(index=0;index!=timers_search_lim;++index)	// ищем любой пустой таймер
 	{
 	if (MainTimer[index].GoToTask == Idle)
-		{
+	{
 		MainTimer[index].GoToTask = TS;			// Заполняем поле перехода задачи
 		MainTimer[index].Time = NewTime;		// И поле выдержки времени
-		if (nointerrupted) {_enable_interrupts()}	// Разрешаем прерывания
-		timers_cnt = index;
+		curr_timer_index = index;		               
+       if((curr_timer_index > prev_timers_index))    //сравнение индекса текущего таймера 
+        {
+          prev_timers_index = curr_timer_index;
+          timers_cnt++;                        //подсчёт исспользованіх таймеров
+        }
+     if(timers_search_lim > timers_cnt){timers_search_lim = timers_cnt+2;}//чтобы не прочёсывать пустую часть очереди   
+      
+     if (nointerrupted) {_enable_interrupts()}	// Разрешаем прерывания
         return;									// Выход.
-		}
+	}
    	}
 //====================================================================
 /*
@@ -133,13 +135,13 @@ inline void TaskManager(void)
 uint8_t		index=0;
 TPTR task;                 //TODO сделать глобальными регистровыми!
 
-  for(index=0;index!=MainTimerQueueSize+1;++index)   // Прочесываем очередь в поисках нужной задачи
+  for(index=0;index!=timers_search_lim;++index)   // Прочесываем очередь в поисках нужной задачи
 	{	if ((MainTimer[index].GoToTask != Idle)&&(MainTimer[index].Time==0)) // пропускаем пустые задачи и те, время которых еще не подошло
 		{
           LED_PORT |= (1<<LED1);   //Для отслеживания загрузки системы
             task=MainTimer[index].GoToTask;             // запомним задачу
 		    MainTimer[index].GoToTask = Idle;           // ставим затычку
-            _enable_interrupts()							// Разрешаем прерывания
+            _enable_interrupts()						// Разрешаем прерывания
             (task)();								    // Переходим к задаче   
             return;                                     // выход до следующего цикла
 		}
@@ -159,7 +161,7 @@ inline void TimerService(void)
 {
 uint8_t index;
 
-for(index=0;index!=MainTimerQueueSize+1;index++)		// Прочесываем очередь таймеров
+for(index=0;index!=timers_search_lim;index++)		// Прочесываем очередь таймеров
 	{
 //==========================================================================
 //UPDATE
@@ -180,7 +182,7 @@ if (STATUS_REG & (1<<Interrupt_Flag))
 _disable_interrupts();
 nointerrupted = 1;
 }
-    for(index=0; index!=MainTimerQueueSize+1; ++index)
+    for(index=0; index!=timers_search_lim; ++index)
     {
         if(MainTimer[index].GoToTask == TS)
         {
