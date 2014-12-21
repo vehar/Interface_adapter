@@ -27,7 +27,7 @@
 //PORT Defines
 #define LED1 		6
 #define LED2		7
-#define	LED3		3
+#define	LED3		5
 
 #define I_C			3
 #define I_L			6

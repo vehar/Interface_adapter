@@ -33,8 +33,9 @@ HARDWARE_init();
 SOFTWARE_init();
 
 #ifdef DEBUG
-    DDRD.7=1;//PORTD.7=1;  //Led VD2
-    DDRD.6=1;//PORTD.6=1;    //Led VD1
+    DDRD.LED2=1;//PORTD.7=1;  //Led VD2
+    DDRD.LED1=1;//PORTD.6=1;    //Led VD1         
+    DDRD.LED3=1;//PORTD.6=1;    //Led LED3
     USART_Send_StrFl(USART_1,start);
     USART_Send_StrFl(SYSTEM_USART,start);
 #endif
@@ -61,8 +62,14 @@ SetTimerTask(Task_LogOut, 50);
 #endif
 ///---------------------------------------------------
 
-
-
+ //load 1000 - 20; 25 - 1; 50+10 - 1; 1-1;1-1;1-1;1-1; = 100%
+ SetTimerTask(Task_1ms, 75);   
+ //SetTimerTask(Task2_1ms,75);      
+ //SetTimerTask(Task3_1ms, 75);   
+ //SetTimerTask(Task4_1ms,75);
+ 
+ // SetTimerTask(Task5_1ms, 75);   
+ //SetTimerTask(Task6_1ms,75);
 
 //delay_ms(1000); //?
 while (1)

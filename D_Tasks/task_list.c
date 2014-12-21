@@ -6,7 +6,39 @@
 //============================================================================
 
 
-   
+DECLARE_TASK(Task_1ms)
+{
+//LED_PORT.LED2^=1;
+LED_PORT |= (1<<LED2);
+SetTimerTask(Task_1ms,1); //запуск мигалки-антизависалки
+LED_PORT  &= ~(1<<LED2);
+}  
+
+DECLARE_TASK(Task2_1ms)
+{
+//LED_PORT.LED2^=1;
+LED_PORT |= (1<<LED3);
+SetTimerTask(Task2_1ms,1); //запуск мигалки-антизависалки
+LED_PORT  &= ~(1<<LED3);
+}  
+DECLARE_TASK(Task3_1ms)
+{
+SetTimerTask(Task3_1ms,1); //запуск мигалки-антизависалки
+}  
+DECLARE_TASK(Task4_1ms)
+{
+SetTimerTask(Task4_1ms,1); //запуск мигалки-антизависалки
+}  
+DECLARE_TASK(Task5_1ms)
+{
+SetTimerTask(Task5_1ms,1); //запуск мигалки-антизависалки
+}  
+DECLARE_TASK(Task6_1ms)
+{
+SetTimerTask(Task6_1ms,1); //запуск мигалки-антизависалки
+}  
+
+ 
 DECLARE_TASK(Task_LoadTest)
 {
  int Tick =0;
@@ -143,9 +175,9 @@ if(LogIndex){LogOut();} //если что-то есть в лог буфере - вывести
 void Task_Flush_WorkLog(void) //очистка лог буффера
 {
 uint16_t i = 0;
-LED_PORT |= (1<<LED2);
+//LED_PORT |= (1<<LED2);
 while(i<512){WorkLog[i] = 0; i++;};
-LED_PORT &=~(1<<LED2);
+//LED_PORT &=~(1<<LED2);
 }
 
 /*

@@ -17,7 +17,7 @@ void PARSER_Init(void)
 
 void PARS_Parser(char symbol)
 {
-   if (symbol !='\n')    //'\r' //end of string 
+   if (symbol !='\r')    //'\r' //end of string 
    {               
      if (i < SIZE_RECEIVE_BUF - 1)
      {

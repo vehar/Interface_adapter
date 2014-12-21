@@ -57,7 +57,8 @@ i2c_PageAddress                                                   0x0FC4       2
 i2c_PageAddrIndex                                                 0x0FC6       1
 i2c_PageAddrCount                                                 0x0FC7       1
 MainTimer                                                         0x0FC8     124
-_seed                                                             0x1044       4
+timers_cnt                                                        0x1044       1
+_seed                                                             0x1045       4
 
 EEPROM Allocation
 Variable                                                          Address   Size
