@@ -12,28 +12,28 @@ DECLARE_TASK(Task_Initial) //стартует перв≥м, запускает все задачи
 
 //SetTask(Task_Start);     //290uS (50/50) and (10/10) но при 1/1 таск 1 лагает
 
-SetTask(Task_LoadTest); //запуск тестового таска дл€ проверки загрузки цп      
+SetTimerTask(Task_LoadTest, 1000, 1000); //запуск тестового таска дл€ проверки загрузки цп      
 ///-----------------Upd-7-----------------------------
 // первичный запуск всех задач
 //SetTimerTask(Task_pars_cmd, 100); //Upd-6
 
 #ifdef DEBUG                    //Upd-6
-SetTimerTask(Task_LogOut, 50);
+SetTimerTask(Task_LogOut, 50, 50);
 //SetTask(Task_LcdGreetImage);    //Upd-4
 //SetTimerTask(Task_ADC_test,5000);   //Upd-6
 //SetTimerTask(Task_AdcOnLcd, 6000);
 //SetTimerTask(Task_BuffOut,5);
 #endif
 ///---------------------------------------------------
- SetTimerTask(Task_1ms, 55);
- SetTimerTask(Task3_1ms, 900);
+ SetTimerTask(Task_1ms, 55, 55);
+ SetTimerTask(Task3_1ms, 500, 500);
 } 
 
 DECLARE_TASK(Task_1ms)
 {
 LED_PORT.LED2^=1;
 //LED_PORT |= (1<<LED2);
-SetTimerTask(Task_1ms,55); //запуск мигалки-антизависалки
+SetTimerTask(Task_1ms,55,55); //запуск мигалки-антизависалки
 //LED_PORT  &= ~(1<<LED2);
 }  
 
@@ -41,13 +41,13 @@ DECLARE_TASK(Task2_1ms)
 {
 //LED_PORT.LED2^=1;
 LED_PORT |= (1<<LED3);
-SetTimerTask(Task2_1ms,5); //запуск мигалки-антизависалки
+//SetTimerTask(Task2_1ms,5); //запуск мигалки-антизависалки
 LED_PORT  &= ~(1<<LED3);
 }  
 DECLARE_TASK(Task3_1ms)   //на 4800 бод - 15символов перед за 50мс 
 {
 Put_In_Log("Task3_500ms\r\n");
-SetTimerTask(Task3_1ms,500); //при таких данных почти безлагова€ предача при разнесении во времени на 5мс
+SetTimerTask(Task3_1ms,500, 500); //при таких данных почти безлагова€ предача при разнесении во времени на 5мс
 }  
 
 
@@ -65,23 +65,23 @@ _LCD_SHOWVAL(Tick); // = sprintf (lcd_buf, "Tick=%i",v_u32_SYS_TICK);  // 500us
 _LCD_STRINBUF("Ololo=)");
  LcdString(1,4);
  LcdUpdate();
-SetTimerTask(Task_LoadTest,1000);; //запуск тестового таска дл€ проверки загрузки цп
+SetTimerTask(Task_LoadTest, 1000, 1000);; //запуск тестового таска дл€ проверки загрузки цп
 }
 
 DECLARE_TASK(Task_Start)
 {
-SetTimerTask(Task_LedOff,100); //запуск мигалки-антизависалки
+SetTimerTask(Task_LedOff, 100, 100); //запуск мигалки-антизависалки
 }
 
 DECLARE_TASK (Task_LedOff)
 {
-SetTimerTask(Task_LedOn,900);
+SetTimerTask(Task_LedOn, 900, 900);
 LED_PORT  &= ~(1<<LED2);
 }
 
 DECLARE_TASK (Task_LedOn)
 {
-SetTimerTask(Task_LedOff,100);
+SetTimerTask(Task_LedOff,100,100);
 LED_PORT  |= (1<<LED2);
 }
 
@@ -91,7 +91,7 @@ uint8_t index = 0;
 char tmp_str[10];
 SetTimerTask(Task_t_props_out,10);
     // LED_PORT  &=~(1<<LED2);
-  for(index=0;index!=timers_search_lim;++index)	// ищем таймер
+  for(index=0;index!=timers_cnt_search_lim;++index)	// ищем таймер
 	{          //отладить ниже
     if((MainTimer[index].sys_tick_time > 0)) //если задача выполн€лась, иначе смысл пихать в очередь сп€щие задачи
     // if((MainTimer[index].Task_status == DONE))
@@ -99,7 +99,7 @@ SetTimerTask(Task_t_props_out,10);
      Put_In_Log("<");    
      itoa((int)MainTimer[index].hndl , tmp_str);
      Put_In_Log(tmp_str); Put_In_Log(",");
-     itoa((int)MainTimer[index].Time , tmp_str);
+     itoa((int)MainTimer[index].TaskDelay , tmp_str);
      Put_In_Log(tmp_str); Put_In_Log(",");
      itoa((int)MainTimer[index].sys_tick_time , tmp_str);   MainTimer[index].sys_tick_time = 0;
      Put_In_Log(tmp_str); Put_In_Log(",");
@@ -117,7 +117,7 @@ DECLARE_TASK (Task_ADC_test) //Upd-6     //дл€ проверки освещЄнноси помещени€
  {
  #warning no Lcd_out// sprintf (lcd_buf, "DummyADC=%d ",volt);      // вывод на экран результата
  LcdString(1,1);   LcdUpdate();
- SetTimerTask(Task_ADC_test,5000);
+ SetTimerTask(Task_ADC_test,5000, 5000);
  }
 void Task_LcdGreetImage (void) //Greeting image on start    //Upd-4
 {
@@ -189,13 +189,13 @@ char scan_interval = 100;
         scan_interval = 5;
        }
 // else{scan_interval = 100;};
-SetTimerTask(Task_pars_cmd, scan_interval); //25   //ѕроверить!
+SetTimerTask(Task_pars_cmd, scan_interval, scan_interval); //25   //ѕроверить!
 }
 
 
 void Task_LogOut (void)           //500us ?
 {
-SetTimerTask(Task_LogOut,50);
+SetTimerTask(Task_LogOut,50,50);
 if(LogIndex){LogOut();} //если что-то есть в лог буфере - вывести
 }
 
@@ -221,7 +221,7 @@ Spi0_TX_buf[i] = 0;
 
  void Task_BuffOut  (void)  //выдача прин€тых по ёарт1 днн сразу в прерывании
  {
-  SetTimerTask(Task_BuffOut,50);
+  SetTimerTask(Task_BuffOut,50,50);
   RingBuff_TX();
  }
 
@@ -237,7 +237,7 @@ void EEP_StartWrite(void)
 {
 if (!i2c_eep_WriteByte(0xA0,0x00FF,/*(char)Usart0_RX_buf[15]*/ 9,&EEP_Writed))    // ≈сли байт незаписалс€
     {
-    SetTimerTask(EEP_StartWrite,50);                        // ѕовторить попытку через 50мс
+    SetTimerTask(EEP_StartWrite,50,50);                        // ѕовторить попытку через 50мс
     }
 }
 
@@ -248,7 +248,7 @@ i2c_Do &= i2c_Free;                                            // ќсвобождаем ши
 
 if(i2c_Do & (i2c_ERR_NA|i2c_ERR_BF))                        // ≈сли запись не удалась
     {
-    SetTimerTask(EEP_StartWrite,20);                        // повтор€ем попытку
+    SetTimerTask(EEP_StartWrite,20,20);                        // повтор€ем попытку
     }
 else
     {
@@ -261,7 +261,7 @@ void IIC_Send_Addr_ToSlave(void)
 {
 if (i2c_Do & i2c_Busy)						// ≈сли передатчик зан€т
 		{
-		SetTimerTask(IIC_Send_Addr_ToSlave,100);	// “о повторить через 100мс
+		SetTimerTask(IIC_Send_Addr_ToSlave,100,100);	// “о повторить через 100мс
 		}
 
 i2c_index = 0;								// —брос индекса
@@ -289,7 +289,7 @@ i2c_Do &= i2c_Free;							// ќсвобождаем шину
 
 if(i2c_Do & (i2c_ERR_NA|i2c_ERR_BF))		// ≈сли адресат нас не услышал или был сбой на линии
 	{
-	SetTimerTask(IIC_Send_Addr_ToSlave,20);		// ѕовторить попытку
+	SetTimerTask(IIC_Send_Addr_ToSlave,20,20);		// ѕовторить попытку
 	}
 }
 

@@ -65,11 +65,10 @@ i2c_SlaveAddress                                                  0x0FD9       1
 i2c_PageAddress                                                   0x0FDA       2
 i2c_PageAddrIndex                                                 0x0FDC       1
 i2c_PageAddrCount                                                 0x0FDD       1
-MainTimer                                                         0x0FDE     208
-timers_search_lim                                                 0x10AE       1
-timers_cnt                                                        0x10AF       1
-tmp_adr                                                           0x10B0       1
-_seed                                                             0x10B1       4
+MainTimer                                                         0x0FDE     240
+timers_cnt_search_lim                                             0x10CE       1
+tmp_adr                                                           0x10CF       1
+_seed                                                             0x10D0       4
 
 EEPROM Allocation
 Variable                                                          Address   Size

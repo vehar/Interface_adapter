@@ -23,7 +23,7 @@ typedef void (*TPTR)(void);
 
 
 extern void SetTask(TPTR TS);
-extern void SetTimerTask(TPTR TS, unsigned int NewTime);
+extern void SetTimerTask(TPTR TS, unsigned int NewTime, unsigned int NewPeriod);    //1 task ~12words
 
 inline extern void TaskManager(void);
 inline extern void TimerService(void);
