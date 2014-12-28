@@ -386,7 +386,6 @@ v_u32_RX_CNT++;
 {
 char data;//!
 data =  UDR1;//! read to clear RxC flag!
-
 if(!U1_in_buf_flag)
   {
     if (Usart1_rxCount < SIZE_BUF_RX) //если в буфере еще есть место
@@ -399,14 +398,15 @@ if(!U1_in_buf_flag)
       {
        Usart1_rxBufTail = 0;
       }
-     }
+     }  //TODO - добавить переход на обработчик переполнения буффера!
   }
  else   //При флаге - грузим в буфер системного юарта и сразу на вывод!
- {
+ {      //эмуляция приёма системным юартом данніх извне! отладить!
     if((uint16_t)(Usart1_txBufHead - Usart1_txBufTail) <= (uint16_t) SIZE_BUF_TX) //если в буфере еще есть место
     {
       Usart0_TX_buf[Usart1_txBufHead & (SIZE_BUF_TX - 1)] = data;//!    //считать символ  в буфер
-      Usart0_txBufHead++;                    //увеличить индекс   буфера
+      Usart0_txBufHead++;     //увеличить индекс   буфера  
+      #warning возможно не Голову, а Хвост!! Проверить!
       //UCSR0B |= (1 << UDRIE0); // TX int - on
       }
  }

@@ -6,12 +6,35 @@
 //============================================================================
 
 
+DECLARE_TASK(Task_Initial) //стартует перв≥м, запускает все задачи
+{
+//SetTimerTask(Task_t_props_out,10);
+
+//SetTask(Task_Start);     //290uS (50/50) and (10/10) но при 1/1 таск 1 лагает
+
+SetTask(Task_LoadTest); //запуск тестового таска дл€ проверки загрузки цп      
+///-----------------Upd-7-----------------------------
+// первичный запуск всех задач
+//SetTimerTask(Task_pars_cmd, 100); //Upd-6
+
+#ifdef DEBUG                    //Upd-6
+SetTimerTask(Task_LogOut, 50);
+//SetTask(Task_LcdGreetImage);    //Upd-4
+//SetTimerTask(Task_ADC_test,5000);   //Upd-6
+//SetTimerTask(Task_AdcOnLcd, 6000);
+//SetTimerTask(Task_BuffOut,5);
+#endif
+///---------------------------------------------------
+ SetTimerTask(Task_1ms, 55);
+ SetTimerTask(Task3_1ms, 900);
+} 
+
 DECLARE_TASK(Task_1ms)
 {
-//LED_PORT.LED2^=1;
-LED_PORT |= (1<<LED2);
-SetTimerTask(Task_1ms,5); //запуск мигалки-антизависалки
-LED_PORT  &= ~(1<<LED2);
+LED_PORT.LED2^=1;
+//LED_PORT |= (1<<LED2);
+SetTimerTask(Task_1ms,55); //запуск мигалки-антизависалки
+//LED_PORT  &= ~(1<<LED2);
 }  
 
 DECLARE_TASK(Task2_1ms)
@@ -23,36 +46,18 @@ LED_PORT  &= ~(1<<LED3);
 }  
 DECLARE_TASK(Task3_1ms)   //на 4800 бод - 15символов перед за 50мс 
 {
-Put_In_Log("Task3_1ms");
-SetTimerTask(Task3_1ms,50); //при таких дан≥х почти безлагова€ предача при разнесении во времени на 5мс
-}  
-DECLARE_TASK(Task4_1ms)
-{
-Put_In_Log("Task4_1ms");
-SetTimerTask(Task4_1ms,55); 
-}  
-DECLARE_TASK(Task5_1ms)
-{
-Put_In_Log("Task5_1ms");
-SetTimerTask(Task5_1ms,60); 
-}  
-DECLARE_TASK(Task6_1ms)
-{
-Put_In_Log("Task6_1ms");
-SetTimerTask(Task6_1ms,65); 
+Put_In_Log("Task3_500ms\r\n");
+SetTimerTask(Task3_1ms,500); //при таких данных почти безлагова€ предача при разнесении во времени на 5мс
 }  
 
+
  
-DECLARE_TASK(Task_LoadTest)
+DECLARE_TASK(Task_LoadTest)    //8ms!
 {
  int Tick =0;
  Tick = v_u32_SYS_TICK;
-  //LED_PORT  &= ~(1<<LED2);
- //delay_ms(10);
- // LED_PORT |= (1<<LED2);
-// delay_ms(1000);
 
-Put_In_Log("Task_LoadTest");
+Put_In_Log("T_L_T\r\n");
 
   //LcdClear();      
 _LCD_SHOWVAL(Tick); // = sprintf (lcd_buf, "Tick=%i",v_u32_SYS_TICK);  // 500us
@@ -60,7 +65,6 @@ _LCD_SHOWVAL(Tick); // = sprintf (lcd_buf, "Tick=%i",v_u32_SYS_TICK);  // 500us
 _LCD_STRINBUF("Ololo=)");
  LcdString(1,4);
  LcdUpdate();
-//#asm("sei");
 SetTimerTask(Task_LoadTest,1000);; //запуск тестового таска дл€ проверки загрузки цп
 }
 
@@ -69,12 +73,6 @@ DECLARE_TASK(Task_Start)
 SetTimerTask(Task_LedOff,100); //запуск мигалки-антизависалки
 }
 
-/*
-void Task_Start (void)
-{
-SetTimerTask(Task_LedOff,100); //запуск мигалки-антизависалки
-}
-  */
 DECLARE_TASK (Task_LedOff)
 {
 SetTimerTask(Task_LedOn,900);
@@ -87,7 +85,33 @@ SetTimerTask(Task_LedOff,100);
 LED_PORT  |= (1<<LED2);
 }
 
-
+DECLARE_TASK (Task_t_props_out)
+{  /*
+uint8_t index = 0;
+char tmp_str[10];
+SetTimerTask(Task_t_props_out,10);
+    // LED_PORT  &=~(1<<LED2);
+  for(index=0;index!=timers_search_lim;++index)	// ищем таймер
+	{          //отладить ниже
+    if((MainTimer[index].sys_tick_time > 0)) //если задача выполн€лась, иначе смысл пихать в очередь сп€щие задачи
+    // if((MainTimer[index].Task_status == DONE))
+    {
+     Put_In_Log("<");    
+     itoa((int)MainTimer[index].hndl , tmp_str);
+     Put_In_Log(tmp_str); Put_In_Log(",");
+     itoa((int)MainTimer[index].Time , tmp_str);
+     Put_In_Log(tmp_str); Put_In_Log(",");
+     itoa((int)MainTimer[index].sys_tick_time , tmp_str);   MainTimer[index].sys_tick_time = 0;
+     Put_In_Log(tmp_str); Put_In_Log(",");
+     itoa((int)MainTimer[index].exec_time , tmp_str);       MainTimer[index].exec_time = 0;
+     Put_In_Log(tmp_str); Put_In_Log(",");
+     itoa((int)MainTimer[index].Task_status , tmp_str);            MainTimer[index].flag = 0;
+     Put_In_Log(tmp_str);
+     Put_In_Log(">\r\n");       
+     }
+  }    */  
+ // LED_PORT  |=(1<<LED2);
+}
 
 DECLARE_TASK (Task_ADC_test) //Upd-6     //дл€ проверки освещЄнноси помещени€
  {
@@ -164,7 +188,7 @@ char scan_interval = 100;
         //SetTask(Task_pars_cmd);  //ѕроверить!
         scan_interval = 5;
        }
- else{scan_interval = 155;};
+// else{scan_interval = 100;};
 SetTimerTask(Task_pars_cmd, scan_interval); //25   //ѕроверить!
 }
 
@@ -184,10 +208,6 @@ while(i<512){WorkLog[i] = 0; i++;};
 //LED_PORT &=~(1<<LED2);
 }
 
-/*
-void Task_Uart_ByfSend(void){ //очистка лог буффера
-
-}*/
 
 void Task_SPI_ClrBuf (void){ //очистка rx/tx буфферов SPI
 uint8_t i;
@@ -199,7 +219,7 @@ Spi0_TX_buf[i] = 0;
  }
 }
 
- void Task_BuffOut  (void)
+ void Task_BuffOut  (void)  //выдача прин€тых по ёарт1 днн сразу в прерывании
  {
   SetTimerTask(Task_BuffOut,50);
   RingBuff_TX();

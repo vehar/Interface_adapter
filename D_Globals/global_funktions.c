@@ -204,9 +204,10 @@ void RingBuff_TX(void)
 }
 
 #warning TODO
-uint8_t get_curr_cpu_freq (void){ //возвращает значение текущей частоты работы мк
+uint8_t get_curr_cpu_freq (void) //возвращает значение текущей частоты работы мк
+{
 uint8_t freq = 0;
-
+  //TODO
 return freq;
 }
 

@@ -181,6 +181,10 @@ settings_EE_cpy_R(); //загрузка настроек из еепром
 USART_Init(USART_0, RAM_settings.MODE_of_Uart[USART_0], RAM_settings.baud_of_Uart[USART_0]);
 USART_Init(USART_1, RAM_settings.MODE_of_Uart[USART_1], RAM_settings.baud_of_Uart[USART_1]);
 
+#ifdef DEBUG
+USART_Init(USART_0, 1, 576);
+#endif
+
 //Soft_SPI_Master_Init();
 //Hard_SPI_Master_Init_default();
 #warning грузить из еепром!

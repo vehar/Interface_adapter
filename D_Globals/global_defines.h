@@ -57,7 +57,7 @@
 
 //----START OTHERS----//
 
-extern volatile uint8_t saved_state = 0;
+static volatile uint8_t saved_state = 0;
 #warning заменить на push pop
 #define __disable_interrupts() do{saved_state = SREG;#asm("cli");}while(0)
 #define __restore_interrupts() (SREG |= saved_state)

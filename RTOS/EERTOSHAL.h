@@ -4,6 +4,7 @@
 #include "RTOS/HAL.h"
 #include <mega128.h>
 #include <stdint.h>
+#include <stdlib.h>    // itoa
 
 #define STATUS_REG 			    SREG
 #define Interrupt_Flag		    SREG_I
@@ -18,7 +19,8 @@
     #define RTOS_ISR  		TIMER2_COMP_vect
 #endif
 //#define	TaskQueueSize		20
-#define MainTimerQueueSize	30
+#define MainTimerQueueSize	15
+
 
 extern void RunRTOS (void);      //запуск системмного таймера
 extern void StopRTOS (void);     //замедление системмного таймера
