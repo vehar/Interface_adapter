@@ -55,7 +55,7 @@ USART_Send_Str(SYSTEM_USART, WorkLog);
 
 RunRTOS();
 
-SetTimerTask(Task_Flush_WorkLog,25,25);//очистка лог буффера
+SetTimerTask(Task_Flush_WorkLog,25,0);//очистка лог буффера
 LogIndex = 0;
 }
 

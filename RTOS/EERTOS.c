@@ -18,7 +18,7 @@ DI HALT: 9 Апрель 2012 в 21:08
 
 /*
   UPDATE - Избавился от очереди задач TaskQueue, вместо этого в диспетчере задач
-  выполняются задачи из очереди MainTimer, которые уже "выщелкали",
+  выполняются задачи из очереди TTask, которые уже "выщелкали",
   соответственно количество кода очень уменьшилось.
   MEMORY -58 WORDS
 */
@@ -30,14 +30,14 @@ DI HALT: 9 Апрель 2012 в 21:08
 // Тип данных - указатель на функцию
 //volatile static TPTR	TaskQueue[TaskQueueSize+1];			// очередь указателей
 //update
-enum TASK_STATUS {WAIT, RDY,IN_PROC, DONE};
+enum TASK_STATUS {WAIT, RDY, IN_PROC, DONE};
 #warning оптимизировать передачей указателя или ссылки а структуру
 volatile static struct
 {
                         TPTR GoToTask; 					// Указатель перехода
                         uint16_t TaskDelay;				// Выдержка в мс перед старотом задачи    
                         uint16_t TaskPeriod;			// Выдержка в мс перед следующим запуском 
-                        uint8_t Task_status; 
+                        uint8_t TaskStatus; 
 						//TODO добавить параметр и отладить
  #ifdef DEBUG  
   uint32_t sys_tick_time; // Значение системного таймера на момент выполнения задачи в тиках
@@ -45,12 +45,15 @@ volatile static struct
   uint8_t  flag;             // Различные флаги (переполнение таймера, ошибка,..) 
   uint8_t hndl;
  #endif
-} MainTimer[MainTimerQueueSize+1];	// Очередь таймеров
+} TTask[MainTimerQueueSize+1];	// Очередь таймеров
 
  volatile uint32_t exec_task_addr = 0; //for debug
- volatile static uint8_t timers_cnt_search_lim = 1;
+ volatile static uint8_t timers_cnt_tail = 1;
 
-
+          
+ 
+  void clear_duplicates (void); //not tested
+  
  //===================================================================
 // RTOS Подготовка. Очистка очередей
   void InitRTOS(void)
@@ -58,8 +61,8 @@ volatile static struct
 uint8_t	index;
       for(index=0;index!=MainTimerQueueSize+1;index++) // Обнуляем все таймеры.
     {
-	    MainTimer[index].GoToTask = Idle;
-	    MainTimer[index].TaskDelay = 0;
+	    TTask[index].GoToTask = Idle;
+	    TTask[index].TaskDelay = 0; //Считаю, что достаточно занулить указатель
 	 }
 }
 
@@ -67,11 +70,14 @@ uint8_t	index;
 //Пустая процедура - простой ядра.
   void  Idle(void)
 { //#warning наполнить полезным функционалом 
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//clear_duplicates();//Кусок очистки очереди от одинаковых задач 
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
 #ifdef DEBUG
 
 LED_PORT  &=~(1<<LED1);   //Для отслеживания загрузки системы   
 
-#endif
+#endif    
 }
 
  //UPDATE
@@ -96,25 +102,24 @@ if (STATUS_REG & (1<<Interrupt_Flag)) 			// Проверка запрета прерывания, аналоги
 	nointerrupted = 1;
 	}
 // My UPDATE - optimized
-  for(index=0;index!=timers_cnt_search_lim;++index)	// ищем любой пустой таймер
+  for(index=0;index!=timers_cnt_tail;++index)	// ищем любой пустой таймер
   {  
-        if (MainTimer[index].GoToTask == TS)
+        if (TTask[index].GoToTask == TS)
 	{
-		MainTimer[index].TaskDelay = NewTime;		// И поле выдержки времени    
-        MainTimer[index].TaskPeriod = NewPeriod;	// И поле периода запуска
-        MainTimer[index].Task_status = WAIT;      //Флаг - ожидает выполнения!
+		TTask[index].TaskDelay = NewTime;		// И поле выдержки времени    
+        TTask[index].TaskPeriod = NewPeriod;	// И поле периода запуска
+        TTask[index].TaskStatus = WAIT;      //Флаг - ожидает выполнения!
         if (nointerrupted) {_enable_interrupts();}	// Разрешаем прерывания
         return;									// Выход.
 	}
-  
-	if (MainTimer[index].GoToTask == Idle)
+	if (TTask[index].GoToTask == Idle)
 	{
-		MainTimer[index].GoToTask = TS;			// Заполняем поле перехода задачи
-		MainTimer[index].TaskDelay = NewTime;		// И поле выдержки времени        
-        MainTimer[index].TaskPeriod = NewPeriod;	// И поле периода запуска
-        MainTimer[index].Task_status = WAIT;      //Флаг - ожидает выполнения!
+		TTask[index].GoToTask = TS;			// Заполняем поле перехода задачи
+		TTask[index].TaskDelay = NewTime;		// И поле выдержки времени        
+        TTask[index].TaskPeriod = NewPeriod;	// И поле периода запуска
+        TTask[index].TaskStatus = WAIT;      //Флаг - ожидает выполнения!
                                   //подсчёт исспользованых таймеров
-        timers_cnt_search_lim++; //чтобы не прочёсывать пустую часть очереди
+        timers_cnt_tail++; //чтобы не прочёсывать пустую часть очереди
         if (nointerrupted) {_enable_interrupts();}	// Разрешаем прерывания
         return;									// Выход.
 	}
@@ -132,30 +137,43 @@ uint8_t		index=0;
 
 TPTR task;                 //TODO сделать глобальными регистровыми!
 
-  for(index=0;index!=timers_cnt_search_lim;++index)   // Прочесываем очередь в поисках нужной задачи
-	{	if ((MainTimer[index].Task_status == RDY)) // пропускаем пустые задачи и те, время которых еще не подошло
+  for(index=0;index!=timers_cnt_tail;++index)   // Прочесываем очередь в поисках нужной задачи
+	{	
+      if ((TTask[index].TaskStatus == RDY)) // пропускаем пустые задачи и те, время которых еще не подошло
 		{
           LED_PORT |= (1<<LED1);   //Для отслеживания загрузки системы
-            task=MainTimer[index].GoToTask;             // запомним задачу т.к. во время выполнения может измениться индекс
+            task=TTask[index].GoToTask;             // запомним задачу т.к. во время выполнения может измениться индекс
+              
+            
+          if(TTask[index].TaskPeriod == 0) //если период 0 - удаляем задачу из списка
+           {
+                ClearTimerTask(task);
+           } 
+           else 
+           {
+                TTask[index].TaskDelay = TTask[index].TaskPeriod; //перезапись задержки
+                TTask[index].TaskStatus = WAIT;
+           }     
+             //Дальше идём на выполнение задачи
+     
 #ifdef DEBUG                                            //запись св-ств задачи для лога
 	_disable_interrupts();            
             tmp_adr =(uint8_t)task;
-            MainTimer[index].hndl = tmp_adr;
-            MainTimer[index].sys_tick_time = v_u32_SYS_TICK;
+            TTask[index].hndl = tmp_adr;
+            TTask[index].sys_tick_time = v_u32_SYS_TICK;
            // Timer_3_start();                           //включили отсчёт времени выполнения
 	_enable_interrupts();
-#endif
-		    //MainTimer[index].GoToTask = Idle;           // ставим затычку   
-            MainTimer[index].Task_status = IN_PROC;         //теперь просто меняем статус
+#endif  
+            //TTask[index].TaskStatus = IN_PROC;         //просто меняем статус
             _enable_interrupts();						// Разрешаем прерывания
             (task)();								    // Переходим к задаче     
             //всё стопорится на єтой строке если не return!!!
-           // MainTimer[index].Task_status = DONE;         //теперь просто меняем статус
+           // TTask[index].TaskStatus = DONE;         //теперь просто меняем статус
 /*#ifdef DEBUG
 	_disable_interrupts();            
             Timer_3_stop();                            //выключили отсчёт времени выполнения
-            MainTimer[index].exec_time = Timer_3_get_val();
-            MainTimer[index].flag = v_u16_TIM_1_OVR_FLAG;
+            TTask[index].exec_time = Timer_3_get_val();
+            TTask[index].flag = v_u16_TIM_1_OVR_FLAG;
     _enable_interrupts();
 #endif*/
             return;                                     // выход до следующего цикла
@@ -176,17 +194,17 @@ inline void TimerService(void)
 {
 uint8_t index;
 
-for(index=0;index!=timers_cnt_search_lim;index++)		// Прочесываем очередь таймеров
+for(index=0;index!=timers_cnt_tail;index++)		// Прочесываем очередь таймеров
 	{
-         if( MainTimer[index].Task_status == WAIT) 		// Если не выполнилась и
+         if( TTask[index].TaskStatus == WAIT) 		// Если не выполнилась и
            {
-             if(MainTimer[index].TaskDelay > 0)  // таймер не выщелкал, то
+             if(TTask[index].TaskDelay > 0)  // таймер не выщелкал, то
               {					
-                MainTimer[index].TaskDelay--;	// щелкаем еще раз.   
+                TTask[index].TaskDelay--;	// щелкаем еще раз.   
               }  
               else                         //Ставим флаг готовности к віполнению
               {
-               MainTimer[index].Task_status = RDY;
+               TTask[index].TaskStatus = RDY;
               }      
 		};
 	}
@@ -195,26 +213,35 @@ for(index=0;index!=timers_cnt_search_lim;index++)		// Прочесываем очередь таймер
 void ClearTimerTask(TPTR TS)  //обнуление таймера
 {
 uint8_t	 index=0;
-uint8_t nointerrupted = 0;
+bit nointerrupted = 0;
 if (STATUS_REG & (1<<Interrupt_Flag))
 {
-_disable_interrupts();
-nointerrupted = 1;
+_disable_interrupts(); nointerrupted = 1;
 }
-    for(index=0; index!=timers_cnt_search_lim; ++index)
+    for(index=0; index<timers_cnt_tail; ++index)
     {
-        if(MainTimer[index].GoToTask == TS)
+        if(TTask[index].GoToTask == TS)
         {                                         
-        /*     //возможно стоит сделать так
-           if(i != (arrayTail - 1))                     // переносим последнюю задачу
+             //возможно стоит сделать так
+           if(index != (timers_cnt_tail - 1))         // переносим последнюю задачу
          {                                            // на место удаляемой
-            TaskArray[i] = TaskArray[arrayTail - 1];
+            TTask[index] = TTask[timers_cnt_tail - 1];      
+                         //На всякий случай зануление последней задачи
+            TTask[timers_cnt_tail - 1].GoToTask = Idle;
+            TTask[timers_cnt_tail - 1].TaskDelay = 0; // Обнуляем время      
+            TTask[timers_cnt_tail - 1].TaskPeriod = 0; // Обнуляем время     
+            TTask[timers_cnt_tail - 1].TaskStatus = DONE; // Обнуляем status
          }
-        */
-            MainTimer[index].GoToTask = Idle;
-            MainTimer[index].TaskDelay = 0; // Обнуляем время  
-            timers_cnt_search_lim--;  //уменьшаем кол-во задач
-            if (nointerrupted) _enable_interrupts();
+           else
+         {
+             //Если задача последняя в очереди
+            TTask[index].GoToTask = Idle;
+            TTask[index].TaskDelay = 0; // Обнуляем время      
+            TTask[index].TaskPeriod = 0; // Обнуляем время  
+            TTask[index].TaskStatus = DONE; // Обнуляем status
+         }  
+          timers_cnt_tail--;  //уменьшаем кол-во задач     
+          if (nointerrupted) _enable_interrupts();
             return;
         }
     }
@@ -223,3 +250,20 @@ nointerrupted = 1;
 
   //TODO look at http://we.easyelectronics.ru/Soft/minimalistichnaya-ochered-zadach-na-c.html
  //TODO look at http://we.easyelectronics.ru/Soft/dispetcher-snova-dispetcher.html
+ 
+ void clear_duplicates (void) //not tested
+ {
+  uint8_t		index=0;
+  bit		nointerrupted = 0;
+  TPTR task_src;
+if (STATUS_REG & (1<<Interrupt_Flag)){_disable_interrupts();nointerrupted = 1;}	// Проверка запрета прерывания	
+  for(index=0;index!=timers_cnt_tail;++index)	
+  {       
+     task_src = TTask[index].GoToTask;
+    for(index+1;index!=timers_cnt_tail;++index)	
+      { 
+       if (TTask[index].GoToTask == task_src) {TTask[index].GoToTask = Idle;}
+      } 
+  }
+  if (nointerrupted){_enable_interrupts();}	// Разрешаем прерывания     
+ }

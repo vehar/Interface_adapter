@@ -7,7 +7,7 @@ DECLARE_TASK(Task_LoadTest);
 DECLARE_TASK(Task_1ms);
 DECLARE_TASK(Task3_1ms);
 DECLARE_TASK (Task_t_props_out);
-
+DECLARE_TASK(Task_ClearTS);//clr task test
 
 DECLARE_TASK(Task_Start);    //new syntax
 //void Task_Start (void);    //old syntax

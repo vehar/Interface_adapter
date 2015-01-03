@@ -61,6 +61,15 @@ TaskManager();	// Âûחמג הטסןועקונא
 
 
 
+
+
+
+
+
+
+
+
+
 // Timer2 interrupt service routine
 interrupt [RTOS_ISR] void timer2_comp_isr(void)//RTOS Interrupt 1mS
 {
