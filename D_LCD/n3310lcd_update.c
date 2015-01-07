@@ -317,8 +317,8 @@ const char table[0x0500] =
 0x14, 0x14, 0x14, 0x14, 0x14,// BD
 0x00, 0x41, 0x22, 0x14, 0x08,// BE
 0x02, 0x01, 0x51, 0x09, 0x06,// BF
-0x7E, 0x11, 0x11, 0x11, 0x7E,// C0 ?
-0x7F, 0x49, 0x49, 0x49, 0x31,// C1 ?
+0x7E, 0x11, 0x11, 0x11, 0x7E,// C0 А
+0x7F, 0x49, 0x49, 0x49, 0x31,// C1 Б
 0x7F, 0x49, 0x49, 0x49, 0x36,// C2 ?
 0x7F, 0x01, 0x01, 0x01, 0x03,// C3 ?
 0x70, 0x29, 0x27, 0x21, 0x7F,// C4 ?
@@ -564,7 +564,17 @@ void LcdImage (flash unsigned char *imageData)	//вывод изображения
         LcdSend(0x80, LCD_CMD);		//ставим указатель на 0,0
         LcdSend(0x40, LCD_CMD);
         for (i = 0; i < LCD_CACHSIZE; i++) LcdCache[i] = imageData[i];	//грузим данные
-        }
+        }        
+        
+ void LcdImageRam (unsigned char *imageData)	//вывод изображения
+        {
+        unsigned int i;
+
+        LcdSend(0x80, LCD_CMD);		//ставим указатель на 0,0
+        LcdSend(0x40, LCD_CMD);
+        for (i = 0; i < LCD_CACHSIZE; i++) LcdCache[i] = imageData[i];	//грузим данные
+        }       
+        
 
 void LcdPixel (unsigned char x, unsigned char y, unsigned char mode)     //Displays a pixel at given absolute (x, y) location, mode -> Off, On or Xor
         {
@@ -666,7 +676,51 @@ void lcd_clear_area(unsigned char line, unsigned char startX, unsigned char endX
     for(uint16_t i=start;i<end;i++) {
        LcdSend(0, LCD_DATA);
     }
+}  */
+
+/*
+ * Имя : LcdRect
+ * Описание : Рисует незакрашенный прямоугольник
+ * Аргумент(ы) : x1 -> абсолютная координата x левого верхнего угла
+ * y1 -> абсолютная координата y левого верхнего угла
+ * x2 -> абсолютная координата x правого нижнего угла
+ * y2 -> абсолютная координата y правого нижнего угла
+ * mode -> Off, On или Xor. Смотри enum в n3310.h
+ * Возвращаемое значение : смотри возвращаемое значение в n3310lcd.h
+ */  
+      
+ /*
+byte LcdRect ( byte x1, byte y1, byte x2, byte y2, LcdPixelMode mode )    //not tested!
+{
+byte tmpIdx;
+ 
+// Проверка границ
+if ( ( x1 >= LCD_X_RES) || ( x2 >= LCD_X_RES) || ( y1 >= LCD_Y_RES) || ( y2 >= LCD_Y_RES) )
+return OUT_OF_BORDER;
+ 
+if ( ( x2 > x1 ) && ( y2 > y1 ) )
+{
+// Рисуем горизонтальные линии
+for ( tmpIdx = x1; tmpIdx <= x2; tmpIdx++ )
+{
+LcdPixel( tmpIdx, y1, mode );
+LcdPixel( tmpIdx, y2, mode );
 }
+ 
+// Рисуем вертикальные линии
+for ( tmpIdx = y1; tmpIdx <= y2; tmpIdx++ )
+{
+LcdPixel( x1, tmpIdx, mode );
+LcdPixel( x2, tmpIdx, mode );
+}
+ 
+// Установка флага изменений кэша
+UpdateLcd = TRUE;
+}
+return OK;
+}
+
+
 */
 
 void LcdCircle(char x, char y, char radius, unsigned char mode)		//рисуем круг по координатам с радиусом - по Брезенхейму

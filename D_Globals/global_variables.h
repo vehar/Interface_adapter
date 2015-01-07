@@ -9,26 +9,23 @@
 #include <stdint.h>
 #include "D_usart/usart.h"
 
-/* this structure will occupy 1 byte in RAM
-   as the bit field data type is unsigned char */
-#warning замена на union_ потенциально болеее еффективна
-volatile struct flag_collector0 {
-              unsigned char Ultra_L_Req:1; /* bit 0 */
-              unsigned char Ultra_R_Req:1; /* bit 1 */
-              unsigned char Ultra_L_Rdy:1; /* bit 2 */
-              unsigned char Ultra_R_Rdy:1; /* bit 3 */
-              unsigned char Lsm303_Req :1; /* bit 4 */
-              unsigned char Lsm303_Rdy :1; /* bit 5 */
-              unsigned char Parser_Req :1; /* bit 6 */ //запрос на обработку пришедших данных
-              unsigned char aa:1; /* bit 7 */
-              }flags;
 
- volatile char U1_in_buf_flag = 0;
 
-//volatile uint32_t result = 0;
+  
+   uint16_t g_tcf = 0; //_global_taskControl_flags
+   enum g_tcf_values {  
+                        ERR_UNDEF_FLAG, //ошибка - неопределЄнный флаг
+                        S_SPI_BUF_CLR,
+                        FLUSH_WORKLOG
+   }; 
+   
+  volatile char U1_in_buf_flag = 0;
+    
+ 
 extern volatile uint8_t symbol = 0;
 extern volatile uint8_t Parser_req_state_cnt = 255;
  volatile  uint32_t v_u32_SYS_TICK; //may be static
+ volatile  uint32_t v_u32_SYS_TICK_TMP1;
 
 extern volatile uint32_t v_u32_TX_CNT = 0;
 extern volatile uint32_t v_u32_RX_CNT = 0;
@@ -142,10 +139,11 @@ __flash char help_Spi_1[] = "\r Prescaller: pow of 2 (Ex: Presc 16)\r";
 //’ранимые настройки
 
  #warning ќѕ“»ћ»«»–ќ¬ј“№!
- /* Global structure located in EEPROM */
+ /* Global structure located in EEPROM */ 
+ eeprom char null_ee;//дл€ услови€ начальной инициализации еепром
 eeprom  struct eeprom_settings_structure {
+ unsigned char MODE_of_Uart[COUNT_OF_UARTS]; 
  unsigned int baud_of_Uart[COUNT_OF_UARTS];
- unsigned char MODE_of_Uart[COUNT_OF_UARTS];
  //bool mode, bool phase, bool polarity, uint16_t prescaller
  unsigned char MODE_of_Spi[COUNT_OF_SPI]; // bits 0 - master/slave, 1 - phase, 2 - polarity
  unsigned char PhaPol_of_Spi[COUNT_OF_SPI];  //Upd - 1

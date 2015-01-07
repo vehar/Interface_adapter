@@ -218,6 +218,55 @@ while (v_u32_SYS_TICK < timecnt){}
 }
 
 
+
+
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//RLE_array pack/unpack funktions
+
+int RLE_pack (unsigned char* src,unsigned char* dst, uint16_t src_size)
+{
+uint8_t tmp_symb = src[0];
+uint16_t tmp_cnt = 1;
+uint16_t k = 0;
+uint16_t i = 1;
+
+ for(i = 1; i<src_size+1; i++)
+    {
+       if(src[i] == tmp_symb){tmp_cnt++;}
+       else
+        {
+            dst[k] = tmp_cnt; k++;
+            dst[k] = tmp_symb; k++;
+
+            tmp_symb = src[i];
+            tmp_cnt = 1;
+       }
+    }
+ return k;   //return new_sise
+}
+
+int RLE_unpack (flash unsigned char* src, unsigned char* dst, uint16_t src_size)
+{
+uint8_t tmp_symb = 0;
+uint8_t tmp_cnt = 0;
+uint16_t i;
+uint16_t j;
+uint16_t k=0;
+
+ for(i = 0; i<src_size; i+=2)
+    {
+        tmp_cnt = src[i];
+        tmp_symb = src[i+1];
+        for(j = 0; j < tmp_cnt; j++)
+        {
+            dst[k++] = tmp_symb;
+        }
+    }
+ return src_size+k;   //new_sise
+}
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
 /**
 void cust_ltoa(long int n, char *str;)
 {

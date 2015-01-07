@@ -13,7 +13,10 @@ typedef void (*T_PTR)(T_ARG);//заготовка для задач с параметром
 typedef void (*TPTR)(void);
 
 #ifdef DEBUG
- extern  volatile uint32_t v_u32_SYS_TICK;
+ extern  volatile uint32_t v_u32_SYS_TICK;    
+ extern  volatile uint32_t v_u32_SYS_TICK_TMP1;
+ extern void Put_In_Log (unsigned char * data);
+ 
  extern volatile uint16_t v_u16_TIM_1_OVR_FLAG;
  extern void Timer_3_start(void);
  extern void Timer_3_stop(void);

@@ -10,16 +10,17 @@ DECLARE_TASK(Task_Initial) //стартует первім, запускает все задачи
 {
 //SetTimerTask(Task_t_props_out,10);
 
-SetTimerTask(Task_Start,1000,10);     //290uS (50/50) and (10/10) но при 1/1 таск 1 лагает
+SetTimerTask(Task_Start,1000,10);     //blink led
 
-SetTimerTask(Task_LoadTest, 500, 500); //запуск тестового таска для проверки загрузки цп      
+SetTimerTask(Task_LoadTest, 5000, 500); //запуск тестового таска для проверки загрузки цп      
 ///-----------------Upd-7-----------------------------
 // первичный запуск всех задач
 //SetTimerTask(Task_pars_cmd,5,100); //Upd-6
+SetTimerTask(Task_FlagsHandler,100,100);
 
 #ifdef DEBUG                    //Upd-6
 SetTimerTask(Task_LogOut, 50, 50);
-//SetTask(Task_LcdGreetImage);    //Upd-4
+SetTask(Task_LcdGreetImage);    //Upd-4
 //SetTimerTask(Task_ADC_test,5000);   //Upd-6
 //SetTimerTask(Task_AdcOnLcd, 6000);
 //SetTimerTask(Task_BuffOut,5);
@@ -132,13 +133,22 @@ DECLARE_TASK (Task_ADC_test) //Upd-6     //для проверки освещённоси помещения
  #warning no Lcd_out// sprintf (lcd_buf, "DummyADC=%d ",volt);      // вывод на экран результата
  LcdString(1,1);   LcdUpdate();
  //SetTimerTask(Task_ADC_test,5000, 5000);
- }
+ }  
+ 
+                  
 void Task_LcdGreetImage (void) //Greeting image on start    //Upd-4
 {
 //SetTask(LcdClear);
 //SetTask(Task_LcdLines);
- //LcdImage(rad1Image);  SetTimerTask(LcdClear,3000);
 
+#warning RLE_unpack doesn`t work
+//unsigned char tmp_unpk_buf[504];
+//unsigned char tmp_src_buf[504];
+//memcpy(tmp_unpk_buf,(void*)rad2Image,504);          
+//RLE_unpack(rad1Image, LcdCache, 230);
+//LcdImageRam(tmp_unpk_buf);  SetTimerTask(LcdClear,1000,0);
+LcdImage(rad2Image);  SetTimerTask(LcdClear,1000,0);
+ /*
  //sprintf (lcd_buf, "  Interface   ");
  strncpy (lcd_buf, "  Interface   ", 15);
  LcdStringBig(1,1);
@@ -149,9 +159,9 @@ void Task_LcdGreetImage (void) //Greeting image on start    //Upd-4
  strncpy (lcd_buf, "  Владислав   ", 15);
  LcdString(1,5);
  strncpy (lcd_buf, "  АЕ - 104    ", 15);
- LcdString(1,6);
+ LcdString(1,6);  */
 LcdUpdate();
-//SetTimerTask(LcdClear,7000);
+SetTimerTask(LcdClear,2000,0);
 
 // sprintf (lcd_buf, "Wait comand...");      //не работает
 // LcdStringBig(1,3);
@@ -192,7 +202,7 @@ void Task_AdcOnLcd (void)
 }
 
 //#error Проверить!
-void Task_pars_cmd (void)         //300us? empty buff
+DECLARE_TASK (Task_pars_cmd)         //300us? empty buff
 {
 char scan_interval = 100;
   if (USART_Get_rxCount(SYSTEM_USART) > 0) //если в приёмном буфере что-то есть
@@ -207,7 +217,23 @@ SetTimerTask(Task_pars_cmd, 0, scan_interval); //25   //Проверить!
 }
 
 
-void Task_LogOut (void)           //500us ?
+DECLARE_TASK (Task_FlagsHandler)
+{
+  switch(g_tcf)
+  { 
+    case ERR_UNDEF_FLAG: Put_In_Log("\r ERR_UNDEF_FLAG "); FLAG_CLR(g_tcf,ERR_UNDEF_FLAG);
+    //break;
+   case S_SPI_BUF_CLR: SetTask(Task_SPI_ClrBuf); FLAG_CLR(g_tcf,S_SPI_BUF_CLR);
+    //break;
+   case FLUSH_WORKLOG: SetTask(Task_Flush_WorkLog);FLAG_CLR(g_tcf,FLUSH_WORKLOG);
+    //break;
+    default:  
+    FLAG_SET(g_tcf, ERR_UNDEF_FLAG);
+    break;
+    }                                   
+}
+
+DECLARE_TASK (Task_LogOut)           //500us ?
 {
 //SetTimerTask(Task_LogOut,50,50);
 if(LogIndex){LogOut();} //если что-то есть в лог буфере - вывести

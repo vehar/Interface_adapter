@@ -19,11 +19,11 @@ Data Stack size         : 1024
 #include "PARSER/pars_hndl.c"           //Upd-8 in folder
 
 // G_vars are here
-
+volatile uint16_t tmp = 0;
 
 //TODO переписать парсер команд в конечный автомат как в http://habrahabr.ru/post/241941/
  //Предусмотреть убийство задачи, если войдёт в бесконечный цикл! (2-й таймер)
-  //Добавить вітесняемость!
+  //Добавить вытесняемость!
  //Отладить прерывание SPI!
 
 void main(void)

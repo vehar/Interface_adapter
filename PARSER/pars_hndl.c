@@ -340,6 +340,10 @@ Put_In_Log(str); //convert dec to str
  #ifdef DEBUG
 Put_In_Log("\r S D<RX ");
 Put_In_Log(Spi0_RX_buf);
+
+#warning ставим не задачу, а только флаг того, что надо установить задачу очитски буффера
+         //флаг проверяется в фоновой задаче и в соответствии происходит запуск или удаление задач
+FLAG_SET(g_tcf,S_SPI_BUF_CLR);//  = SetTask(Task_SPI_ClrBuf);
 //SetTimerTask(Task_SPI_ClrBuf, 10);
  // USART_Send_Str(SYSTEM_USART, Spi0_RX_buf);
   #endif

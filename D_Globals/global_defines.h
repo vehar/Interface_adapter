@@ -70,6 +70,10 @@ static volatile uint8_t saved_state = 0;
 #define _clr(X) (X=0)
 #define _read(X)(X)
 
+#define FLAG_SET(var,flag) var|=(1<<flag)
+#define FLAG_CLR(var,flag) var&=~(1<<flag)
+#define FLAG_READ(var,flag) var&(1<<flag)
+
 #define L_RISING_EDGE    GICR|=(1<<INT0);MCUCR|=((1<<ISC00)|(1<<ISC01))
 #define L_FALLING_EDGE   GICR|=(1<<INT0);MCUCR&=~(1<<ISC00);MCUCR|=(1<<ISC01))
 #define L_OFF            GICR&=~(1<<INT0);MCUCR&=~((1<<ISC00)|(1<<ISC01))

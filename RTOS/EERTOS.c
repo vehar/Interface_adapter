@@ -70,14 +70,11 @@ uint8_t	index;
 //ѕуста€ процедура - простой €дра.
   void  Idle(void)
 { //#warning наполнить полезным функционалом 
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//clear_duplicates();// усок очистки очереди от одинаковых задач 
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
 #ifdef DEBUG
 
 LED_PORT  &=~(1<<LED1);   //ƒл€ отслеживани€ загрузки системы   
 
-#endif    
+#endif   
 }
 
  //UPDATE
@@ -134,7 +131,7 @@ volatile uint8_t	tmp_adr;
 inline void TaskManager(void)
 {
 uint8_t		index=0;
-
+char tmp_str[10];
 TPTR task;                 //TODO сделать глобальными регистровыми!
 
   for(index=0;index!=timers_cnt_tail;++index)   // ѕрочесываем очередь в поисках нужной задачи
@@ -142,7 +139,7 @@ TPTR task;                 //TODO сделать глобальными регистровыми!
       if ((TTask[index].TaskStatus == RDY)) // пропускаем пустые задачи и те, врем€ которых еще не подошло
 		{
           LED_PORT |= (1<<LED1);   //ƒл€ отслеживани€ загрузки системы
-            task=TTask[index].GoToTask;             // запомним задачу т.к. во врем€ выполнени€ может изменитьс€ индекс
+          task=TTask[index].GoToTask;  // запомним задачу т.к. во врем€ выполнени€ может изменитьс€ индекс
               
             
           if(TTask[index].TaskPeriod == 0) //если период 0 - удал€ем задачу из списка
@@ -158,15 +155,15 @@ TPTR task;                 //TODO сделать глобальными регистровыми!
      
 #ifdef DEBUG                                            //запись св-ств задачи дл€ лога
 	_disable_interrupts();            
-            tmp_adr =(uint8_t)task;
+            tmp_adr =(uint8_t)task;     //если задача уже удалилась, то это не имеет смысла!
             TTask[index].hndl = tmp_adr;
-            TTask[index].sys_tick_time = v_u32_SYS_TICK;
-           // Timer_3_start();                           //включили отсчЄт времени выполнени€
+            TTask[index].sys_tick_time = v_u32_SYS_TICK;                        
 	_enable_interrupts();
 #endif  
-            //TTask[index].TaskStatus = IN_PROC;         //просто мен€ем статус
+             v_u32_SYS_TICK_TMP1 = v_u32_SYS_TICK; //засекаем врем€ в≥полнени€ задачи
             _enable_interrupts();						// –азрешаем прерывани€
-            (task)();								    // ѕереходим к задаче     
+            (task)();								    // ѕереходим к задаче        
+             if((v_u32_SYS_TICK_TMP1 = v_u32_SYS_TICK - v_u32_SYS_TICK_TMP1)>=1){ itoa(v_u32_SYS_TICK_TMP1,tmp_str);Put_In_Log(tmp_str);}
             //всЄ стопоритс€ на Їтой строке если не return!!!
            // TTask[index].TaskStatus = DONE;         //теперь просто мен€ем статус
 /*#ifdef DEBUG
@@ -202,7 +199,7 @@ for(index=0;index!=timers_cnt_tail;index++)		// ѕрочесываем очередь таймеров
               {					
                 TTask[index].TaskDelay--;	// щелкаем еще раз.   
               }  
-              else                         //—тавим флаг готовности к в≥полнению
+              else                         //—тавим флаг готовности к выполнению
               {
                TTask[index].TaskStatus = RDY;
               }      
@@ -220,13 +217,12 @@ _disable_interrupts(); nointerrupted = 1;
 }
     for(index=0; index<timers_cnt_tail; ++index)
     {
-        if(TTask[index].GoToTask == TS)
-        {                                         
-             //возможно стоит сделать так
+      if(TTask[index].GoToTask == TS)
+      {                                         
            if(index != (timers_cnt_tail - 1))         // переносим последнюю задачу
          {                                            // на место удал€емой
             TTask[index] = TTask[timers_cnt_tail - 1];      
-                         //Ќа вс€кий случай зануление последней задачи
+                         //зануление последней задачи
             TTask[timers_cnt_tail - 1].GoToTask = Idle;
             TTask[timers_cnt_tail - 1].TaskDelay = 0; // ќбнул€ем врем€      
             TTask[timers_cnt_tail - 1].TaskPeriod = 0; // ќбнул€ем врем€     
@@ -240,10 +236,10 @@ _disable_interrupts(); nointerrupted = 1;
             TTask[index].TaskPeriod = 0; // ќбнул€ем врем€  
             TTask[index].TaskStatus = DONE; // ќбнул€ем status
          }  
-          timers_cnt_tail--;  //уменьшаем кол-во задач     
-          if (nointerrupted) _enable_interrupts();
-            return;
-        }
+        timers_cnt_tail--;  //уменьшаем кол-во задач     
+        if (nointerrupted) _enable_interrupts();
+        return;
+      }
     }
 }
 

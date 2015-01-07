@@ -168,9 +168,13 @@ void HARDWARE_init(void)
 
 void SOFTWARE_init (void)
 {
-#ifdef EEPROM_REINIT  //Upd-5
-First_EE_init();  //начальная инициализация еепром (выполняется 1 раз при компиляции)
-#endif
+//#ifdef EEPROM_REINIT  //Upd-5
+if(null_ee != 0x42)	// если первое включение - инициализируем переменные ЕЕПРОМ
+   {
+    First_EE_init();  //начальная инициализация еепром (выполняется 1 раз) 
+    null_ee = 0x42;
+   }
+//#endif
 settings_EE_cpy_R(); //загрузка настроек из еепром
 
 // check_after_pow_on();
@@ -193,9 +197,6 @@ LcdInit();//Upd-3 //soft spi on portA
 
 //cust_I2C_init(I2C_0);
 
-PARSER_Init();
-InitRTOS();			// Инициализируем ядро
-
 //======
 Init_i2c();						// Запускаем и конфигурируем i2c
 Init_Slave_i2c(&SlaveControl);	// Настраиваем событие выхода при сработке как Slave
@@ -206,6 +207,11 @@ Init_Slave_i2c(&SlaveControl);	// Настраиваем событие выхода при сработке как Sl
     in   r30,spsr
     in   r30,spdr
 #endasm
+
+
+PARSER_Init();
+InitRTOS();			// Инициализируем ядро
+
 
 #ifdef DEBUG
 LogIndex=0;					// Лог с начала
