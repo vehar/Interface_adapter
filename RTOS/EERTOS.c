@@ -132,6 +132,8 @@ inline void TaskManager(void)
 {
 uint8_t		index=0;
 char tmp_str[10];
+bit task_exist = 1;// существует ли задача всЄ ещЄ
+
 TPTR task;                 //TODO сделать глобальными регистровыми!
 
   for(index=0;index!=timers_cnt_tail;++index)   // ѕрочесываем очередь в поисках нужной задачи
@@ -144,7 +146,7 @@ TPTR task;                 //TODO сделать глобальными регистровыми!
             
           if(TTask[index].TaskPeriod == 0) //если период 0 - удал€ем задачу из списка
            {
-                ClearTimerTask(task);
+                ClearTimerTask(task);  task_exist = 0;// задачи больше не существует
            } 
            else 
            {
@@ -160,10 +162,13 @@ TPTR task;                 //TODO сделать глобальными регистровыми!
             TTask[index].sys_tick_time = v_u32_SYS_TICK;                        
 	_enable_interrupts();
 #endif  
-             v_u32_SYS_TICK_TMP1 = v_u32_SYS_TICK; //засекаем врем€ в≥полнени€ задачи
+             v_u32_SYS_TICK_TMP1 = (uint8_t)v_u32_SYS_TICK; //засекаем врем€ в≥полнени€ задачи
             _enable_interrupts();						// –азрешаем прерывани€
-            (task)();								    // ѕереходим к задаче        
-             if((v_u32_SYS_TICK_TMP1 = v_u32_SYS_TICK - v_u32_SYS_TICK_TMP1)>=1){ itoa(v_u32_SYS_TICK_TMP1,tmp_str);Put_In_Log(tmp_str);}
+            (task)();								    // ѕереходим к задаче    
+            if(task_exist){  //если задача не удалилась  
+             if((v_u32_SYS_TICK_TMP1 = (uint8_t)v_u32_SYS_TICK - v_u32_SYS_TICK_TMP1)>=1){itoa(v_u32_SYS_TICK_TMP1,tmp_str);Put_In_Log(tmp_str);Put_In_Log("%\r");}
+              TTask[index].exec_time = v_u32_SYS_TICK_TMP1;//то запишем врем€ еЄ выполнени€
+             }
             //всЄ стопоритс€ на Їтой строке если не return!!!
            // TTask[index].TaskStatus = DONE;         //теперь просто мен€ем статус
 /*#ifdef DEBUG

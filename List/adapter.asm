@@ -1513,6 +1513,8 @@ _0x0:
 	.DB  0x45,0x0
 _0x20003:
 	.DB  0x1
+_0x20000:
+	.DB  0x25,0xD,0x0
 _0x2060060:
 	.DB  0x1
 _0x2060000:
@@ -1808,6 +1810,10 @@ __GLOBAL_INI_TBL:
 	.DW  _timers_cnt_tail_G001
 	.DW  _0x20003*2
 
+	.DW  0x03
+	.DW  _0x20017
+	.DW  _0x20000*2
+
 	.DW  0x01
 	.DW  __seed_G103
 	.DW  _0x2060060*2
@@ -2001,7 +2007,7 @@ _0xD:
 ;  /// WorkLogPutChar(10);//\r
 ;   //WorkLogPutChar(13);//\n
 ;}
-	RJMP _0x20C000C
+	RJMP _0x20C000D
 ;
 ;void LogOut(void)				// Выброс логов
 ;{
@@ -2517,7 +2523,7 @@ _0x1C:
 ;        LCD_CPORT.LCD_CPIN = 1;                //Disable display controller
 	SBI  0x1B,1
 ;        }
-	RJMP _0x20C000D
+	RJMP _0x20C000E
 ;
 ;#warning need 7.05ms(!) to execute
 ;void LcdUpdate (void)   //Copies the LCD cache into the device RAM
@@ -2564,7 +2570,7 @@ _0x2A:
 	RJMP _0x2A
 _0x2B:
 ;        }
-	RJMP _0x20C000E
+	RJMP _0x20C000F
 ;
 ;void LcdClear (void)    //Clears the display
 ;{
@@ -2587,7 +2593,7 @@ _0x2D:
 _0x2E:
 	RCALL _LcdUpdate
 ;}
-_0x20C000E:
+_0x20C000F:
 	LD   R16,Y+
 	LD   R17,Y+
 	RET
@@ -2788,7 +2794,7 @@ _0x46:
 	__ADDWRN 16,17,1
 	RJMP _0x46
 _0x47:
-_0x20C000D:
+_0x20C000E:
 	LDD  R17,Y+1
 	LDD  R16,Y+0
 	ADIW R28,4
@@ -3091,7 +3097,7 @@ _0x75:
 	STS  _LcdCacheIdx+1,R31
 ;        }
 _0x73:
-_0x20C000C:
+_0x20C000D:
 	ADIW R28,2
 	RET
 ;
@@ -3154,7 +3160,7 @@ _0x7B:
 	STD  Z+0,R26
 ; 	}
 	LDD  R17,Y+0
-	RJMP _0x20C000A
+	RJMP _0x20C000B
 ;
 ;void LcdChrInv (int ch)	//Displays a character at current cursor location and increment cursor location
 ; 	{
@@ -3183,7 +3189,7 @@ _LcdString:
 	BRLO _0x7F
 _0x80:
 	LDD  R17,Y+0
-	RJMP _0x20C000A
+	RJMP _0x20C000B
 ;	LcdGotoXYFont (x, y);
 _0x7F:
 	LDD  R30,Y+2
@@ -3221,7 +3227,7 @@ _0x84:
 	RCALL _LcdTextBufClean
 ;	}
 	LDD  R17,Y+0
-	RJMP _0x20C000A
+	RJMP _0x20C000B
 ;
 ;void LcdStringInv (unsigned char x, unsigned char y)	//Displays a string at current cursor location
 ;	{
@@ -4099,7 +4105,7 @@ _0xAE:
 ;}
 	LDD  R17,Y+1
 	LDD  R16,Y+0
-	RJMP _0x20C000B
+	RJMP _0x20C000C
 ;
 ;
 ;//______________________________________________________________________________
@@ -4241,7 +4247,7 @@ _0xBC:
 	CALL SUBOPT_0x3
 ;}
 	CALL __LOADLOCR4
-_0x20C000B:
+_0x20C000C:
 	ADIW R28,6
 	RET
 ;
@@ -4274,7 +4280,7 @@ _0xCB:
 	RJMP _0xCB
 _0xCD:
 ;}
-	RJMP _0x20C000A
+	RJMP _0x20C000B
 ;
 ;void USART_Send_StrFl(uint8_t sel, unsigned char __flash * data) //функция посылающая строку из флэша по usart`у
 ;{
@@ -4305,7 +4311,7 @@ _0xCE:
 	RJMP _0xCE
 _0xD0:
 ;}
-	RJMP _0x20C000A
+	RJMP _0x20C000B
 ;
 ;
 ;  //Optimised
@@ -4998,7 +5004,7 @@ _Hard_SPI_Master_Init_default:
 ;
 ;SPCR = (1<<SPE)|(1<<MSTR)|(1<<SPR0);
 	LDI  R30,LOW(81)
-	RJMP _0x20C0009
+	RJMP _0x20C000A
 ;//SPCR = (1<<SPIE)|(1<<SPE); /* Enable SPI, Interrupt */  в прерывание не переходит!
 ;}
 ;
@@ -5097,7 +5103,7 @@ _0x123:
 	LDI  R30,LOW(80)
 	OUT  0xD,R30
 ;}
-_0x20C000A:
+_0x20C000B:
 	ADIW R28,3
 	RET
 ;
@@ -5209,7 +5215,7 @@ _Hard_SPI_Slave_Init:
 	OUT  0x17,R30
 ;SPCR = (1<<SPE);/* Enable SPI */
 	LDI  R30,LOW(64)
-_0x20C0009:
+_0x20C000A:
 	OUT  0xD,R30
 ;}
 	RET
@@ -6943,7 +6949,7 @@ _Init_Slave_i2c:
 	LDI  R30,LOW(69)
 	STS  116,R30
 ;}
-	JMP  _0x20C0006
+	JMP  _0x20C0007
 ;#include "D_i2c_AT24C_EEP/i2c_AT24C_EEP.h"
 ;
 ;
@@ -7454,16 +7460,7 @@ _Task_Initial:
 ;///-----------------Upd-7-----------------------------
 ;// первичный запуск всех задач
 ;//SetTimerTask(Task_pars_cmd,5,100); //Upd-6
-;SetTimerTask(Task_DispatchFlags,100,100);
-	LDI  R30,LOW(_Task_DispatchFlags)
-	LDI  R31,HIGH(_Task_DispatchFlags)
-	ST   -Y,R31
-	ST   -Y,R30
-	LDI  R30,LOW(100)
-	LDI  R31,HIGH(100)
-	ST   -Y,R31
-	ST   -Y,R30
-	CALL SUBOPT_0x2E
+;//SetTimerTask(Task_FlagsHandler,100,100); //перенесён в главный цикл после диспетчера, (в роли как обработчик сообщений)
 ;
 ;#ifdef DEBUG                    //Upd-6
 ;SetTimerTask(Task_LogOut, 50, 50);
@@ -7495,7 +7492,7 @@ _Task_Initial:
 	LDI  R31,HIGH(250)
 	ST   -Y,R31
 	ST   -Y,R30
-	RJMP _0x20C0008
+	RJMP _0x20C0009
 ;
 ;
 ;}
@@ -7600,7 +7597,7 @@ _Task_LoadTest:
 	CALL _LcdUpdate
 ;//SetTimerTask(Task_LoadTest, 1000, 1000);; //запуск тестового таска для проверки загрузки цп
 ;}
-	RJMP _0x20C0007
+	RJMP _0x20C0008
 
 	.DSEG
 _0x1EB:
@@ -7720,7 +7717,7 @@ _Task_LcdGreetImage:
 	LDI  R30,LOW(2000)
 	LDI  R31,HIGH(2000)
 	CALL SUBOPT_0x31
-_0x20C0008:
+_0x20C0009:
 	ST   -Y,R31
 	ST   -Y,R30
 	CALL _SetTimerTask
@@ -7781,17 +7778,33 @@ _0x20C0008:
 ;}
 ;
 ;
-;DECLARE_TASK (Task_DispatchFlags)
+;DECLARE_TASK (Task_FlagsHandler)
 ;{
-_Task_DispatchFlags:
+_Task_FlagsHandler:
+;char tmp_str[5];
 ;  switch(g_tcf)
+	SBIW R28,5
+;	tmp_str -> Y+0
 	CALL SUBOPT_0x4
 ;  {
-;    case ERR_UNDEF_FLAG: Put_In_Log("\r ERR_UNDEF_FLAG "); FLAG_CLR(g_tcf,ERR_UNDEF_FLAG);
+;    case ERR_UNDEF_FLAG:
 	SBIW R30,0
 	BRNE _0x1F5
+;                        Put_In_Log("\r ERR_UNDEF_FLAG ");
 	__POINTW1MN _0x1F6,0
 	CALL SUBOPT_0x30
+;                        itoa(g_tcf,tmp_str);Put_In_Log(tmp_str);
+	CALL SUBOPT_0x4
+	ST   -Y,R31
+	ST   -Y,R30
+	MOVW R30,R28
+	ADIW R30,2
+	ST   -Y,R31
+	ST   -Y,R30
+	CALL _itoa
+	MOVW R30,R28
+	CALL SUBOPT_0x30
+;                        FLAG_CLR(g_tcf,ERR_UNDEF_FLAG);
 	CALL SUBOPT_0x4
 	ANDI R30,LOW(0xFFFE)
 	CALL SUBOPT_0x5
@@ -7835,11 +7848,12 @@ _0x1FB:
 ;    break;
 ;    }
 ;}
-	RET
+	JMP  _0x20C0002
 
 	.DSEG
 _0x1F6:
 	.BYTE 0x12
+;
 ;
 ;DECLARE_TASK (Task_LogOut)           //500us ?
 ;{
@@ -7880,7 +7894,7 @@ _0x1FD:
 _0x1FF:
 ;//LED_PORT &=~(1<<LED2);
 ;}
-_0x20C0007:
+_0x20C0008:
 	LD   R16,Y+
 	LD   R17,Y+
 	RET
@@ -7915,7 +7929,7 @@ _0x201:
 	RJMP _0x201
 _0x202:
 ;}
-	JMP  _0x20C0003
+	JMP  _0x20C0004
 ;
 ; void Task_BuffOut  (void)  //выдача принятых по Юарт1 днн сразу в прерывании
 ; {
@@ -8294,7 +8308,7 @@ _0x20C:
 	RJMP _0x20C
 _0x20D:
 ;}
-	JMP  _0x20C0003
+	JMP  _0x20C0004
 ;
 ;inline void First_EE_init(void){ // settings transfer from eeprom to ram
 _First_EE_init:
@@ -8350,7 +8364,7 @@ _0x212:
 	RJMP _0x212
 _0x213:
 ;}
-	JMP  _0x20C0003
+	JMP  _0x20C0004
 ;
 ;
 ;void HARDWARE_init(void)
@@ -8986,95 +9000,106 @@ _0x216:
 ;// G_vars are here
 ;volatile uint16_t tmp = 0;
 ;
+;inline void ProcessMessages(void);//Обработчик флагов и сообщений задач
+;
 ;//TODO переписать парсер команд в конечный автомат как в http://habrahabr.ru/post/241941/
 ; //Предусмотреть убийство задачи, если войдёт в бесконечный цикл! (2-й таймер)
 ;  //Добавить вытесняемость!
 ; //Отладить прерывание SPI!
+; //Добавить сортировку задач по периоду выполнения (наиболее частые - ближе к началу очереди!)
 ;
+;//===================================================================================
+;//===================================================================================
+;//START MAIN
 ;void main(void)
-; 0000 001E {
+; 0000 0024 {
 
 	.CSEG
 _main:
-; 0000 001F #ifdef DEBUG   //синхронизация с протеусом
-; 0000 0020     DDRD.LED2=1;LED_PORT |= (1<<LED2);  //Led VD2
+; 0000 0025 #ifdef DEBUG   //синхронизация с протеусом
+; 0000 0026     DDRD.LED2=1;LED_PORT |= (1<<LED2);  //Led VD2
 	SBI  0x11,7
 	SBI  0x12,7
-; 0000 0021     delay_ms(35);
-	LDI  R30,LOW(35)
-	LDI  R31,HIGH(35)
+; 0000 0027     delay_ms(15);
+	LDI  R30,LOW(15)
+	LDI  R31,HIGH(15)
 	CALL SUBOPT_0x8
-; 0000 0022     DDRD.LED2=0;LED_PORT  &= ~(1<<LED2); //Led VD2
+; 0000 0028     DDRD.LED2=0;LED_PORT  &= ~(1<<LED2); //Led VD2
 	CBI  0x11,7
 	CBI  0x12,7
-; 0000 0023 #endif
-; 0000 0024 
-; 0000 0025 HARDWARE_init();
+; 0000 0029 #endif
+; 0000 002A 
+; 0000 002B HARDWARE_init();
 	RCALL _HARDWARE_init
-; 0000 0026 SOFTWARE_init();
+; 0000 002C SOFTWARE_init();
 	RCALL _SOFTWARE_init
-; 0000 0027 
-; 0000 0028 #ifdef DEBUG
-; 0000 0029     DDRD.LED2=1;//PORTD.7=1;  //Led VD2
+; 0000 002D 
+; 0000 002E #ifdef DEBUG
+; 0000 002F     DDRD.LED2=1;//PORTD.7=1;  //Led VD2
 	SBI  0x11,7
-; 0000 002A     DDRD.LED1=1;//PORTD.6=1;    //Led VD1
+; 0000 0030     DDRD.LED1=1;//PORTD.6=1;    //Led VD1
 	SBI  0x11,6
-; 0000 002B     DDRD.LED3=1;//PORTD.6=1;    //Led LED3
+; 0000 0031     DDRD.LED3=1;//PORTD.6=1;    //Led LED3
 	SBI  0x11,5
-; 0000 002C     USART_Send_StrFl(USART_1,start);
+; 0000 0032     USART_Send_StrFl(USART_1,start);
 	LDI  R30,LOW(1)
 	CALL SUBOPT_0x35
-; 0000 002D     USART_Send_StrFl(SYSTEM_USART,start);
+; 0000 0033     USART_Send_StrFl(SYSTEM_USART,start);
 	LDI  R30,LOW(0)
 	CALL SUBOPT_0x35
-; 0000 002E #endif
-; 0000 002F 
-; 0000 0030 //sprintf(lcd_buf, "Z=%d", v_u32_SYS_TICK); ;LcdString(1,3); LcdUpdate();
-; 0000 0031 //RunRTOS();			// Старт ядра.
-; 0000 0032 
-; 0000 0033 // Запуск фоновых задач.
-; 0000 0034 SetTask(Task_Initial);
+; 0000 0034 #endif
+; 0000 0035 
+; 0000 0036 //RunRTOS();			// Старт ядра.
+; 0000 0037 
+; 0000 0038 // Запуск фоновых задач.
+; 0000 0039 SetTask(Task_Initial);
 	LDI  R30,LOW(_Task_Initial)
 	LDI  R31,HIGH(_Task_Initial)
 	CALL SUBOPT_0x2F
-; 0000 0035 
-; 0000 0036 RunRTOS();			// Старт ядра.
+; 0000 003A 
+; 0000 003B RunRTOS();			// Старт ядра.
 	CALL _RunRTOS
-; 0000 0037 while (1)
+; 0000 003C while (1)
 _0x271:
-; 0000 0038  {
-; 0000 0039 //wdt_reset();	// Сброс собачьего таймера
-; 0000 003A TaskManager();	// Вызов диспетчера
+; 0000 003D  {
+; 0000 003E //wdt_reset();	// Сброс собачьего таймера
+; 0000 003F TaskManager();	// Вызов диспетчера
 	RCALL _TaskManager
-; 0000 003B  }
+; 0000 0040 ProcessMessages();//Обработка различных флагов и сообщений от задач
+	RCALL _ProcessMessages
+; 0000 0041  }
 	RJMP _0x271
-; 0000 003C } //END MAIN
+; 0000 0042 } //END MAIN
 _0x274:
 	RJMP _0x274
+;//===================================================================================
+;//===================================================================================
 ;
 ;
 ;
 ;
 ;
 ;
-;
-;
-;
-;
-;
+;inline void ProcessMessages(void)
+; 0000 004C {
+_ProcessMessages:
+; 0000 004D Task_FlagsHandler();
+	RCALL _Task_FlagsHandler
+; 0000 004E }
+	RET
 ;
 ;// Timer2 interrupt service routine
 ;interrupt [RTOS_ISR] void timer2_comp_isr(void)//RTOS Interrupt 1mS
-; 0000 004B {
+; 0000 0052 {
 _timer2_comp_isr:
 	CALL SUBOPT_0x1A
-; 0000 004C  v_u32_SYS_TICK++;
+; 0000 0053  v_u32_SYS_TICK++;
 	LDI  R26,LOW(_v_u32_SYS_TICK)
 	LDI  R27,HIGH(_v_u32_SYS_TICK)
 	CALL SUBOPT_0x12
-; 0000 004D   TimerService();
+; 0000 0054   TimerService();
 	CALL _TimerService
-; 0000 004E }
+; 0000 0055 }
 	LD   R30,Y+
 	OUT  SREG,R30
 	LD   R31,Y+
@@ -9090,18 +9115,29 @@ _timer2_comp_isr:
 	LD   R0,Y+
 	RETI
 ;
+;
+;
+;
+;
+;
+;
+;
+;
 ;// Timer1 overflow interrupt service routine
 ;interrupt [TIM1_OVF] void timer1_ovf_isr(void)
-; 0000 0052 {
+; 0000 0061 {
 _timer1_ovf_isr:
 	CALL SUBOPT_0x15
-; 0000 0053 v_u16_TIM_1_OVR_FLAG++;
+; 0000 0062 v_u16_TIM_1_OVR_FLAG++;
 	LDI  R26,LOW(_v_u16_TIM_1_OVR_FLAG)
 	LDI  R27,HIGH(_v_u16_TIM_1_OVR_FLAG)
 	CALL SUBOPT_0x14
-; 0000 0054 }
+; 0000 0063 }
 	CALL SUBOPT_0x16
 	RETI
+;
+;
+;//sprintf(lcd_buf, "Z=%d", v_u32_SYS_TICK); ;LcdString(1,3); LcdUpdate();
 ;#include "RTOS/EERTOS.h"
 	#ifndef __SLEEP_DEFINED__
 	#define __SLEEP_DEFINED__
@@ -9198,38 +9234,35 @@ _0x20005:
 	RJMP _0x20005
 _0x20006:
 ; 0001 0043 }
-	RJMP _0x20C0003
+	RJMP _0x20C0004
 ;
 ;
 ;//Пустая процедура - простой ядра.
 ;  void  Idle(void)
 ; 0001 0048 { //#warning наполнить полезным функционалом
 _Idle:
-; 0001 0049 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-; 0001 004A //clear_duplicates();//Кусок очистки очереди от одинаковых задач
-; 0001 004B //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-; 0001 004C #ifdef DEBUG
-; 0001 004D 
-; 0001 004E LED_PORT  &=~(1<<LED1);   //Для отслеживания загрузки системы
+; 0001 0049 #ifdef DEBUG
+; 0001 004A 
+; 0001 004B LED_PORT  &=~(1<<LED1);   //Для отслеживания загрузки системы
 	CBI  0x12,6
-; 0001 004F 
-; 0001 0050 #endif
-; 0001 0051 }
+; 0001 004C 
+; 0001 004D #endif
+; 0001 004E }
 	RET
 ;
 ; //UPDATE
 ; void SetTask(TPTR TS){  // Поставить задачу в очередь для немедленного выполнения
-; 0001 0054 void SetTask(TPTR TS){
+; 0001 0051 void SetTask(TPTR TS){
 _SetTask:
-; 0001 0055  SetTimerTask(TS,0,0);
+; 0001 0052  SetTimerTask(TS,0,0);
 ;	*TS -> Y+0
 	LD   R30,Y
 	LDD  R31,Y+1
 	CALL SUBOPT_0x31
 	CALL SUBOPT_0x31
 	CALL SUBOPT_0x2E
-; 0001 0056 }
-_0x20C0006:
+; 0001 0053 }
+_0x20C0007:
 	ADIW R28,2
 	RET
 ;
@@ -9238,14 +9271,14 @@ _0x20C0006:
 ;// Время выдержки в тиках системного таймера. Возвращет код ошибки.
 ;
 ;void SetTimerTask(TPTR TS, unsigned int NewTime, unsigned int NewPeriod)    //1 task ~12words
-; 0001 005D {
+; 0001 005A {
 _SetTimerTask:
-; 0001 005E uint8_t		index=0;
-; 0001 005F static uint8_t		timers_cnt=0;
-; 0001 0060 uint8_t		nointerrupted = 0;
-; 0001 0061 
-; 0001 0062 
-; 0001 0063 if (STATUS_REG & (1<<Interrupt_Flag)) 			// Проверка запрета прерывания, аналогично функции выше
+; 0001 005B uint8_t		index=0;
+; 0001 005C static uint8_t		timers_cnt=0;
+; 0001 005D uint8_t		nointerrupted = 0;
+; 0001 005E 
+; 0001 005F 
+; 0001 0060 if (STATUS_REG & (1<<Interrupt_Flag)) 			// Проверка запрета прерывания, аналогично функции выше
 	ST   -Y,R17
 	ST   -Y,R16
 ;	*TS -> Y+6
@@ -9258,22 +9291,22 @@ _SetTimerTask:
 	IN   R30,0x3F
 	SBRS R30,7
 	RJMP _0x20007
-; 0001 0064 	{
-; 0001 0065 	_disable_interrupts();
+; 0001 0061 	{
+; 0001 0062 	_disable_interrupts();
 	cli
-; 0001 0066 	nointerrupted = 1;
+; 0001 0063 	nointerrupted = 1;
 	LDI  R16,LOW(1)
-; 0001 0067 	}
-; 0001 0068 // My UPDATE - optimized
-; 0001 0069   for(index=0;index!=timers_cnt_tail;++index)	// ищем любой пустой таймер
+; 0001 0064 	}
+; 0001 0065 // My UPDATE - optimized
+; 0001 0066   for(index=0;index!=timers_cnt_tail;++index)	// ищем любой пустой таймер
 _0x20007:
 	LDI  R17,LOW(0)
 _0x20009:
 	LDS  R30,_timers_cnt_tail_G001
 	CP   R30,R17
 	BREQ _0x2000A
-; 0001 006A   {
-; 0001 006B         if (TTask[index].GoToTask == TS)
+; 0001 0067   {
+; 0001 0068         if (TTask[index].GoToTask == TS)
 	CALL SUBOPT_0x36
 	MOVW R26,R30
 	CALL __GETW1P
@@ -9283,21 +9316,21 @@ _0x20009:
 	CP   R30,R26
 	CPC  R31,R27
 	BRNE _0x2000B
-; 0001 006C 	{
-; 0001 006D 		TTask[index].TaskDelay = NewTime;		// И поле выдержки времени
+; 0001 0069 	{
+; 0001 006A 		TTask[index].TaskDelay = NewTime;		// И поле выдержки времени
 	CALL SUBOPT_0x38
 	CALL SUBOPT_0x3A
-; 0001 006E         TTask[index].TaskPeriod = NewPeriod;	// И поле периода запуска
-; 0001 006F         TTask[index].TaskStatus = WAIT;      //Флаг - ожидает выполнения!
-; 0001 0070         if (nointerrupted) {_enable_interrupts();}	// Разрешаем прерывания
+; 0001 006B         TTask[index].TaskPeriod = NewPeriod;	// И поле периода запуска
+; 0001 006C         TTask[index].TaskStatus = WAIT;      //Флаг - ожидает выполнения!
+; 0001 006D         if (nointerrupted) {_enable_interrupts();}	// Разрешаем прерывания
 	CPI  R16,0
 	BREQ _0x2000C
 	sei
-; 0001 0071         return;									// Выход.
+; 0001 006E         return;									// Выход.
 _0x2000C:
-	RJMP _0x20C0005
-; 0001 0072 	}
-; 0001 0073 	if (TTask[index].GoToTask == Idle)
+	RJMP _0x20C0006
+; 0001 006F 	}
+; 0001 0070 	if (TTask[index].GoToTask == Idle)
 _0x2000B:
 	CALL SUBOPT_0x36
 	MOVW R26,R30
@@ -9308,39 +9341,39 @@ _0x2000B:
 	CP   R30,R26
 	CPC  R31,R27
 	BRNE _0x2000D
-; 0001 0074 	{
-; 0001 0075 		TTask[index].GoToTask = TS;			// Заполняем поле перехода задачи
+; 0001 0071 	{
+; 0001 0072 		TTask[index].GoToTask = TS;			// Заполняем поле перехода задачи
 	CALL SUBOPT_0x36
 	LDD  R26,Y+6
 	LDD  R27,Y+6+1
 	STD  Z+0,R26
 	STD  Z+1,R27
-; 0001 0076 		TTask[index].TaskDelay = NewTime;		// И поле выдержки времени
+; 0001 0073 		TTask[index].TaskDelay = NewTime;		// И поле выдержки времени
 	CALL SUBOPT_0x38
 	CALL SUBOPT_0x3A
-; 0001 0077         TTask[index].TaskPeriod = NewPeriod;	// И поле периода запуска
-; 0001 0078         TTask[index].TaskStatus = WAIT;      //Флаг - ожидает выполнения!
-; 0001 0079                                   //подсчёт исспользованых таймеров
-; 0001 007A         timers_cnt_tail++; //чтобы не прочёсывать пустую часть очереди
+; 0001 0074         TTask[index].TaskPeriod = NewPeriod;	// И поле периода запуска
+; 0001 0075         TTask[index].TaskStatus = WAIT;      //Флаг - ожидает выполнения!
+; 0001 0076                                   //подсчёт исспользованых таймеров
+; 0001 0077         timers_cnt_tail++; //чтобы не прочёсывать пустую часть очереди
 	LDS  R30,_timers_cnt_tail_G001
 	SUBI R30,-LOW(1)
 	STS  _timers_cnt_tail_G001,R30
-; 0001 007B         if (nointerrupted) {_enable_interrupts();}	// Разрешаем прерывания
+; 0001 0078         if (nointerrupted) {_enable_interrupts();}	// Разрешаем прерывания
 	CPI  R16,0
 	BREQ _0x2000E
 	sei
-; 0001 007C         return;									// Выход.
+; 0001 0079         return;									// Выход.
 _0x2000E:
-	RJMP _0x20C0005
-; 0001 007D 	}
-; 0001 007E   }
+	RJMP _0x20C0006
+; 0001 007A 	}
+; 0001 007B   }
 _0x2000D:
 	SUBI R17,-LOW(1)
 	RJMP _0x20009
 _0x2000A:
-; 0001 007F // тут можно сделать return c кодом ошибки - нет свободных таймеров
-; 0001 0080 }
-_0x20C0005:
+; 0001 007C // тут можно сделать return c кодом ошибки - нет свободных таймеров
+; 0001 007D }
+_0x20C0006:
 	LDD  R17,Y+1
 	LDD  R16,Y+0
 	ADIW R28,8
@@ -9351,18 +9384,24 @@ _0x20C0005:
 ;*/
 ;volatile uint8_t	tmp_adr;
 ;inline void TaskManager(void)
-; 0001 0087 {
+; 0001 0084 {
 _TaskManager:
-; 0001 0088 uint8_t		index=0;
-; 0001 0089 char tmp_str[10];
-; 0001 008A TPTR task;                 //TODO сделать глобальными регистровыми!
-; 0001 008B 
-; 0001 008C   for(index=0;index!=timers_cnt_tail;++index)   // Прочесываем очередь в поисках нужной задачи
+	PUSH R15
+; 0001 0085 uint8_t		index=0;
+; 0001 0086 char tmp_str[10];
+; 0001 0087 bit task_exist = 1;// существует ли задача всё ещё
+; 0001 0088 
+; 0001 0089 TPTR task;                 //TODO сделать глобальными регистровыми!
+; 0001 008A 
+; 0001 008B   for(index=0;index!=timers_cnt_tail;++index)   // Прочесываем очередь в поисках нужной задачи
 	SBIW R28,10
 	CALL __SAVELOCR4
 ;	index -> R17
 ;	tmp_str -> Y+4
+;	task_exist -> R15.0
 ;	*task -> R18,R19
+	LDI  R30,LOW(1)
+	MOV  R15,R30
 	LDI  R17,0
 	LDI  R17,LOW(0)
 _0x20010:
@@ -9370,23 +9409,23 @@ _0x20010:
 	CP   R30,R17
 	BRNE PC+3
 	JMP _0x20011
-; 0001 008D 	{
-; 0001 008E       if ((TTask[index].TaskStatus == RDY)) // пропускаем пустые задачи и те, время которых еще не подошло
+; 0001 008C 	{
+; 0001 008D       if ((TTask[index].TaskStatus == RDY)) // пропускаем пустые задачи и те, время которых еще не подошло
 	CALL SUBOPT_0x3B
 	LD   R26,Z
 	CPI  R26,LOW(0x1)
 	BREQ PC+3
 	JMP _0x20012
-; 0001 008F 		{
-; 0001 0090           LED_PORT |= (1<<LED1);   //Для отслеживания загрузки системы
+; 0001 008E 		{
+; 0001 008F           LED_PORT |= (1<<LED1);   //Для отслеживания загрузки системы
 	SBI  0x12,6
-; 0001 0091           task=TTask[index].GoToTask;  // запомним задачу т.к. во время выполнения может измениться индекс
+; 0001 0090           task=TTask[index].GoToTask;  // запомним задачу т.к. во время выполнения может измениться индекс
 	CALL SUBOPT_0x36
 	LD   R18,Z
 	LDD  R19,Z+1
+; 0001 0091 
 ; 0001 0092 
-; 0001 0093 
-; 0001 0094           if(TTask[index].TaskPeriod == 0) //если период 0 - удаляем задачу из списка
+; 0001 0093           if(TTask[index].TaskPeriod == 0) //если период 0 - удаляем задачу из списка
 	LDI  R26,LOW(15)
 	MUL  R17,R26
 	MOVW R30,R0
@@ -9395,17 +9434,19 @@ _0x20010:
 	CALL __GETW1P
 	SBIW R30,0
 	BRNE _0x20013
-; 0001 0095            {
-; 0001 0096                 ClearTimerTask(task);
+; 0001 0094            {
+; 0001 0095                 ClearTimerTask(task);  task_exist = 0;// задачи больше не существует
 	ST   -Y,R19
 	ST   -Y,R18
 	RCALL _ClearTimerTask
-; 0001 0097            }
-; 0001 0098            else
+	CLT
+	BLD  R15,0
+; 0001 0096            }
+; 0001 0097            else
 	RJMP _0x20014
 _0x20013:
-; 0001 0099            {
-; 0001 009A                 TTask[index].TaskDelay = TTask[index].TaskPeriod; //перезапись задержки
+; 0001 0098            {
+; 0001 0099                 TTask[index].TaskDelay = TTask[index].TaskPeriod; //перезапись задержки
 	LDI  R26,LOW(15)
 	MUL  R17,R26
 	MOVW R30,R0
@@ -9417,27 +9458,27 @@ _0x20013:
 	MOVW R26,R22
 	ST   X+,R30
 	ST   X,R31
-; 0001 009B                 TTask[index].TaskStatus = WAIT;
+; 0001 009A                 TTask[index].TaskStatus = WAIT;
 	CALL SUBOPT_0x3B
 	LDI  R26,LOW(0)
 	STD  Z+0,R26
-; 0001 009C            }
+; 0001 009B            }
 _0x20014:
-; 0001 009D              //Дальше идём на выполнение задачи
-; 0001 009E 
-; 0001 009F #ifdef DEBUG                                            //запись св-ств задачи для лога
-; 0001 00A0 	_disable_interrupts();
+; 0001 009C              //Дальше идём на выполнение задачи
+; 0001 009D 
+; 0001 009E #ifdef DEBUG                                            //запись св-ств задачи для лога
+; 0001 009F 	_disable_interrupts();
 	cli
-; 0001 00A1             tmp_adr =(uint8_t)task;     //если задача уже удалилась, то это не имеет смысла!
+; 0001 00A0             tmp_adr =(uint8_t)task;     //если задача уже удалилась, то это не имеет смысла!
 	STS  _tmp_adr,R18
-; 0001 00A2             TTask[index].hndl = tmp_adr;
+; 0001 00A1             TTask[index].hndl = tmp_adr;
 	LDI  R26,LOW(15)
 	MUL  R17,R26
 	MOVW R30,R0
 	__ADDW1MN _TTask_G001,14
 	LDS  R26,_tmp_adr
 	STD  Z+0,R26
-; 0001 00A3             TTask[index].sys_tick_time = v_u32_SYS_TICK;
+; 0001 00A2             TTask[index].sys_tick_time = v_u32_SYS_TICK;
 	LDI  R26,LOW(15)
 	MUL  R17,R26
 	MOVW R30,R0
@@ -9447,29 +9488,29 @@ _0x20014:
 	LDS  R24,_v_u32_SYS_TICK+2
 	LDS  R25,_v_u32_SYS_TICK+3
 	CALL __PUTDZ20
-; 0001 00A4 	_enable_interrupts();
+; 0001 00A3 	_enable_interrupts();
 	sei
-; 0001 00A5 #endif
-; 0001 00A6              v_u32_SYS_TICK_TMP1 = v_u32_SYS_TICK; //засекаем время віполнения задачи
-	CALL SUBOPT_0x3C
-	CALL SUBOPT_0x3D
-; 0001 00A7             _enable_interrupts();						// Разрешаем прерывания
+; 0001 00A4 #endif
+; 0001 00A5              v_u32_SYS_TICK_TMP1 = (uint8_t)v_u32_SYS_TICK; //засекаем время віполнения задачи
+	LDS  R30,_v_u32_SYS_TICK
+	STS  _v_u32_SYS_TICK_TMP1,R30
+; 0001 00A6             _enable_interrupts();						// Разрешаем прерывания
 	sei
-; 0001 00A8             (task)();								    // Переходим к задаче
+; 0001 00A7             (task)();								    // Переходим к задаче
 	MOVW R30,R18
 	ICALL
-; 0001 00A9              if((v_u32_SYS_TICK_TMP1 = v_u32_SYS_TICK - v_u32_SYS_TICK_TMP1)>=1){ itoa(v_u32_SYS_TICK_TMP1,tmp_str);Put_In_Log(tmp_str);}
+; 0001 00A8             if(task_exist){  //если задача не удалилась
+	SBRS R15,0
+	RJMP _0x20015
+; 0001 00A9              if((v_u32_SYS_TICK_TMP1 = (uint8_t)v_u32_SYS_TICK - v_u32_SYS_TICK_TMP1)>=1){itoa(v_u32_SYS_TICK_TMP1,tmp_str);Put_In_Log(tmp_str);Put_In_Log("%\r");}
 	LDS  R26,_v_u32_SYS_TICK_TMP1
-	LDS  R27,_v_u32_SYS_TICK_TMP1+1
-	LDS  R24,_v_u32_SYS_TICK_TMP1+2
-	LDS  R25,_v_u32_SYS_TICK_TMP1+3
-	CALL SUBOPT_0x3C
-	CALL __SUBD12
-	CALL SUBOPT_0x3D
-	__CPD1N 0x1
-	BRLO _0x20015
+	LDS  R30,_v_u32_SYS_TICK
+	SUB  R30,R26
+	STS  _v_u32_SYS_TICK_TMP1,R30
+	CPI  R30,LOW(0x1)
+	BRLO _0x20016
 	LDS  R30,_v_u32_SYS_TICK_TMP1
-	LDS  R31,_v_u32_SYS_TICK_TMP1+1
+	LDI  R31,0
 	ST   -Y,R31
 	ST   -Y,R30
 	MOVW R30,R28
@@ -9480,33 +9521,52 @@ _0x20014:
 	MOVW R30,R28
 	ADIW R30,4
 	CALL SUBOPT_0x30
-; 0001 00AA             //всё стопорится на єтой строке если не return!!!
-; 0001 00AB            // TTask[index].TaskStatus = DONE;         //теперь просто меняем статус
-; 0001 00AC /*#ifdef DEBUG
-; 0001 00AD 	_disable_interrupts();
-; 0001 00AE             Timer_3_stop();                            //выключили отсчёт времени выполнения
-; 0001 00AF             TTask[index].exec_time = Timer_3_get_val();
-; 0001 00B0             TTask[index].flag = v_u16_TIM_1_OVR_FLAG;
-; 0001 00B1     _enable_interrupts();
-; 0001 00B2 #endif*/
-; 0001 00B3             return;                                     // выход до следующего цикла
+	__POINTW1MN _0x20017,0
+	CALL SUBOPT_0x30
+; 0001 00AA               TTask[index].exec_time = v_u32_SYS_TICK_TMP1;//то запишем время её выполнения
+_0x20016:
+	LDI  R26,LOW(15)
+	MUL  R17,R26
+	MOVW R30,R0
+	__ADDW1MN _TTask_G001,11
+	MOVW R26,R30
+	LDS  R30,_v_u32_SYS_TICK_TMP1
+	LDI  R31,0
+	ST   X+,R30
+	ST   X,R31
+; 0001 00AB              }
+; 0001 00AC             //всё стопорится на єтой строке если не return!!!
+; 0001 00AD            // TTask[index].TaskStatus = DONE;         //теперь просто меняем статус
+; 0001 00AE /*#ifdef DEBUG
+; 0001 00AF 	_disable_interrupts();
+; 0001 00B0             Timer_3_stop();                            //выключили отсчёт времени выполнения
+; 0001 00B1             TTask[index].exec_time = Timer_3_get_val();
+; 0001 00B2             TTask[index].flag = v_u16_TIM_1_OVR_FLAG;
+; 0001 00B3     _enable_interrupts();
+; 0001 00B4 #endif*/
+; 0001 00B5             return;                                     // выход до следующего цикла
 _0x20015:
-	RJMP _0x20C0004
-; 0001 00B4 		}
-; 0001 00B5 	}
+	RJMP _0x20C0005
+; 0001 00B6 		}
+; 0001 00B7 	}
 _0x20012:
 	SUBI R17,-LOW(1)
 	RJMP _0x20010
 _0x20011:
-; 0001 00B6     _enable_interrupts();							// Разрешаем прерывания
+; 0001 00B8     _enable_interrupts();							// Разрешаем прерывания
 	sei
-; 0001 00B7 	Idle();                                     // обошли задачи, нужных нет - простой
+; 0001 00B9 	Idle();                                     // обошли задачи, нужных нет - простой
 	RCALL _Idle
-; 0001 00B8 }
-_0x20C0004:
+; 0001 00BA }
+_0x20C0005:
 	CALL __LOADLOCR4
 	ADIW R28,14
+	POP  R15
 	RET
+
+	.DSEG
+_0x20017:
+	.BYTE 0x3
 ;
 ;/*
 ;Служба таймеров ядра. Должна вызываться из прерывания раз в 1мс. Хотя время можно варьировать в зависимости от задачи
@@ -9516,34 +9576,36 @@ _0x20C0004:
 ;В этом случае не забыть добавить проверку прерывания.
 ;*/
 ;inline void TimerService(void)
-; 0001 00C2 {
+; 0001 00C4 {
+
+	.CSEG
 _TimerService:
-; 0001 00C3 uint8_t index;
-; 0001 00C4 
-; 0001 00C5 for(index=0;index!=timers_cnt_tail;index++)		// Прочесываем очередь таймеров
+; 0001 00C5 uint8_t index;
+; 0001 00C6 
+; 0001 00C7 for(index=0;index!=timers_cnt_tail;index++)		// Прочесываем очередь таймеров
 	ST   -Y,R17
 ;	index -> R17
 	LDI  R17,LOW(0)
-_0x20017:
+_0x20019:
 	LDS  R30,_timers_cnt_tail_G001
 	CP   R30,R17
-	BREQ _0x20018
-; 0001 00C6 	{
-; 0001 00C7          if( TTask[index].TaskStatus == WAIT) 		// Если не выполнилась и
+	BREQ _0x2001A
+; 0001 00C8 	{
+; 0001 00C9          if( TTask[index].TaskStatus == WAIT) 		// Если не выполнилась и
 	CALL SUBOPT_0x3B
 	LD   R30,Z
 	CPI  R30,0
-	BRNE _0x20019
-; 0001 00C8            {
-; 0001 00C9              if(TTask[index].TaskDelay > 0)  // таймер не выщелкал, то
+	BRNE _0x2001B
+; 0001 00CA            {
+; 0001 00CB              if(TTask[index].TaskDelay > 0)  // таймер не выщелкал, то
 	CALL SUBOPT_0x38
 	MOVW R26,R30
 	CALL __GETW1P
 	MOVW R26,R30
 	CALL __CPW02
-	BRSH _0x2001A
-; 0001 00CA               {
-; 0001 00CB                 TTask[index].TaskDelay--;	// щелкаем еще раз.
+	BRSH _0x2001C
+; 0001 00CC               {
+; 0001 00CD                 TTask[index].TaskDelay--;	// щелкаем еще раз.
 	CALL SUBOPT_0x38
 	MOVW R26,R30
 	LD   R30,X+
@@ -9551,35 +9613,35 @@ _0x20017:
 	SBIW R30,1
 	ST   -X,R31
 	ST   -X,R30
-; 0001 00CC               }
-; 0001 00CD               else                         //Ставим флаг готовности к выполнению
-	RJMP _0x2001B
-_0x2001A:
-; 0001 00CE               {
-; 0001 00CF                TTask[index].TaskStatus = RDY;
+; 0001 00CE               }
+; 0001 00CF               else                         //Ставим флаг готовности к выполнению
+	RJMP _0x2001D
+_0x2001C:
+; 0001 00D0               {
+; 0001 00D1                TTask[index].TaskStatus = RDY;
 	CALL SUBOPT_0x3B
 	LDI  R26,LOW(1)
 	STD  Z+0,R26
-; 0001 00D0               }
+; 0001 00D2               }
+_0x2001D:
+; 0001 00D3 		};
 _0x2001B:
-; 0001 00D1 		};
-_0x20019:
-; 0001 00D2 	}
+; 0001 00D4 	}
 	SUBI R17,-1
-	RJMP _0x20017
-_0x20018:
-; 0001 00D3 }
-_0x20C0003:
+	RJMP _0x20019
+_0x2001A:
+; 0001 00D5 }
+_0x20C0004:
 	LD   R17,Y+
 	RET
 ;
 ;void ClearTimerTask(TPTR TS)  //обнуление таймера
-; 0001 00D6 {
+; 0001 00D8 {
 _ClearTimerTask:
 	PUSH R15
-; 0001 00D7 uint8_t	 index=0;
-; 0001 00D8 bit nointerrupted = 0;
-; 0001 00D9 if (STATUS_REG & (1<<Interrupt_Flag))
+; 0001 00D9 uint8_t	 index=0;
+; 0001 00DA bit nointerrupted = 0;
+; 0001 00DB if (STATUS_REG & (1<<Interrupt_Flag))
 	ST   -Y,R17
 ;	*TS -> Y+1
 ;	index -> R17
@@ -9588,23 +9650,23 @@ _ClearTimerTask:
 	LDI  R17,0
 	IN   R30,0x3F
 	SBRS R30,7
-	RJMP _0x2001C
-; 0001 00DA {
-; 0001 00DB _disable_interrupts(); nointerrupted = 1;
+	RJMP _0x2001E
+; 0001 00DC {
+; 0001 00DD _disable_interrupts(); nointerrupted = 1;
 	cli
 	SET
 	BLD  R15,0
-; 0001 00DC }
-; 0001 00DD     for(index=0; index<timers_cnt_tail; ++index)
-_0x2001C:
-	LDI  R17,LOW(0)
+; 0001 00DE }
+; 0001 00DF     for(index=0; index<timers_cnt_tail; ++index)
 _0x2001E:
+	LDI  R17,LOW(0)
+_0x20020:
 	LDS  R30,_timers_cnt_tail_G001
 	CP   R17,R30
 	BRLO PC+3
-	JMP _0x2001F
-; 0001 00DE     {
-; 0001 00DF       if(TTask[index].GoToTask == TS)
+	JMP _0x20021
+; 0001 00E0     {
+; 0001 00E1       if(TTask[index].GoToTask == TS)
 	CALL SUBOPT_0x36
 	MOVW R26,R30
 	CALL __GETW1P
@@ -9614,81 +9676,81 @@ _0x2001E:
 	CP   R30,R26
 	CPC  R31,R27
 	BREQ PC+3
-	JMP _0x20020
-; 0001 00E0       {
-; 0001 00E1            if(index != (timers_cnt_tail - 1))         // переносим последнюю задачу
+	JMP _0x20022
+; 0001 00E2       {
+; 0001 00E3            if(index != (timers_cnt_tail - 1))         // переносим последнюю задачу
 	LDS  R30,_timers_cnt_tail_G001
 	SUBI R30,LOW(1)
 	CP   R30,R17
-	BREQ _0x20021
-; 0001 00E2          {                                            // на место удаляемой
-; 0001 00E3             TTask[index] = TTask[timers_cnt_tail - 1];
+	BREQ _0x20023
+; 0001 00E4          {                                            // на место удаляемой
+; 0001 00E5             TTask[index] = TTask[timers_cnt_tail - 1];
 	CALL SUBOPT_0x36
 	MOVW R22,R30
-	CALL SUBOPT_0x3E
+	CALL SUBOPT_0x3C
 	MOVW R26,R22
 	LDI  R24,15
 	CALL __COPYMML
-; 0001 00E4                          //зануление последней задачи
-; 0001 00E5             TTask[timers_cnt_tail - 1].GoToTask = Idle;
-	CALL SUBOPT_0x3E
+; 0001 00E6                          //зануление последней задачи
+; 0001 00E7             TTask[timers_cnt_tail - 1].GoToTask = Idle;
+	CALL SUBOPT_0x3C
 	CALL SUBOPT_0x37
-; 0001 00E6             TTask[timers_cnt_tail - 1].TaskDelay = 0; // Обнуляем время
-	CALL SUBOPT_0x3F
+; 0001 00E8             TTask[timers_cnt_tail - 1].TaskDelay = 0; // Обнуляем время
+	CALL SUBOPT_0x3D
 	__ADDW1MN _TTask_G001,2
 	CALL SUBOPT_0x39
-; 0001 00E7             TTask[timers_cnt_tail - 1].TaskPeriod = 0; // Обнуляем время
-	CALL SUBOPT_0x3F
+; 0001 00E9             TTask[timers_cnt_tail - 1].TaskPeriod = 0; // Обнуляем время
+	CALL SUBOPT_0x3D
 	__ADDW1MN _TTask_G001,4
 	CALL SUBOPT_0x39
-; 0001 00E8             TTask[timers_cnt_tail - 1].TaskStatus = DONE; // Обнуляем status
-	CALL SUBOPT_0x3F
-	RJMP _0x2002D
-; 0001 00E9          }
-; 0001 00EA            else
-_0x20021:
-; 0001 00EB          {
-; 0001 00EC              //Если задача последняя в очереди
-; 0001 00ED             TTask[index].GoToTask = Idle;
+; 0001 00EA             TTask[timers_cnt_tail - 1].TaskStatus = DONE; // Обнуляем status
+	CALL SUBOPT_0x3D
+	RJMP _0x2002F
+; 0001 00EB          }
+; 0001 00EC            else
+_0x20023:
+; 0001 00ED          {
+; 0001 00EE              //Если задача последняя в очереди
+; 0001 00EF             TTask[index].GoToTask = Idle;
 	CALL SUBOPT_0x36
 	CALL SUBOPT_0x37
-; 0001 00EE             TTask[index].TaskDelay = 0; // Обнуляем время
+; 0001 00F0             TTask[index].TaskDelay = 0; // Обнуляем время
 	CALL SUBOPT_0x38
 	CALL SUBOPT_0x39
-; 0001 00EF             TTask[index].TaskPeriod = 0; // Обнуляем время
+; 0001 00F1             TTask[index].TaskPeriod = 0; // Обнуляем время
 	LDI  R26,LOW(15)
 	MUL  R17,R26
 	MOVW R30,R0
 	__ADDW1MN _TTask_G001,4
 	CALL SUBOPT_0x39
-; 0001 00F0             TTask[index].TaskStatus = DONE; // Обнуляем status
+; 0001 00F2             TTask[index].TaskStatus = DONE; // Обнуляем status
 	LDI  R26,LOW(15)
 	MUL  R17,R26
 	MOVW R30,R0
-_0x2002D:
+_0x2002F:
 	__ADDW1MN _TTask_G001,6
 	LDI  R26,LOW(3)
 	STD  Z+0,R26
-; 0001 00F1          }
-; 0001 00F2         timers_cnt_tail--;  //уменьшаем кол-во задач
+; 0001 00F3          }
+; 0001 00F4         timers_cnt_tail--;  //уменьшаем кол-во задач
 	LDS  R30,_timers_cnt_tail_G001
 	SUBI R30,LOW(1)
 	STS  _timers_cnt_tail_G001,R30
-; 0001 00F3         if (nointerrupted) _enable_interrupts();
+; 0001 00F5         if (nointerrupted) _enable_interrupts();
 	SBRS R15,0
-	RJMP _0x20023
+	RJMP _0x20025
 	sei
-; 0001 00F4         return;
-_0x20023:
-	RJMP _0x20C0002
-; 0001 00F5       }
-; 0001 00F6     }
-_0x20020:
+; 0001 00F6         return;
+_0x20025:
+	RJMP _0x20C0003
+; 0001 00F7       }
+; 0001 00F8     }
+_0x20022:
 	SUBI R17,-LOW(1)
-	RJMP _0x2001E
-_0x2001F:
-; 0001 00F7 }
-_0x20C0002:
+	RJMP _0x20020
+_0x20021:
+; 0001 00F9 }
+_0x20C0003:
 	LDD  R17,Y+0
 	ADIW R28,3
 	POP  R15
@@ -9699,24 +9761,24 @@ _0x20C0002:
 ; //TODO look at http://we.easyelectronics.ru/Soft/dispetcher-snova-dispetcher.html
 ;
 ; void clear_duplicates (void) //not tested
-; 0001 00FE  {
-; 0001 00FF   uint8_t		index=0;
-; 0001 0100   bit		nointerrupted = 0;
-; 0001 0101   TPTR task_src;
-; 0001 0102 if (STATUS_REG & (1<<Interrupt_Flag)){_disable_interrupts();nointerrupted = 1;}	// Проверка запрета прерывания
+; 0001 0100  {
+; 0001 0101   uint8_t		index=0;
+; 0001 0102   bit		nointerrupted = 0;
+; 0001 0103   TPTR task_src;
+; 0001 0104 if (STATUS_REG & (1<<Interrupt_Flag)){_disable_interrupts();nointerrupted = 1;}	// Проверка запрета прерывания
 ;	index -> R17
 ;	nointerrupted -> R15.0
 ;	*task_src -> R18,R19
-; 0001 0103   for(index=0;index!=timers_cnt_tail;++index)
-; 0001 0104   {
-; 0001 0105      task_src = TTask[index].GoToTask;
-; 0001 0106     for(index+1;index!=timers_cnt_tail;++index)
-; 0001 0107       {
-; 0001 0108        if (TTask[index].GoToTask == task_src) {TTask[index].GoToTask = Idle;}
-; 0001 0109       }
-; 0001 010A   }
-; 0001 010B   if (nointerrupted){_enable_interrupts();}	// Разрешаем прерывания
-; 0001 010C  }
+; 0001 0105   for(index=0;index!=timers_cnt_tail;++index)
+; 0001 0106   {
+; 0001 0107      task_src = TTask[index].GoToTask;
+; 0001 0108     for(index+1;index!=timers_cnt_tail;++index)
+; 0001 0109       {
+; 0001 010A        if (TTask[index].GoToTask == task_src) {TTask[index].GoToTask = Idle;}
+; 0001 010B       }
+; 0001 010C   }
+; 0001 010D   if (nointerrupted){_enable_interrupts();}	// Разрешаем прерывания
+; 0001 010E  }
 ;#include "RTOS/EERTOSHAL.h"
 	#ifndef __SLEEP_DEFINED__
 	#define __SLEEP_DEFINED__
@@ -9746,7 +9808,7 @@ _RunRTOS:
 	LDI  R30,LOW(0)
 	OUT  0x24,R30
 ; 0002 000A OCR2  = LO(TimerDivider); 				// Установить значение в регистр сравнения
-	LDI  R30,LOW(62)
+	LDI  R30,LOW(12)
 	OUT  0x23,R30
 ; 0002 000B TIMSK = (0<<TOIE2)|(1<<OCIE2);
 	LDI  R30,LOW(128)
@@ -9840,6 +9902,7 @@ _0x2020010:
 _0x2020015:
 	LDD  R17,Y+1
 	LDD  R16,Y+0
+_0x20C0002:
 	ADIW R28,5
 	RET
 __print_G101:
@@ -9872,7 +9935,7 @@ _0x2020016:
 	LDI  R17,LOW(1)
 	RJMP _0x202001E
 _0x202001D:
-	CALL SUBOPT_0x40
+	CALL SUBOPT_0x3E
 _0x202001E:
 	RJMP _0x202001B
 _0x202001C:
@@ -9880,7 +9943,7 @@ _0x202001C:
 	BRNE _0x202001F
 	CPI  R18,37
 	BRNE _0x2020020
-	CALL SUBOPT_0x40
+	CALL SUBOPT_0x3E
 	RJMP _0x20200C9
 _0x2020020:
 	LDI  R17,LOW(2)
@@ -9937,26 +10000,26 @@ _0x2020029:
 	MOV  R30,R18
 	CPI  R30,LOW(0x63)
 	BRNE _0x202002F
-	CALL SUBOPT_0x41
+	CALL SUBOPT_0x3F
 	LDD  R30,Y+16
 	LDD  R31,Y+16+1
 	LDD  R26,Z+4
 	ST   -Y,R26
-	CALL SUBOPT_0x42
+	CALL SUBOPT_0x40
 	RJMP _0x2020030
 _0x202002F:
 	CPI  R30,LOW(0x73)
 	BRNE _0x2020032
+	CALL SUBOPT_0x3F
 	CALL SUBOPT_0x41
-	CALL SUBOPT_0x43
 	CALL _strlen
 	MOV  R17,R30
 	RJMP _0x2020033
 _0x2020032:
 	CPI  R30,LOW(0x70)
 	BRNE _0x2020035
+	CALL SUBOPT_0x3F
 	CALL SUBOPT_0x41
-	CALL SUBOPT_0x43
 	CALL _strlenf
 	MOV  R17,R30
 	ORI  R16,LOW(8)
@@ -10001,8 +10064,8 @@ _0x2020040:
 _0x202003D:
 	SBRS R16,2
 	RJMP _0x2020042
-	CALL SUBOPT_0x41
-	CALL SUBOPT_0x44
+	CALL SUBOPT_0x3F
+	CALL SUBOPT_0x42
 	LDD  R26,Y+11
 	TST  R26
 	BRPL _0x2020043
@@ -10022,8 +10085,8 @@ _0x2020044:
 _0x2020045:
 	RJMP _0x2020046
 _0x2020042:
-	CALL SUBOPT_0x41
-	CALL SUBOPT_0x44
+	CALL SUBOPT_0x3F
+	CALL SUBOPT_0x42
 _0x2020046:
 _0x2020036:
 	SBRC R16,0
@@ -10046,7 +10109,7 @@ _0x202004D:
 _0x202004B:
 	LDI  R18,LOW(32)
 _0x202004E:
-	CALL SUBOPT_0x40
+	CALL SUBOPT_0x3E
 	SUBI R21,LOW(1)
 	RJMP _0x2020048
 _0x202004A:
@@ -10072,7 +10135,7 @@ _0x2020053:
 	STD  Y+6,R26
 	STD  Y+6+1,R27
 _0x2020054:
-	CALL SUBOPT_0x40
+	CALL SUBOPT_0x3E
 	CPI  R21,0
 	BREQ _0x2020055
 	SUBI R21,LOW(1)
@@ -10151,7 +10214,7 @@ _0x20200CA:
 	RJMP _0x202006A
 	ANDI R16,LOW(251)
 	ST   -Y,R20
-	CALL SUBOPT_0x42
+	CALL SUBOPT_0x40
 	CPI  R21,0
 	BREQ _0x202006B
 	SUBI R21,LOW(1)
@@ -10159,7 +10222,7 @@ _0x202006B:
 _0x202006A:
 _0x2020069:
 _0x2020061:
-	CALL SUBOPT_0x40
+	CALL SUBOPT_0x3E
 	CPI  R21,0
 	BREQ _0x202006C
 	SUBI R21,LOW(1)
@@ -10181,7 +10244,7 @@ _0x202006E:
 	SUBI R21,LOW(1)
 	LDI  R30,LOW(32)
 	ST   -Y,R30
-	CALL SUBOPT_0x42
+	CALL SUBOPT_0x40
 	RJMP _0x202006E
 _0x2020070:
 _0x202006D:
@@ -10203,7 +10266,7 @@ _sprintf:
 	MOV  R15,R24
 	SBIW R28,6
 	CALL __SAVELOCR4
-	CALL SUBOPT_0x45
+	CALL SUBOPT_0x43
 	SBIW R30,0
 	BRNE _0x2020072
 	LDI  R30,LOW(65535)
@@ -10214,7 +10277,7 @@ _0x2020072:
 	ADIW R26,6
 	CALL __ADDW2R15
 	MOVW R16,R26
-	CALL SUBOPT_0x45
+	CALL SUBOPT_0x43
 	STD  Y+6,R30
 	STD  Y+6+1,R31
 	LDI  R30,LOW(0)
@@ -10378,7 +10441,7 @@ _symbol:
 _v_u32_SYS_TICK:
 	.BYTE 0x4
 _v_u32_SYS_TICK_TMP1:
-	.BYTE 0x4
+	.BYTE 0x1
 _v_u32_TX_CNT:
 	.BYTE 0x4
 _v_u32_RX_CNT:
@@ -10552,7 +10615,7 @@ SUBOPT_0x3:
 	OUT  0x3F,R30
 	RET
 
-;OPTIMIZER ADDED SUBROUTINE, CALLED 6 TIMES, CODE SIZE REDUCTION:7 WORDS
+;OPTIMIZER ADDED SUBROUTINE, CALLED 7 TIMES, CODE SIZE REDUCTION:9 WORDS
 SUBOPT_0x4:
 	LDS  R30,_g_tcf
 	LDS  R31,_g_tcf+1
@@ -10926,7 +10989,7 @@ SUBOPT_0x2D:
 	ST   -Y,R30
 	RET
 
-;OPTIMIZER ADDED SUBROUTINE, CALLED 6 TIMES, CODE SIZE REDUCTION:7 WORDS
+;OPTIMIZER ADDED SUBROUTINE, CALLED 5 TIMES, CODE SIZE REDUCTION:5 WORDS
 SUBOPT_0x2E:
 	ST   -Y,R31
 	ST   -Y,R30
@@ -10938,7 +11001,7 @@ SUBOPT_0x2F:
 	ST   -Y,R30
 	JMP  _SetTask
 
-;OPTIMIZER ADDED SUBROUTINE, CALLED 4 TIMES, CODE SIZE REDUCTION:3 WORDS
+;OPTIMIZER ADDED SUBROUTINE, CALLED 6 TIMES, CODE SIZE REDUCTION:7 WORDS
 SUBOPT_0x30:
 	ST   -Y,R31
 	ST   -Y,R30
@@ -11048,22 +11111,6 @@ SUBOPT_0x3B:
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 2 TIMES, CODE SIZE REDUCTION:3 WORDS
 SUBOPT_0x3C:
-	LDS  R30,_v_u32_SYS_TICK
-	LDS  R31,_v_u32_SYS_TICK+1
-	LDS  R22,_v_u32_SYS_TICK+2
-	LDS  R23,_v_u32_SYS_TICK+3
-	RET
-
-;OPTIMIZER ADDED SUBROUTINE, CALLED 2 TIMES, CODE SIZE REDUCTION:3 WORDS
-SUBOPT_0x3D:
-	STS  _v_u32_SYS_TICK_TMP1,R30
-	STS  _v_u32_SYS_TICK_TMP1+1,R31
-	STS  _v_u32_SYS_TICK_TMP1+2,R22
-	STS  _v_u32_SYS_TICK_TMP1+3,R23
-	RET
-
-;OPTIMIZER ADDED SUBROUTINE, CALLED 2 TIMES, CODE SIZE REDUCTION:3 WORDS
-SUBOPT_0x3E:
 	LDS  R30,_timers_cnt_tail_G001
 	SUBI R30,LOW(1)
 	LDI  R26,LOW(15)
@@ -11074,7 +11121,7 @@ SUBOPT_0x3E:
 	RET
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 3 TIMES, CODE SIZE REDUCTION:5 WORDS
-SUBOPT_0x3F:
+SUBOPT_0x3D:
 	LDS  R30,_timers_cnt_tail_G001
 	SUBI R30,LOW(1)
 	LDI  R26,LOW(15)
@@ -11083,7 +11130,7 @@ SUBOPT_0x3F:
 	RET
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 5 TIMES, CODE SIZE REDUCTION:21 WORDS
-SUBOPT_0x40:
+SUBOPT_0x3E:
 	ST   -Y,R18
 	LDD  R30,Y+13
 	LDD  R31,Y+13+1
@@ -11095,7 +11142,7 @@ SUBOPT_0x40:
 	RET
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 5 TIMES, CODE SIZE REDUCTION:9 WORDS
-SUBOPT_0x41:
+SUBOPT_0x3F:
 	LDD  R30,Y+16
 	LDD  R31,Y+16+1
 	SBIW R30,4
@@ -11104,7 +11151,7 @@ SUBOPT_0x41:
 	RET
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 3 TIMES, CODE SIZE REDUCTION:7 WORDS
-SUBOPT_0x42:
+SUBOPT_0x40:
 	LDD  R30,Y+13
 	LDD  R31,Y+13+1
 	ST   -Y,R31
@@ -11115,7 +11162,7 @@ SUBOPT_0x42:
 	RET
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 2 TIMES, CODE SIZE REDUCTION:6 WORDS
-SUBOPT_0x43:
+SUBOPT_0x41:
 	LDD  R26,Y+16
 	LDD  R27,Y+16+1
 	ADIW R26,4
@@ -11127,7 +11174,7 @@ SUBOPT_0x43:
 	RET
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 2 TIMES, CODE SIZE REDUCTION:2 WORDS
-SUBOPT_0x44:
+SUBOPT_0x42:
 	LDD  R26,Y+16
 	LDD  R27,Y+16+1
 	ADIW R26,4
@@ -11137,7 +11184,7 @@ SUBOPT_0x44:
 	RET
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 2 TIMES, CODE SIZE REDUCTION:1 WORDS
-SUBOPT_0x45:
+SUBOPT_0x43:
 	MOVW R26,R28
 	ADIW R26,12
 	CALL __ADDW2R15
@@ -11166,13 +11213,6 @@ __ADDW2R15:
 	CLR  R0
 	ADD  R26,R15
 	ADC  R27,R0
-	RET
-
-__SUBD12:
-	SUB  R30,R26
-	SBC  R31,R27
-	SBC  R22,R24
-	SBC  R23,R25
 	RET
 
 __ANEGW1:

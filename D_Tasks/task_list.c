@@ -16,7 +16,7 @@ SetTimerTask(Task_LoadTest, 5000, 500); //запуск тестового таска дл€ проверки за
 ///-----------------Upd-7-----------------------------
 // первичный запуск всех задач
 //SetTimerTask(Task_pars_cmd,5,100); //Upd-6
-SetTimerTask(Task_FlagsHandler,100,100);
+//SetTimerTask(Task_FlagsHandler,100,100); //перенесЄн в главный цикл после диспетчера, (в роли как обработчик сообщений)
 
 #ifdef DEBUG                    //Upd-6
 SetTimerTask(Task_LogOut, 50, 50);
@@ -219,9 +219,13 @@ SetTimerTask(Task_pars_cmd, 0, scan_interval); //25   //ѕроверить!
 
 DECLARE_TASK (Task_FlagsHandler)
 {
+char tmp_str[5];
   switch(g_tcf)
   { 
-    case ERR_UNDEF_FLAG: Put_In_Log("\r ERR_UNDEF_FLAG "); FLAG_CLR(g_tcf,ERR_UNDEF_FLAG);
+    case ERR_UNDEF_FLAG: 
+                        Put_In_Log("\r ERR_UNDEF_FLAG "); 
+                        itoa(g_tcf,tmp_str);Put_In_Log(tmp_str); 
+                        FLAG_CLR(g_tcf,ERR_UNDEF_FLAG);
     //break;
    case S_SPI_BUF_CLR: SetTask(Task_SPI_ClrBuf); FLAG_CLR(g_tcf,S_SPI_BUF_CLR);
     //break;
@@ -232,6 +236,7 @@ DECLARE_TASK (Task_FlagsHandler)
     break;
     }                                   
 }
+
 
 DECLARE_TASK (Task_LogOut)           //500us ?
 {

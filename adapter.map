@@ -1,13 +1,13 @@
 RAM Allocation
 Variable                                                          Address   Size
 --------------------------------------------------------------------------------
-__ds1820_scratch_pad                                              0x0419       9
-saved_state                                                       0x0422       1
-g_tcf                                                             0x0423       2
-U1_in_buf_flag                                                    0x0425       1
-symbol                                                            0x0426       1
-v_u32_SYS_TICK                                                    0x0427       4
-v_u32_SYS_TICK_TMP1                                               0x042B       4
+__ds1820_scratch_pad                                              0x041C       9
+saved_state                                                       0x0425       1
+g_tcf                                                             0x0426       2
+U1_in_buf_flag                                                    0x0428       1
+symbol                                                            0x0429       1
+v_u32_SYS_TICK                                                    0x042A       4
+v_u32_SYS_TICK_TMP1                                               0x042E       1
 v_u32_TX_CNT                                                      0x042F       4
 v_u32_RX_CNT                                                      0x0433       4
 v_u16_TIM_1_OVR_FLAG                                              0x0437       2

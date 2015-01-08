@@ -21,16 +21,22 @@ Data Stack size         : 1024
 // G_vars are here
 volatile uint16_t tmp = 0;
 
+inline void ProcessMessages(void);//Обработчик флагов и сообщений задач
+
 //TODO переписать парсер команд в конечный автомат как в http://habrahabr.ru/post/241941/
  //Предусмотреть убийство задачи, если войдёт в бесконечный цикл! (2-й таймер)
   //Добавить вытесняемость!
- //Отладить прерывание SPI!
+ //Отладить прерывание SPI!  
+ //Добавить сортировку задач по периоду выполнения (наиболее частые - ближе к началу очереди!)  
 
+//===================================================================================
+//=================================================================================== 
+//START MAIN
 void main(void)
-{
+{ 
 #ifdef DEBUG   //синхронизация с протеусом
     DDRD.LED2=1;LED_PORT |= (1<<LED2);  //Led VD2
-    delay_ms(35);
+    delay_ms(15);
     DDRD.LED2=0;LED_PORT  &= ~(1<<LED2); //Led VD2
 #endif
 
@@ -45,7 +51,6 @@ SOFTWARE_init();
     USART_Send_StrFl(SYSTEM_USART,start);
 #endif
 
-//sprintf(lcd_buf, "Z=%d", v_u32_SYS_TICK); ;LcdString(1,3); LcdUpdate();
 //RunRTOS();			// Старт ядра.
 
 // Запуск фоновых задач.
@@ -56,19 +61,21 @@ while (1)
  {
 //wdt_reset();	// Сброс собачьего таймера
 TaskManager();	// Вызов диспетчера
+ProcessMessages();//Обработка различных флагов и сообщений от задач
  }
 } //END MAIN
+//===================================================================================
+//===================================================================================
 
 
 
 
 
 
-
-
-
-
-
+inline void ProcessMessages(void)
+{
+Task_FlagsHandler();
+}      
 
 // Timer2 interrupt service routine
 interrupt [RTOS_ISR] void timer2_comp_isr(void)//RTOS Interrupt 1mS
@@ -77,8 +84,19 @@ interrupt [RTOS_ISR] void timer2_comp_isr(void)//RTOS Interrupt 1mS
   TimerService();
 }
 
+
+
+
+
+
+
+
+
 // Timer1 overflow interrupt service routine
 interrupt [TIM1_OVF] void timer1_ovf_isr(void)
 {
 v_u16_TIM_1_OVR_FLAG++;
 }
+
+
+//sprintf(lcd_buf, "Z=%d", v_u32_SYS_TICK); ;LcdString(1,3); LcdUpdate();
