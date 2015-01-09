@@ -18,7 +18,7 @@
  #else
     #define RTOS_ISR  		TIMER2_COMP_vect
 #endif
-//#define	TaskQueueSize		20
+
 #define MainTimerQueueSize	20
 
 

@@ -47,13 +47,13 @@ void Put_In_Log (unsigned char * data)
 
 void LogOut(void)				// Выброс логов
 {
-StopRTOS();
+//StopRTOS();
 
 WorkLog[LogIndex]= '+';
 LogIndex++;
 USART_Send_Str(SYSTEM_USART, WorkLog);
 
-RunRTOS();
+//RunRTOS();
 
 FLAG_SET(g_tcf, FLUSH_WORKLOG);//SetTimerTask(Task_Flush_WorkLog,25,0);//очистка лог буффера
 LogIndex = 0;

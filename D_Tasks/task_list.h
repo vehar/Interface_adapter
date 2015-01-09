@@ -2,6 +2,7 @@
 
 #define DECLARE_TASK(t_name)         void t_name (void)
 
+
 // Прототипы задач ============================================================
 DECLARE_TASK(Task_LoadTest);
 DECLARE_TASK(Task_1ms);
@@ -9,6 +10,7 @@ DECLARE_TASK(Task3_1ms);
 DECLARE_TASK (Task_t_props_out);
 DECLARE_TASK(Task_ClearTS);//clr task test
 DECLARE_TASK(Task_FlagsHandler);//обработка глобальных флагов
+DECLARE_TASK(Sorting);
 
 DECLARE_TASK(Task_Start);    //new syntax
 //void Task_Start (void);    //old syntax

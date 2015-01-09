@@ -293,3 +293,70 @@ do
    *str = 0;
 }
 */
+
+void SheikerSort(uint8_t *a, int n)  // 114words - 50elem=5ms; 100elem=20ms
+{
+           int8_t l, r, i, k;     
+           int tmp;
+           k = l = 0;
+           r = n - 2;   
+           
+           while(l <= r)
+           {
+              for(i = l; i <= r; ++i)
+              {
+                 if (a[i] > a[i+1])
+                 {   
+                 tmp = a[i];
+                 a[i] = a[i+1];
+                 a[i+1] = tmp;
+                   /* a[i] ^= a[i+1]; //More memory and time!
+                    a[i+1] ^= a[i];
+                    a[i] ^= a[i+1]; */
+                    k = i;
+                 }
+              }
+              r = k - 1;
+
+              for(i = r; i >= l; --i)
+               {
+                 if (a[i] > a[i+1])
+                 {     
+                 tmp = a[i];
+                 a[i] = a[i+1];
+                 a[i+1] = tmp;
+                    /*a[i] ^= a[i+1]; //More memory and time!
+                    a[i+1] ^= a[i];
+                    a[i] ^= a[i+1];*/
+                    k = i;
+                 }
+               }
+              l = k + 1;
+           }            
+}
+
+void BubbleSort(uint8_t *arr, int n) //89words - 50elem=6,4ms; 100elem=26ms
+{    
+      bit swapped = true;  
+      int i = 0;
+      int j = 0;
+      int tmp;
+
+      while (swapped) 
+      {      
+            swapped = false;  
+            j++;            
+            for (i = 0; i < n - j; i++) 
+            {  
+                  if (arr[i] > arr[i + 1]) 
+                  {
+                        tmp = arr[i];  
+                        arr[i] = arr[i + 1];
+                        arr[i + 1] = tmp;
+                        swapped = true;  
+                  }
+
+            }
+
+      }
+}

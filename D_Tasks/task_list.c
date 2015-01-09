@@ -10,9 +10,9 @@ DECLARE_TASK(Task_Initial) //стартует первім, запускает все задачи
 {
 //SetTimerTask(Task_t_props_out,10);
 
-SetTimerTask(Task_Start,1000,10);     //blink led
 
-SetTimerTask(Task_LoadTest, 5000, 500); //запуск тестового таска для проверки загрузки цп      
+SetTimerTask(Task_Start,1000,10);     //blink led
+SetTimerTask(Task_LoadTest, 1500, 500); //запуск тестового таска для проверки загрузки цп      
 ///-----------------Upd-7-----------------------------
 // первичный запуск всех задач
 //SetTimerTask(Task_pars_cmd,5,100); //Upd-6
@@ -26,12 +26,22 @@ SetTask(Task_LcdGreetImage);    //Upd-4
 //SetTimerTask(Task_BuffOut,5);
 #endif
 ///---------------------------------------------------
- //SetTimerTask(Task_1ms, 55, 1);
+ SetTimerTask(Task_1ms, 55, 10);
  SetTimerTask(Task3_1ms, 250, 250);   
+ SetTimerTask(Sorting, 2600, 0);  
+  
+ SetTimerTask(Task_ADC_test, 200, 440); 
+ //SetTimerTask(Task_AdcOnLcd, 230, 77); //загрузка 100%!!
+ SetTimerTask(Task_BuffOut, 180,  333);
  
-
+ //SetTimerTask(Task_t_props_out,2700,0); 
 } 
 
+DECLARE_TASK(Sorting)
+{
+KERNEL_Sort_TaskQueue(); //sorting task list
+//Put_In_Log("SH\r\n");
+}
 
 DECLARE_TASK(Task_ClearTS)//clr task test
 {
@@ -47,6 +57,7 @@ ClearTimerTask(Task_ClearTS);
 DECLARE_TASK(Task_1ms)
 {
 LED_PORT.LED2^=1;
+//Put_In_Log("Task_10ms\r\n");
 //LED_PORT |= (1<<LED2);
 //SetTimerTask(Task_1ms,5,5); //запуск мигалки-антизависалки
 //LED_PORT  &= ~(1<<LED2);
@@ -61,7 +72,7 @@ LED_PORT  &= ~(1<<LED3);
 }  
 DECLARE_TASK(Task3_1ms)   //на 4800 бод - 15символов перед за 50мс 
 {
-Put_In_Log("Task3_250ms\r\n");
+//Put_In_Log("Task3_250ms\r\n");
 //SetTimerTask(Task3_1ms,500, 500); //при таких данных почти безлаговая предача при разнесении во времени на 5мс
 }  
 
@@ -72,7 +83,7 @@ DECLARE_TASK(Task_LoadTest)    //8ms!
  int Tick =0;
  Tick = v_u32_SYS_TICK;
 
-Put_In_Log("T_L_T\r\n");
+//Put_In_Log("T_L_T\r\n");
 
   //LcdClear();      
 _LCD_SHOWVAL(Tick); // = sprintf (lcd_buf, "Tick=%i",v_u32_SYS_TICK);  // 500us
@@ -100,21 +111,22 @@ DECLARE_TASK (Task_LedOn)
 LED_PORT  |= (1<<LED2);
 }
 
+/*
 DECLARE_TASK (Task_t_props_out)
-{  /*
+{ 
 uint8_t index = 0;
 char tmp_str[10];
-SetTimerTask(Task_t_props_out,10);
+
+ FullStopRTOS();
     // LED_PORT  &=~(1<<LED2);
   for(index=0;index!=timers_cnt_tail;++index)	// ищем таймер
 	{          //отладить ниже
-    if((TTask[index].sys_tick_time > 0)) //если задача выполнялась, иначе смысл пихать в очередь спящие задачи
-    // if((TTask[index].TaskStatus == DONE))
-    {
-     Put_In_Log("<");    
+     Put_In_Log("\r\n<");    
      itoa((int)TTask[index].hndl , tmp_str);
      Put_In_Log(tmp_str); Put_In_Log(",");
      itoa((int)TTask[index].TaskDelay , tmp_str);
+     Put_In_Log(tmp_str); Put_In_Log(","); 
+     itoa((int)TTask[index].TaskPeriod , tmp_str);
      Put_In_Log(tmp_str); Put_In_Log(",");
      itoa((int)TTask[index].sys_tick_time , tmp_str);   TTask[index].sys_tick_time = 0;
      Put_In_Log(tmp_str); Put_In_Log(",");
@@ -122,11 +134,14 @@ SetTimerTask(Task_t_props_out,10);
      Put_In_Log(tmp_str); Put_In_Log(",");
      itoa((int)TTask[index].TaskStatus , tmp_str);            TTask[index].flag = 0;
      Put_In_Log(tmp_str);
-     Put_In_Log(">\r\n");       
-     }
-  }    */  
- // LED_PORT  |=(1<<LED2);
+     Put_In_Log(">");       
+  }    
+ // LED_PORT  |=(1<<LED2); 
+ Put_In_Log("\r\n");
+ Task_LogOut();  
+ RunRTOS();
 }
+*/
 
 DECLARE_TASK (Task_ADC_test) //Upd-6     //для проверки освещённоси помещения
  {

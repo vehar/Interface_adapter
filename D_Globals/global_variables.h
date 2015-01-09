@@ -25,7 +25,7 @@
 extern volatile uint8_t symbol = 0;
 extern volatile uint8_t Parser_req_state_cnt = 255;
  volatile  uint32_t v_u32_SYS_TICK; //may be static
- volatile  uint8_t v_u32_SYS_TICK_TMP1;
+ volatile  uint8_t v_u8_SYS_TICK_TMP1;
 
 extern volatile uint32_t v_u32_TX_CNT = 0;
 extern volatile uint32_t v_u32_RX_CNT = 0;

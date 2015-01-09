@@ -14,14 +14,20 @@ typedef void (*TPTR)(void);
 
 #ifdef DEBUG
  extern  volatile uint32_t v_u32_SYS_TICK;    
- extern  volatile uint8_t v_u32_SYS_TICK_TMP1;
+ extern  volatile uint8_t v_u8_SYS_TICK_TMP1;
  extern void Put_In_Log (unsigned char * data);
  
  extern volatile uint16_t v_u16_TIM_1_OVR_FLAG;
  extern void Timer_3_start(void);
- extern void Timer_3_stop(void);
- extern void Put_In_Log (unsigned char * data);
- extern uint16_t Timer_3_get_val (void);
+ extern void Timer_3_stop(void);   
+ 
+ extern void Put_In_Log (unsigned char * data); 
+ extern void Task_LogOut(void);
+ extern uint16_t Timer_3_get_val (void);    
+ 
+ 
+//extern  TASK_STRUCT  TTask[MainTimerQueueSize+1];
+extern volatile uint8_t timers_cnt_tail;
 #endif
 
 
@@ -30,6 +36,8 @@ extern void SetTimerTask(TPTR TS, unsigned int NewTime, unsigned int NewPeriod);
 
 inline extern void TaskManager(void);
 inline extern void TimerService(void);
+
+extern void KERNEL_Sort_TaskQueue (void);
 
 extern void ClearTimerTask(TPTR TS);
 

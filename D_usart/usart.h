@@ -27,7 +27,7 @@
 
 // must be power of 2
 #define SIZE_BUF_RX 256      //задаем размер кольцевых буферов - <255
-#define SIZE_BUF_TX 512
+#define SIZE_BUF_TX 256
 
 
 #define MAX_BAUD_RATE 1152

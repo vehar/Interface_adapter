@@ -32,7 +32,8 @@ DI HALT: 9 Апрель 2012 в 21:08
 //update
 enum TASK_STATUS {WAIT, RDY, IN_PROC, DONE};
 #warning оптимизировать передачей указателя или ссылки а структуру
-volatile static struct
+
+typedef  struct 
 {
                         TPTR GoToTask; 					// Указатель перехода
                         uint16_t TaskDelay;				// Выдержка в мс перед старотом задачи    
@@ -41,18 +42,19 @@ volatile static struct
 						//TODO добавить параметр и отладить
  #ifdef DEBUG  
   uint32_t sys_tick_time; // Значение системного таймера на момент выполнения задачи в тиках
-  uint16_t exec_time;       // Реально замеряное время выполнения задачи
+  uint8_t exec_time;       // Реально замеряное время выполнения задачи
   uint8_t  flag;             // Различные флаги (переполнение таймера, ошибка,..) 
   uint8_t hndl;
  #endif
-} TTask[MainTimerQueueSize+1];	// Очередь таймеров
+}TASK_STRUCT;// Структура программного таймера-задачи
 
- volatile uint32_t exec_task_addr = 0; //for debug
+ volatile static TASK_STRUCT  TTask[MainTimerQueueSize+1];	// Очередь таймеров
  volatile static uint8_t timers_cnt_tail = 1;
-
+ volatile uint32_t exec_task_addr = 0; //for debug
           
  
-  void clear_duplicates (void); //not tested
+  void clear_duplicates (void); //not tested    
+  void SheikerSort(uint8_t *a, int n);
   
  //===================================================================
 // RTOS Подготовка. Очистка очередей
@@ -73,7 +75,7 @@ uint8_t	index;
 #ifdef DEBUG
 
 LED_PORT  &=~(1<<LED1);   //Для отслеживания загрузки системы   
-
+//if(v_u32_SYS_TICK%2600){KERNEL_Sort_TaskQueue();};
 #endif   
 }
 
@@ -157,17 +159,15 @@ TPTR task;                 //TODO сделать глобальными регистровыми!
      
 #ifdef DEBUG                                            //запись св-ств задачи для лога
 	_disable_interrupts();            
-            tmp_adr =(uint8_t)task;     //если задача уже удалилась, то это не имеет смысла!
-            TTask[index].hndl = tmp_adr;
-            TTask[index].sys_tick_time = v_u32_SYS_TICK;                        
+          if(task_exist){ TTask[index].sys_tick_time = v_u32_SYS_TICK;}  //если задача не удалилась                                    
 	_enable_interrupts();
 #endif  
-             v_u32_SYS_TICK_TMP1 = (uint8_t)v_u32_SYS_TICK; //засекаем время віполнения задачи
+             v_u8_SYS_TICK_TMP1 = (uint8_t)v_u32_SYS_TICK; //засекаем время віполнения задачи
             _enable_interrupts();						// Разрешаем прерывания
             (task)();								    // Переходим к задаче    
             if(task_exist){  //если задача не удалилась  
-             if((v_u32_SYS_TICK_TMP1 = (uint8_t)v_u32_SYS_TICK - v_u32_SYS_TICK_TMP1)>=1){itoa(v_u32_SYS_TICK_TMP1,tmp_str);Put_In_Log(tmp_str);Put_In_Log("%\r");}
-              TTask[index].exec_time = v_u32_SYS_TICK_TMP1;//то запишем время её выполнения
+             if((v_u8_SYS_TICK_TMP1 = (uint8_t)v_u32_SYS_TICK - v_u8_SYS_TICK_TMP1)>=1){itoa(v_u8_SYS_TICK_TMP1,tmp_str);Put_In_Log(tmp_str);Put_In_Log("%\r");}
+              TTask[index].exec_time = v_u8_SYS_TICK_TMP1;//то запишем время её выполнения
              }
             //всё стопорится на єтой строке если не return!!!
            // TTask[index].TaskStatus = DONE;         //теперь просто меняем статус
@@ -249,6 +249,48 @@ _disable_interrupts(); nointerrupted = 1;
 }
 
 
+  void KERNEL_Sort_TaskQueue (void) //сортировкa задач по периоду выполнения (наиболее частые - ближе к началу очереди!)  
+ {
+  bit		nointerrupted = 0;
+  int8_t l, r, k, index;       
+  TASK_STRUCT tmp;        
+  
+ if (STATUS_REG & (1<<Interrupt_Flag)){_disable_interrupts();nointerrupted = 1;}	// Проверка запрета прерывания	
+  //+++++++++++++      
+           k = l = 0;
+           r = timers_cnt_tail - 3; //In original = 2!            
+           while(l <= r)
+           {
+              for(index = l; index <= r; index++)
+              {
+                 if (TTask[index].TaskPeriod > TTask[index+1].TaskPeriod)
+                 {   
+                 tmp = TTask[index];
+                 TTask[index] = TTask[index+1];
+                 TTask[index+1] = tmp;
+                    k = index;
+                 }
+              }
+              r = k - 1;
+
+              for(index = r; index >= l; index--)
+               {
+                 if (TTask[index].TaskPeriod > TTask[index+1].TaskPeriod)
+                 {   
+                 tmp = TTask[index];
+                 TTask[index] = TTask[index+1];
+                 TTask[index+1] = tmp;
+                    k = index;
+                 }
+               }
+              l = k + 1;
+           }           
+ //-------------
+  if (nointerrupted){_enable_interrupts();}	// Разрешаем прерывания     
+ }
+ 
+ 
+
   //TODO look at http://we.easyelectronics.ru/Soft/minimalistichnaya-ochered-zadach-na-c.html
  //TODO look at http://we.easyelectronics.ru/Soft/dispetcher-snova-dispetcher.html
  
@@ -268,3 +310,83 @@ if (STATUS_REG & (1<<Interrupt_Flag)){_disable_interrupts();nointerrupted = 1;}	
   }
   if (nointerrupted){_enable_interrupts();}	// Разрешаем прерывания     
  }
+ 
+
+void Task_t_props_out (void)
+{ 
+uint8_t index = 0;
+char tmp_str[10];
+
+ FullStopRTOS();
+    // LED_PORT  &=~(1<<LED2);
+  for(index=0;index!=timers_cnt_tail;++index)	// ищем таймер
+	{         
+     Put_In_Log("\r\n<");    
+     itoa((int)TTask[index].GoToTask , tmp_str);
+     Put_In_Log(tmp_str); Put_In_Log(",");
+     itoa((int)TTask[index].TaskDelay , tmp_str);
+     Put_In_Log(tmp_str); Put_In_Log(","); 
+     itoa((int)TTask[index].TaskPeriod , tmp_str);
+     Put_In_Log(tmp_str); Put_In_Log(",");
+     itoa((int)TTask[index].sys_tick_time , tmp_str);      
+     Put_In_Log(tmp_str); Put_In_Log(",");
+     itoa((int)TTask[index].exec_time , tmp_str);      
+     Put_In_Log(tmp_str);Put_In_Log(",");     
+     itoa((int)TTask[index].TaskStatus , tmp_str);  
+     Put_In_Log(tmp_str); 
+     Put_In_Log(">");       
+  }    
+ // LED_PORT  |=(1<<LED2); 
+ Put_In_Log("\r\n"); 
+ #asm("sei");
+ Task_LogOut();  
+ RunRTOS();
+}
+
+/*
+TPTR GoToTask; 					// Указатель перехода
+uint16_t TaskDelay;				// Выдержка в мс перед старотом задачи    
+uint16_t TaskPeriod;			// Выдержка в мс перед следующим запуском 
+uint8_t TaskStatus; 
+  uint32_t sys_tick_time; // Значение системного таймера на момент выполнения задачи в тиках
+  uint8_t exec_time;       // Реально замеряное время выполнения задачи
+  uint8_t hndl;
+*/
+
+//TPTR> Delay> Period> tick> exec Status>
+
+/*2400
+<3720,8,10,2404,0,0>
+<4295,0,0,0,0,3>
+<3759,0,33,0,0,1>
+<3674,107,500,2013,46,0>
+<3835,48,50,2404,1,0>
+<3882,33,333,2106,0,0>
+<3666,0,10,2363,0,1>
+<3673,0,250,2148,1,1>
+<3663,97,0,0,0,0>
+<3727,0,3,2363,41,1>
++ */
+
+/*2700 
+<4295,0,0,0,0,3>
+<3674,298,500,2533,44,0>
+<3727,0,3,2698,37,1>
+<3720,0,10,2578,0,1>
+<3666,0,10,2580,0,1>
+<3759,0,33,0,0,1>
+<3835,0,50,2578,1,1>
+<3673,0,250,2406,0,1>
+<3882,47,333,2449,0,0>
++*/
+/* 
+<4295,0,0,0,0,3>
+<3674,294,500,2534,45,0>
+<3727,0,3,2703,37,1>
+<3720,0,10,2624,0,1>
+<3666,0,10,2624,0,1>
+<3759,0,33,0,0,1>
+<3835,0,50,2580,1,1>
+<3673,0,250,2406,0,1>
+<3882,42,333,2449,0,0>
++*/
