@@ -6,17 +6,16 @@
 //============================================================================
 
 
-DECLARE_TASK(Task_Initial) //стартует первім, запускает все задачи
+DECLARE_TASK(Task_Initial) //стартует первым, запускает все задачи
 {
 //SetTimerTask(Task_t_props_out,10);
 
 
-SetTimerTask(Task_Start,1000,10);     //blink led
-SetTimerTask(Task_LoadTest, 1500, 500); //запуск тестового таска для проверки загрузки цп      
+SetTimerTask(Task_Start,700,10);     //blink led
+SetTimerTask(Task_LoadTest, 900, 500); //запуск тестового таска для проверки загрузки цп      
 ///-----------------Upd-7-----------------------------
 // первичный запуск всех задач
 //SetTimerTask(Task_pars_cmd,5,100); //Upd-6
-//SetTimerTask(Task_FlagsHandler,100,100); //перенесён в главный цикл после диспетчера, (в роли как обработчик сообщений)
 
 #ifdef DEBUG                    //Upd-6
 SetTimerTask(Task_LogOut, 50, 50);
@@ -28,20 +27,16 @@ SetTask(Task_LcdGreetImage);    //Upd-4
 ///---------------------------------------------------
  SetTimerTask(Task_1ms, 55, 10);
  SetTimerTask(Task3_1ms, 250, 250);   
- SetTimerTask(Sorting, 2600, 0);  
+
   
  SetTimerTask(Task_ADC_test, 200, 440); 
  //SetTimerTask(Task_AdcOnLcd, 230, 77); //загрузка 100%!!
  SetTimerTask(Task_BuffOut, 180,  333);
  
- //SetTimerTask(Task_t_props_out,2700,0); 
+ SetTimerTask(Task_t_props_out,1000,42); 
 } 
 
-DECLARE_TASK(Sorting)
-{
-KERNEL_Sort_TaskQueue(); //sorting task list
-//Put_In_Log("SH\r\n");
-}
+
 
 DECLARE_TASK(Task_ClearTS)//clr task test
 {
@@ -56,7 +51,9 @@ ClearTimerTask(Task_ClearTS);
 
 DECLARE_TASK(Task_1ms)
 {
-LED_PORT.LED2^=1;
+delay_ms(8);
+
+//LED_PORT.LED2^=1;
 //Put_In_Log("Task_10ms\r\n");
 //LED_PORT |= (1<<LED2);
 //SetTimerTask(Task_1ms,5,5); //запуск мигалки-антизависалки
@@ -92,6 +89,7 @@ _LCD_STRINBUF("Ololo=)");
  LcdString(1,4);
  LcdUpdate();
 //SetTimerTask(Task_LoadTest, 1000, 1000);; //запуск тестового таска для проверки загрузки цп
+
 }
 
 DECLARE_TASK(Task_Start)

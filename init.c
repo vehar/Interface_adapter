@@ -210,7 +210,7 @@ Init_Slave_i2c(&SlaveControl);	// Настраиваем событие выхода при сработке как Sl
 
 
 PARSER_Init();
-InitRTOS();			// Инициализируем ядро
+
 
 
 #ifdef DEBUG

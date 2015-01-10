@@ -58,7 +58,7 @@
 //****************************************************************************
 void USART_Init(uint8_t sel, uint8_t mode, uint16_t baudRate); //инициализация usart`a
 
-uint8_t USART_Get_txCount(uint8_t sel);                     //взять число символов передающего буфера
+//uint8_t USART_Get_txCount(uint8_t sel);                     //взять число символов передающего буфера
 void USART_FlushTxBuf(uint8_t sel);                        //очистить передающий буфер
 void USART_PutChar(uint8_t sel,char symbol);                    //положить символ в буфер
 void USART_Send_Str(uint8_t sel,char * data);                    //послать строку из озу по usart`у
@@ -68,7 +68,7 @@ void USART_Send_StrFl(uint8_t sel,char __flash * data);          //послать строк
 uint8_t USART_Get_rxCount(uint8_t sel);                     //взять число символов в приемном буфере
 void USART_FlushRxBuf(uint8_t sel);                        //очистить приемный буфер
 char USART_Get_Char(uint8_t sel);                           //прочитать приемный буфер usart`a
-void USART_GetBuf(uint8_t num, char *buf);          //скопировать приемный буфер usart`a
+//void USART_GetBuf(uint8_t num, char *buf);          //скопировать приемный буфер usart`a
 
 uint16_t usart_calc_BufData (uint16_t BufTail, uint16_t BufHead);  //считает кол-во данных в кольцевом буфере
 void UartTxBufOvf_Handler(void); //обработчик переполнения передающего буфера UART //TODO add parameter

@@ -4,13 +4,24 @@
 #include "RTOS/HAL.h"
 #include "RTOS/EERTOSHAL.h"
 
+
+#define QUEUE_SORTING_PERIOD 100 //ticks(!)  //можно увеличить, чтоб не грузить Idle-задачу
+#define DEAD_TIMEOUT 7
+
+extern void InitRTOS (void);
 extern void InitRTOS(void);
 extern void Idle(void);
+
+extern void DeadTimerInit (void);
+extern void DeadTimerRun (void);
+extern void DeadTimerStop (void);
 
 typedef uint8_t T_ARG;
 typedef void (*T_PTR)(T_ARG);//заготовка для задач с параметром
 
 typedef void (*TPTR)(void);
+extern  volatile bit InfiniteLoopFlag;  
+extern  volatile uint16_t DeadTaskTimeout;  
 
 #ifdef DEBUG
  extern  volatile uint32_t v_u32_SYS_TICK;    
@@ -32,10 +43,11 @@ extern volatile uint8_t timers_cnt_tail;
 
 
 extern void SetTask(TPTR TS);
-extern void SetTimerTask(TPTR TS, unsigned int NewTime, unsigned int NewPeriod);    //1 task ~12words
+extern uint8_t SetTimerTask(TPTR TS, unsigned int NewTime, unsigned int NewPeriod);    //1 task ~12words
 
 inline extern void TaskManager(void);
 inline extern void TimerService(void);
+inline extern void CorpseService(void);
 
 extern void KERNEL_Sort_TaskQueue (void);
 

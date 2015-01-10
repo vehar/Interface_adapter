@@ -13,7 +13,7 @@ OutputListFilesDirectory=List
 OutputObjectFilesDirectory=Obj
 OutputExecutableFilesDirectory=Exe
 OutputLinkerFilesDirectory=Linker
-AllowDisplayFunctionCallTree=1
+AllowDisplayFunctionCallTree=0
 CleanUp=2
 EditorPanelMode=1
 ActiveEditorPanel=0
@@ -124,9 +124,6 @@ Active21=0
 EditorPanel21=1
 TimeStamp21=1176795148
 PageIndex21=3
-F1=adapter.c
-F2=RTOS\EERTOS.c
-F3=RTOS\EERTOSHAL.c
 OF22=D_ADC\ADC.h
 Active22=0
 EditorPanel22=0
@@ -167,6 +164,9 @@ Active29=0
 EditorPanel29=0
 TimeStamp29=982082338
 PageIndex29=25
+F1=adapter.c
+F2=RTOS\EERTOS.c
+F3=RTOS\EERTOSHAL.c
 [Compiler]
 RebuildAll=0
 LinkageInformationPresent=1
@@ -202,7 +202,7 @@ AutomaticRegisterAllocation=0
 SmartRegisterAllocation=1
 PreprocessorOutput=1
 IOBitDefinitions=1
-StackEndMarkers=1
+StackEndMarkers=0
 Warnings=1
 WarningConstantRange=1
 WarningPossibleLossOfPrecision=1
@@ -258,7 +258,7 @@ WarningUnknownPragma=1
 LinkerWarnings=1
 DebugBootLoader=0
 WatchAVR8LAutoVariables=0
-Build=1216
+Build=1344
 UseEEPROMLocation0=1
 ExternalInterruptVectors=0
 IncludePath0=
@@ -778,11 +778,11 @@ BK7=-1
 BK8=-1
 BK9=-1
 [Bookmarks17]
-TimeStamp=1167366946
-Row=9053
-Column=82
+TimeStamp=1177223938
+Row=2060
+Column=47
 ScrollPosX=0
-ScrollPosY=10672
+ScrollPosY=2057
 BK0=-1
 BK1=-1
 BK2=-1
@@ -827,10 +827,10 @@ BK8=-1
 BK9=-1
 [Bookmarks20]
 TimeStamp=1167370772
-Row=62
-Column=39
+Row=17
+Column=0
 ScrollPosX=0
-ScrollPosY=21
+ScrollPosY=107
 BK0=-1
 BK1=-1
 BK2=-1
@@ -1398,9 +1398,9 @@ BK9=-1
 [FoldedCode52]
 Blocks=0
 [Bookmarks53]
-TimeStamp=1176999552
-Row=24
-Column=77
+TimeStamp=1177160093
+Row=30
+Column=0
 ScrollPosX=0
 ScrollPosY=0
 BK0=-1
@@ -1448,11 +1448,11 @@ BK9=-1
 [FoldedCode55]
 Blocks=0
 [Bookmarks56]
-TimeStamp=1177029784
-Row=16
-Column=23
+TimeStamp=1177199468
+Row=7
+Column=31
 ScrollPosX=0
-ScrollPosY=0
+ScrollPosY=7
 BK0=-1
 BK1=-1
 BK2=-1
@@ -1498,10 +1498,10 @@ BK7=-1
 BK8=-1
 BK9=-1
 [Bookmarks59]
-TimeStamp=1177029541
-Row=16
-Column=56
-ScrollPosX=0
+TimeStamp=1177224472
+Row=17
+Column=64
+ScrollPosX=1
 ScrollPosY=0
 BK0=-1
 BK1=-1
@@ -1706,7 +1706,7 @@ TimeStamp=1157020123
 Row=10
 Column=5
 ScrollPosX=0
-ScrollPosY=150
+ScrollPosY=0
 BK0=-1
 BK1=-1
 BK2=-1
@@ -1950,10 +1950,10 @@ BK8=-1
 BK9=-1
 [Bookmarks85]
 TimeStamp=1177003365
-Row=332
+Row=8
 Column=0
 ScrollPosX=0
-ScrollPosY=312
+ScrollPosY=8
 BK0=-1
 BK1=-1
 BK2=-1
@@ -1988,8 +1988,8 @@ Blocks=0
 Blocks=0
 [Bookmarks87]
 TimeStamp=1153199079
-Row=42
-Column=54
+Row=13
+Column=0
 ScrollPosX=0
 ScrollPosY=10
 BK0=-1
@@ -2100,8 +2100,6 @@ BK8=-1
 BK9=-1
 [FoldedCode92]
 Blocks=0
-[FoldedCode17]
-Blocks=0
 [Bookmarks93]
 TimeStamp=1167592832
 Row=0
@@ -2196,8 +2194,6 @@ BK9=-1
 Blocks=0
 [FoldedCode64]
 Blocks=0
-[FoldedCode71]
-Blocks=0
 [FoldedCode89]
 Blocks=0
 [FoldedCode86]
@@ -2210,13 +2206,9 @@ Blocks=0
 Blocks=0
 [FoldedCode7]
 Blocks=0
-[FoldedCode53]
-Blocks=0
 [FoldedCode2]
 Blocks=0
 [FoldedCode48]
-Blocks=0
-[FoldedCode56]
 Blocks=0
 [FoldedCode72]
 Blocks=0
@@ -2228,8 +2220,6 @@ Blocks=0
 Blocks=0
 [FoldedCode25]
 Blocks=0
-[FoldedCode59]
-Blocks=0
 [FoldedCode91]
 Blocks=0
 [FoldedCode97]
@@ -2238,15 +2228,9 @@ Blocks=0
 Blocks=0
 [FoldedCode82]
 Blocks=0
-[FoldedCode85]
-Blocks=0
-[FoldedCode20]
-Blocks=0
 [FoldedCode78]
 Blocks=0
 [FoldedCode10]
-Blocks=0
-[FoldedCode87]
 Blocks=0
 [FoldedCode6]
 Blocks=0
@@ -2260,11 +2244,35 @@ Blocks=0
 Blocks=0
 [FoldedCode63]
 Blocks=0
+[FoldedCode71]
+Blocks=0
+[FoldedCode87]
+Blocks=0
+[FoldedCode53]
+Blocks=0
+[FoldedCode56]
+Blocks=0
+[FoldedCode85]
+Blocks=0
 [HeadersList]
 Files=3
 F1=C:\Users\veha\Dropbox\ADAPTER_CV_PROJ_v7 - current\adapter.c
 F2=C:\Users\veha\Dropbox\ADAPTER_CV_PROJ_v7 - current\RTOS\EERTOS.c
 F3=C:\Users\veha\Dropbox\ADAPTER_CV_PROJ_v7 - current\RTOS\EERTOSHAL.c
+[FoldedCode20]
+Blocks=0
+[FoldedCode17]
+Blocks=0
+[Header3]
+Files=6
+F1=RTOS\EERTOSHAL.h
+F2=RTOS\HAL.h
+F3=C:\Program Files\CV_avr\inc\mega128.h
+F4=C:\Program Files\CV_avr\inc\mega128_bits.h
+F5=C:\Program Files\CV_avr\inc\stdint.h
+F6=C:\Program Files\CV_avr\inc\stdlib.h
+[FoldedCode59]
+Blocks=0
 [Header1]
 Files=48
 F1=adapter.h
@@ -2324,11 +2332,3 @@ F4=C:\Program Files\CV_avr\inc\mega128.h
 F5=C:\Program Files\CV_avr\inc\mega128_bits.h
 F6=C:\Program Files\CV_avr\inc\stdint.h
 F7=C:\Program Files\CV_avr\inc\stdlib.h
-[Header3]
-Files=6
-F1=RTOS\EERTOSHAL.h
-F2=RTOS\HAL.h
-F3=C:\Program Files\CV_avr\inc\mega128.h
-F4=C:\Program Files\CV_avr\inc\mega128_bits.h
-F5=C:\Program Files\CV_avr\inc\stdint.h
-F6=C:\Program Files\CV_avr\inc\stdlib.h

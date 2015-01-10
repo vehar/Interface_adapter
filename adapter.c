@@ -27,8 +27,9 @@ inline void ProcessMessages(void);//Обработчик флагов и сообщений задач
  //Предусмотреть убийство задачи, если войдёт в бесконечный цикл! (2-й таймер)
   //Добавить вытесняемость!
  //Отладить прерывание SPI!  
- //Добавить сортировку задач по периоду выполнения (наиболее частые - ближе к началу очереди!)  
-
+ //Добавить сортировку задач по периоду выполнения (наиболее частые - ближе к началу очереди!)+  
+  //TODO Теперь надо передать управление системе после удаления из очереди зависшей задачи!
+  
 //===================================================================================
 //=================================================================================== 
 //START MAIN
@@ -45,11 +46,13 @@ void main(void)
 
 HARDWARE_init();
 SOFTWARE_init();
+//DeadTimerInit();
+InitRTOS();
 
 #ifdef DEBUG
     DDRD.LED2=1;//PORTD.7=1;  //Led VD2
     DDRD.LED1=1;//PORTD.6=1;    //Led VD1
-    DDRD.LED3=1;//PORTD.6=1;    //Led LED3
+    DDRD.LED3=1;//PORTD.5=1;    //Led LED3
     USART_Send_StrFl(USART_1,start);
     USART_Send_StrFl(SYSTEM_USART,start);
 #endif
@@ -60,6 +63,7 @@ SOFTWARE_init();
 SetTask(Task_Initial);
 
 RunRTOS();			// Старт ядра.
+
 while (1)
  {
 //wdt_reset();	// Сброс собачьего таймера
@@ -78,16 +82,32 @@ ProcessMessages();//Обработка различных флагов и сообщений от задач
 inline void ProcessMessages(void)
 {
 Task_FlagsHandler();
-}      
+}  
+
+
 
 // Timer2 interrupt service routine
 interrupt [RTOS_ISR] void timer2_comp_isr(void)//RTOS Interrupt 1mS
 {
- v_u32_SYS_TICK++;
+//static uint16_t tmp_tick;
+
+ v_u32_SYS_TICK++;  
+// if(v_u32_SYS_TICK%10 == 0)
+// {
   TimerService();
+// }
+ 
+  CorpseService(); //очистка от зависших задач
+
 }
 
 
+
+
+interrupt [DEAD_TIME_ISR] void timer0_comp_isr(void)//DEAD_TIME_ISR Interrupt 
+{
+  LED_PORT.LED3^=1;
+}
 
 
 

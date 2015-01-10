@@ -14,7 +14,12 @@
 
 //System Timer Config
 #define Prescaler	  		256                   //Upd-5
-#define	TimerDivider  		(F_CPU/Prescaler/5000)// 0.2mS! (F_CPU/Prescaler/1000)// 1 mS   //Upd-5
+#define	RtosTimerDivider  		(F_CPU/Prescaler/1000)// 1 mS   
+//#define	RtosTimerDivider  	(F_CPU/Prescaler/10000)*/// 0.1mS! 
+                                            //Прерывание 10 000 раз в сек., но обработчик таймеров стартует каждое 10-е прерывание
+                                            //получается 1мс
+
+#define	DeadTimerDivider  		(F_CPU/Prescaler/1000)
 
 
 //USART Config
