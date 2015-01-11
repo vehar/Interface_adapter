@@ -37,12 +37,13 @@ typedef  struct
  #ifdef DEBUG  
   uint32_t sys_tick_time;  // Значение системного таймера на момент запуска задачи в тиках
   uint8_t exec_time;       // Реально замеряное время выполнения задачи
+  uint8_t deadtime;       // Время на выполнение задачи 0 - дефолтный deadtime, 0xFF - бесконечно
   //uint8_t  flag;           // Различные флаги (переполнение таймера, ошибка,..) 
  #endif
 }TASK_STRUCT;// Структура программного таймера-задачи
 
 #define QUEUE_SORTING_PERIOD 100 //ticks(!)  //можно увеличить, чтоб не грузить Idle-задачу
-volatile static uint16_t DeadTaskTimeout = 10;
+volatile static uint16_t DeadTaskDefaultTimeout = 10;
 
  volatile static TASK_STRUCT  TTask[MainTimerQueueSize+1];	// Очередь таймеров
  volatile static uint8_t timers_cnt_tail = 1; 
@@ -77,7 +78,11 @@ RTOS_timer_init(); //Hardware!
       for(index=0;index!=MainTimerQueueSize+1;index++) // Обнуляем все таймеры.
     {
 	    TTask[index].GoToTask = Idle;
-	    TTask[index].TaskDelay = 0; //Считаю, что достаточно занулить указатель
+	    TTask[index].TaskDelay = 0; 
+		TTask[index].TaskPeriod = 0;
+		TTask[index].TaskStatus = WAIT;
+		TTask[index].exec_time = 0;
+		TTask[index].deadtime = 0;
 	 }
 }
 //===============================================================================================
@@ -103,6 +108,10 @@ bit			nointerrupted = 0;
 
 if (STATUS_REG & (1<<Interrupt_Flag)){_disable_interrupts();nointerrupted = 1;}	// Проверка запрета прерывания
 
+
+ // поиск следующей доступной позиции в массиве задач
+ //попробовать замену на //while ((TTask[index].GoToTask != TS) && (index < timers_cnt_tail)) {index++; };
+   
   for(index=0;index!=timers_cnt_tail;++index)	
   {  
 	if (TTask[index].GoToTask == TS)			// ищем заданый таймер
@@ -136,6 +145,39 @@ exit:
 //===============================================================================================
 
 
+
+//===============================================================================================
+uint8_t SetTaskDeadtime(TPTR TS, uint8_t DeadTime) //DeadTime = 0xFF means DeadTimer (for this task) OFF, DeadTime = 0x00 use default deadtime
+{
+uint8_t		index=0;
+uint8_t		result = QUEUE_FULL;
+bit			nointerrupted = 0;
+
+if (STATUS_REG & (1<<Interrupt_Flag)){_disable_interrupts();nointerrupted = 1;}	// Проверка запрета прерывания
+  
+  for(index=0;index!=timers_cnt_tail;++index)	
+  {  
+	if (TTask[index].GoToTask == TS)			// ищем заданый таймер
+	{
+		if(TTask[index].TaskStatus != DEAD)				// Если задача не помечена как мёртвая(зависшая) утилитой CorpseService()
+		{
+			TTask[index].deadtime  = DeadTime;		    // И поле выдержки времени    
+			result = TASK_REWRITTEN; 
+			goto exit;			// Выход.
+		}	else{result = DEAD_TASK; goto exit;}		//Устанавливать на выполнение висячие задачи нельзя!											
+	  }	  
+  } 
+  
+exit:  
+  if (nointerrupted) {_enable_interrupts();}			// Разрешаем прерывания    
+  return result; // return c кодом ошибки - нет свободных таймеров, таймер перезаписан или добавлен как новый	
+}
+//===============================================================================================
+
+
+
+
+
 /*
 Служба таймеров ядра. Должна вызываться из прерывания раз в 1мс. Хотя время можно варьировать в зависимости от задачи
 
@@ -150,16 +192,17 @@ uint8_t index;
 for(index=0;index!=timers_cnt_tail;index++)		// Прочесываем очередь таймеров
 	{
          if((TTask[index].TaskStatus == WAIT) || (TTask[index].TaskStatus == DONE))// Если не выполнилась или выполнилась
-           {
+        {
              if(TTask[index].TaskDelay > 0)  // таймер не выщелкал, то
               {					
                 TTask[index].TaskDelay--;	// щелкаем еще раз.   
               }  
               else                         //Ставим флаг готовности к выполнению
               {
-               TTask[index].TaskStatus = RDY;
+               //if(TTask[index].TaskStatus != DEAD) {TTask[index].TaskStatus = RDY;} //Зависшие задачи никогда не станут выполняться
+			   TTask[index].TaskStatus = RDY;
               }      
-		};
+		}
 	}
 }
 
@@ -244,15 +287,14 @@ if (STATUS_REG & (1<<Interrupt_Flag)){_disable_interrupts(); nointerrupted = 1;}
            if(index != (timers_cnt_tail - 1))         // переносим последнюю задачу
          {                                            // на место удаляемой
             TTask[index] = TTask[timers_cnt_tail - 1];      
-            //зануление последней задачи
+            //зануление последней задачи (ДЛЯ ЭКОНОМИИ ВРЕМЕНИ - МОЖНО НЕ ЗАНУЛЯТЬ!)
             TTask[timers_cnt_tail - 1].GoToTask = Idle;
             TTask[timers_cnt_tail - 1].TaskDelay = 0; // Обнуляем время      
             TTask[timers_cnt_tail - 1].TaskPeriod = 0; // Обнуляем время     
             TTask[timers_cnt_tail - 1].TaskStatus = DONE; // Обнуляем status
          }
-           else
+           else//Если задача последняя в очереди
          {
-             //Если задача последняя в очереди
             TTask[index].GoToTask = Idle;
             TTask[index].TaskDelay = 0; // Обнуляем время      
             TTask[index].TaskPeriod = 0; // Обнуляем время  
@@ -319,6 +361,7 @@ if (STATUS_REG & (1<<Interrupt_Flag)){_disable_interrupts(); nointerrupted = 1;}
  static uint16_t 	Timeout_delay = 0;
  static uint8_t 	coins = 0; //совпадения
  uint8_t			index = 0;   
+ uint8_t			DeadTaskLocalTimeout = 0;   
  static bit 		suspect_flag = 0;  
  bit				nointerrupted = 0;
   
@@ -332,7 +375,7 @@ if (STATUS_REG & (1<<Interrupt_Flag)){_disable_interrupts(); nointerrupted = 1;}
 
 	for(index=0; index<timers_cnt_tail; ++index)	//поиск мертвеца (пока ещё просто возможного!)
 			 {   
-				if(TTask[index].TaskStatus == IN_PROC) //TODO добавить фильтр задач на игнорирование
+				if((TTask[index].TaskStatus == IN_PROC) && (TTask[index].deadtime !=0xFF)) //фильтр задач на игнорирование
 				{
 					if(suspect_flag == 0)//при первом заходе
 					{
@@ -344,10 +387,13 @@ if (STATUS_REG & (1<<Interrupt_Flag)){_disable_interrupts(); nointerrupted = 1;}
 					else //при втором заходе
 					{	
 						DeadTask_curr = TTask[index].GoToTask;	
-						if(DeadTask_curr == DeadTask_prev)	//подозревания подтвердились
+						if(DeadTask_curr == DeadTask_prev)	//подозрения подтвердились
 							{
 							    coins++;
-								if((v_u32_SYS_TICK - Timeout_delay >= DeadTaskTimeout)&&(coins>=4))
+								if(TTask[index].deadtime==0){DeadTaskLocalTimeout = DeadTaskDefaultTimeout;}
+								else{DeadTaskLocalTimeout = TTask[index].deadtime;}
+								
+								if((v_u32_SYS_TICK - Timeout_delay >= DeadTaskLocalTimeout)&&(coins>=4))
 								{      
                                    TTask[index].TaskStatus = DEAD;	//Поставить метку (обработать в будущем)
 								  //ClearTimerTask(DeadTask_curr);	//или просто выпилить из очереди!	
@@ -389,6 +435,7 @@ EXIT:
  //===============================================================================================
  //===============================================================================================
  //===============================================================================================
+ //Очистка очереди от дубликатов задач с разным временем
  void clear_duplicates (void) //not tested
  {
   uint8_t		index=0;
@@ -405,8 +452,10 @@ if (STATUS_REG & (1<<Interrupt_Flag)){_disable_interrupts();nointerrupted = 1;}	
   }
   if (nointerrupted){_enable_interrupts();}	// Разрешаем прерывания     
  }
- 
+//===============================================================================================
 
+//Дебажные выводы
+ //===============================================================================================
 void Task_t_props_out (void)
 { 
 uint8_t index = 0;

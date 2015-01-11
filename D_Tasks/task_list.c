@@ -51,7 +51,8 @@ ClearTimerTask(Task_ClearTS);
 
 DECLARE_TASK(Task_1ms)
 {
-delay_ms(20);
+SetTaskDeadtime(Task_1ms,0);
+delay_ms(26);
 
 //LED_PORT.LED2^=1;
 //Put_In_Log("Task_10ms\r\n");

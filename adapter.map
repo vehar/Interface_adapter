@@ -12,7 +12,7 @@ v_u32_TX_CNT                                                      0x043D       4
 v_u32_RX_CNT                                                      0x0441       4
 v_u16_TIM_1_OVR_FLAG                                              0x0445       2
 RAM_settings                                                      0x0447      12
-DeadTaskTimeout                                                   0x0453       2
+DeadTaskDefaultTimeout                                            0x0453       2
 timers_cnt_tail                                                   0x0455       1
 WorkLog                                                           0x0456     512
 LogIndex                                                          0x0656       2
@@ -69,12 +69,12 @@ i2c_SlaveAddress                                                  0x0DB7       1
 i2c_PageAddress                                                   0x0DB8       2
 i2c_PageAddrIndex                                                 0x0DBA       1
 i2c_PageAddrCount                                                 0x0DBB       1
-TTask                                                             0x0DBC     252
-DeadTask_prev                                                     0x0EB8       2
-DeadTask_curr                                                     0x0EBA       2
-Timeout_delay                                                     0x0EBC       2
-coins                                                             0x0EBE       1
-_seed                                                             0x0EBF       4
+TTask                                                             0x0DBC     273
+DeadTask_prev                                                     0x0ECD       2
+DeadTask_curr                                                     0x0ECF       2
+Timeout_delay                                                     0x0ED1       2
+coins                                                             0x0ED3       1
+_seed                                                             0x0ED4       4
 
 EEPROM Allocation
 Variable                                                          Address   Size

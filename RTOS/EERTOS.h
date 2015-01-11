@@ -18,7 +18,7 @@ typedef void (*T_PTR)(T_ARG);//заготовка для задач с параметром
 
 typedef void (*TPTR)(void);
 extern  volatile bit InfiniteLoopFlag;  
-extern  volatile uint16_t DeadTaskTimeout;  
+extern  volatile uint16_t DeadTaskDefaultTimeout;  
 
 #ifdef DEBUG
  extern  volatile uint32_t v_u32_SYS_TICK;    
@@ -40,7 +40,9 @@ extern volatile uint8_t timers_cnt_tail;
 
 
 extern void SetTask(TPTR TS);
-extern uint8_t SetTimerTask(TPTR TS, unsigned int NewTime, unsigned int NewPeriod);    //1 task ~12words
+extern uint8_t SetTimerTask(TPTR TS, unsigned int NewTime, unsigned int NewPeriod); //1 task ~12words
+extern uint8_t SetTaskDeadtime(TPTR TS, uint8_t DeadTime);
+
 
 inline extern void TaskManager(void);
 inline extern void TimerService(void);
