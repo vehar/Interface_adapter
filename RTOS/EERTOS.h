@@ -5,9 +5,6 @@
 #include "RTOS/EERTOSHAL.h"
 
 
-#define QUEUE_SORTING_PERIOD 100 //ticks(!)  //можно увеличить, чтоб не грузить Idle-задачу
-#define DEAD_TIMEOUT 7
-
 extern void InitRTOS (void);
 extern void InitRTOS(void);
 extern void Idle(void);

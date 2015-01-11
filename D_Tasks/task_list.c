@@ -51,7 +51,7 @@ ClearTimerTask(Task_ClearTS);
 
 DECLARE_TASK(Task_1ms)
 {
-delay_ms(8);
+delay_ms(20);
 
 //LED_PORT.LED2^=1;
 //Put_In_Log("Task_10ms\r\n");
@@ -236,14 +236,16 @@ char tmp_str[5];
   switch(g_tcf)
   { 
     case ERR_UNDEF_FLAG: 
-                        Put_In_Log("\r ERR_UNDEF_FLAG "); 
+                        Put_In_Log(" ERR_UNDEF_FLAG\r"); 
                         itoa(g_tcf,tmp_str);Put_In_Log(tmp_str); 
                         FLAG_CLR(g_tcf,ERR_UNDEF_FLAG);
     //break;
    case S_SPI_BUF_CLR: SetTask(Task_SPI_ClrBuf); FLAG_CLR(g_tcf,S_SPI_BUF_CLR);
     //break;
    case FLUSH_WORKLOG: SetTask(Task_Flush_WorkLog);FLAG_CLR(g_tcf,FLUSH_WORKLOG);
-    //break;
+    //break; 
+   // case DEAD_TASK_DELETED: Put_In_Log(" DEAD_TASK_DELETED\r");FLAG_CLR(g_tcf,DEAD_TASK_DELETED);
+    //break; 
     default:  
     FLAG_SET(g_tcf, ERR_UNDEF_FLAG);
     break;

@@ -16,7 +16,8 @@
    enum g_tcf_values {  
                         ERR_UNDEF_FLAG, //ошибка - неопределённый флаг
                         S_SPI_BUF_CLR,
-                        FLUSH_WORKLOG
+                        FLUSH_WORKLOG,
+                        DEAD_TASK_DELETED
    }; 
    
   volatile char U1_in_buf_flag = 0;
