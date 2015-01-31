@@ -64,7 +64,6 @@
 
 #include "D_Globals/global_funktions.c"   //Upd-8 in folder
 
-#include "RTOS/HAL.h"
 #include "RTOS/EERTOS.h"
 #include "RTOS/EERTOSHAL.h"
 

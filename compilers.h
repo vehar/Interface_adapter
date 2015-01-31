@@ -49,6 +49,8 @@
 #define __enable_interrupt() #asm("sei")
 #define __delay_cycles(var) delay_us((unsigned int)(var)/(_MCU_CLOCK_FREQUENCY_/1000000))
 
+
+
 //typedef unsigned char uint8_t;
 //typedef unsigned int  uint16_t;
 

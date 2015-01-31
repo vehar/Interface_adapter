@@ -24,7 +24,7 @@ volatile uint16_t tmp = 0;
 inline void ProcessMessages(void);//Обработчик флагов и сообщений задач
 
 //TODO переписать парсер команд в конечный автомат как в http://habrahabr.ru/post/241941/
- //Предусмотреть убийство задачи, если войдёт в бесконечный цикл! (2-й таймер)
+ //Предусмотреть убийство задачи, если войдёт в бесконечный цикл!+ (2-й таймер)
   //Добавить вытесняемость!
  //Отладить прерывание SPI!  
  //Добавить сортировку задач по периоду выполнения (наиболее частые - ближе к началу очереди!)+  
@@ -39,6 +39,9 @@ inline void ProcessMessages(void);//Обработчик флагов и сообщений задач
 void main(void)
 { 
 #ifdef DEBUG   //синхронизация с протеусом
+//InitPort
+LED_DDR |= 1<<LED1|1<<LED2|1<<LED3;//|1<<I_L|1<<I_C;
+
     DDRD.LED2=1;LED_PORT |= (1<<LED2);  //Led VD2
     delay_ms(15);
     DDRD.LED2=0;LED_PORT  &= ~(1<<LED2); //Led VD2
@@ -46,7 +49,7 @@ void main(void)
 
 HARDWARE_init();
 SOFTWARE_init();
-//DeadTimerInit();
+
 InitRTOS();
 
 #ifdef DEBUG
@@ -57,7 +60,7 @@ InitRTOS();
     USART_Send_StrFl(SYSTEM_USART,start);
 #endif
 
-//RunRTOS();			// Старт ядра.
+
 
 // Запуск фоновых задач.
 SetTask(Task_Initial);
@@ -82,6 +85,7 @@ ProcessMessages();//Обработка различных флагов и сообщений от задач
 inline void ProcessMessages(void)
 {
 Task_FlagsHandler();
+//Заготовка для обработчика сообщений от процессов
 }  
 
 

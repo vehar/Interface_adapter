@@ -156,8 +156,9 @@ void HARDWARE_init(void)
  USART_1_init();
  Hard_SPI_Master_Init_default();
 //TWI_init();
- RTC_init(); //Timer 0 used
-
+ RTC_init(); //Timer 0 used     
+ 
+//DeadTimerInit();
 //i2c_init(); // I2C Bus initialization
 //w1_init(); // 1 Wire Bus initialization
 // 1 Wire Data port: PORTA
