@@ -1,10 +1,10 @@
-//***************************************************************************
+п»ї//***************************************************************************
 //
 //  Author(s)...: Pashgan    http://ChipEnable.Ru
 //
 //  Compiler....: CodeVision 2.04
 //
-//  Description.: USART/UART. Используем кольцевой буфер
+//  Description.: USART/UART. РСЃРїРѕР»СЊР·СѓРµРј РєРѕР»СЊС†РµРІРѕР№ Р±СѓС„РµСЂ
 //
 //  Data........: 3.01.10
 //
@@ -12,7 +12,7 @@
 #include "usart.h"
 
 
-#warning заменить на структуру+ избавиться от Usart_rxCount!
+#warning Р·Р°РјРµРЅРёС‚СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ+ РёР·Р±Р°РІРёС‚СЊСЃСЏ РѕС‚ Usart_rxCount!
 /*
   struct {
 	u08 buff[TX_BUFFER_SIZE];
@@ -26,7 +26,7 @@ struct {
 	u08 tail;
 } RX_buff;
 */
-//передающий буфер
+//РїРµСЂРµРґР°СЋС‰РёР№ Р±СѓС„РµСЂ
 static volatile char Usart0_TX_buf[SIZE_BUF_TX];
 static volatile uint16_t Usart0_txBufTail = 0;
 static volatile uint16_t Usart0_txBufHead = 0;
@@ -39,7 +39,7 @@ static volatile uint16_t Usart1_txBufHead = 0;
  #warning  Usart0_txCount not used
 
 
-//приемный буфер
+//РїСЂРёРµРјРЅС‹Р№ Р±СѓС„РµСЂ
 static volatile char Usart0_RX_buf[SIZE_BUF_RX];
 static volatile uint16_t Usart0_rxBufTail = 0;
 static volatile uint16_t Usart0_rxBufHead = 0;
@@ -51,15 +51,15 @@ static volatile uint16_t Usart1_rxBufHead = 0;
 static volatile uint16_t Usart1_rxCount = 0;
 
 
-void UartTxBufOvf_Handler(void) //обработчик переполнения передающего буфера UART
+void UartTxBufOvf_Handler(void) //РѕР±СЂР°Р±РѕС‚С‡РёРє РїРµСЂРµРїРѕР»РЅРµРЅРёСЏ РїРµСЂРµРґР°СЋС‰РµРіРѕ Р±СѓС„РµСЂР° UART
 {
     PORTD.7=1;
 }
 
 
-uint16_t Calk_safe_baud(uint8_t mode, uint16_t input_baud)   //Проверка возможности работі на заданой скорости
+uint16_t Calk_safe_baud(uint8_t mode, uint16_t input_baud)   //РџСЂРѕРІРµСЂРєР° РІРѕР·РјРѕР¶РЅРѕСЃС‚Рё СЂР°Р±РѕС‚С– РЅР° Р·Р°РґР°РЅРѕР№ СЃРєРѕСЂРѕСЃС‚Рё
 {
- uint8_t max_total_err = 52; //порог ошибки, если больше - комуникация невозможна. 52 соответствует 2.1%
+ uint8_t max_total_err = 52; //РїРѕСЂРѕРі РѕС€РёР±РєРё, РµСЃР»Рё Р±РѕР»СЊС€Рµ - РєРѕРјСѓРЅРёРєР°С†РёСЏ РЅРµРІРѕР·РјРѕР¶РЅР°. 52 СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓРµС‚ 2.1%
 
  uint32_t tmp0 = 0;
  uint16_t tmp1 = 0;
@@ -71,20 +71,20 @@ uint16_t Calk_safe_baud(uint8_t mode, uint16_t input_baud)   //Проверка возможно
  tmp1 = tmp1*tmp0;
  tmp1 = ((F_CPU/100) - tmp1);
  tmp1 = tmp1>>5; // /32
- if(tmp1 > max_total_err){tmp1 = 48;} //при большой потенциальной ошибке передачи (>2.1%) - скорость будет 4800baud (не вызывает ошибки на ЛЮБЫХ частотах)
- else {tmp1 = input_baud;} //если всё ок, вернуть принятую скорость
+ if(tmp1 > max_total_err){tmp1 = 48;} //РїСЂРё Р±РѕР»СЊС€РѕР№ РїРѕС‚РµРЅС†РёР°Р»СЊРЅРѕР№ РѕС€РёР±РєРµ РїРµСЂРµРґР°С‡Рё (>2.1%) - СЃРєРѕСЂРѕСЃС‚СЊ Р±СѓРґРµС‚ 4800baud (РЅРµ РІС‹Р·С‹РІР°РµС‚ РѕС€РёР±РєРё РЅР° Р›Р®Р‘Р«РҐ С‡Р°СЃС‚РѕС‚Р°С…)
+ else {tmp1 = input_baud;} //РµСЃР»Рё РІСЃС‘ РѕРє, РІРµСЂРЅСѓС‚СЊ РїСЂРёРЅСЏС‚СѓСЋ СЃРєРѕСЂРѕСЃС‚СЊ
 return tmp1;
 }
 
 
- void USART_Init (uint8_t sel, uint8_t mode, uint16_t baudRate) //инициализация usart`a
+ void USART_Init (uint8_t sel, uint8_t mode, uint16_t baudRate) //РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ usart`a
 {
 uint16_t ubrrValue;
-#warning возможно надо увеличить разрядность baudRate!
+#warning РІРѕР·РјРѕР¶РЅРѕ РЅР°РґРѕ СѓРІРµР»РёС‡РёС‚СЊ СЂР°Р·СЂСЏРґРЅРѕСЃС‚СЊ baudRate!
 __disable_interrupts();
 
 #ifdef UART_BAUD-ERR-CONTROL_EN
-baudRate = Calk_safe_baud(mode, baudRate);// Проверка погрешности при выбраной скорости (зависит от F_CPU)
+baudRate = Calk_safe_baud(mode, baudRate);// РџСЂРѕРІРµСЂРєР° РїРѕРіСЂРµС€РЅРѕСЃС‚Рё РїСЂРё РІС‹Р±СЂР°РЅРѕР№ СЃРєРѕСЂРѕСЃС‚Рё (Р·Р°РІРёСЃРёС‚ РѕС‚ F_CPU)
 #endif
 baudRate = baudRate * 100;
 
@@ -112,8 +112,8 @@ if(sel==USART_0)    //for USART_0
   // USART1 Receiver: On //Transmitter: On //Mode: Asynchronous
   UBRR0H = (uint8_t)(ubrrValue >> 8);
   UBRR0L = (uint8_t)ubrrValue;
-  UCSR0B = (1<<RXCIE0)|(1<<RXEN0)|(1<<TXEN0); //разр. прерыв при приеме и передачи, разр приема, разр передачи.
-  UCSR0C = (1<<UCSZ01)|(1<<UCSZ00); //размер слова 8 разрядов
+  UCSR0B = (1<<RXCIE0)|(1<<RXEN0)|(1<<TXEN0); //СЂР°Р·СЂ. РїСЂРµСЂС‹РІ РїСЂРё РїСЂРёРµРјРµ Рё РїРµСЂРµРґР°С‡Рё, СЂР°Р·СЂ РїСЂРёРµРјР°, СЂР°Р·СЂ РїРµСЂРµРґР°С‡Рё.
+  UCSR0C = (1<<UCSZ01)|(1<<UCSZ00); //СЂР°Р·РјРµСЂ СЃР»РѕРІР° 8 СЂР°Р·СЂСЏРґРѕРІ
 }
 else             //for USART_1
 {
@@ -129,8 +129,8 @@ else             //for USART_1
   // USART1 Receiver: On //Transmitter: On //Mode: Asynchronous
   UBRR1H = (uint8_t)(ubrrValue >> 8);
   UBRR1L = (uint8_t)ubrrValue;
-  UCSR1B = (1<<RXCIE1)|(1<<RXEN1)|(1<<TXEN1); //разр. прерыв при приеме и передачи, разр приема, разр передачи.
-  UCSR1C = (1<<UCSZ11)|(1<<UCSZ10); //размер слова 8 разрядов
+  UCSR1B = (1<<RXCIE1)|(1<<RXEN1)|(1<<TXEN1); //СЂР°Р·СЂ. РїСЂРµСЂС‹РІ РїСЂРё РїСЂРёРµРјРµ Рё РїРµСЂРµРґР°С‡Рё, СЂР°Р·СЂ РїСЂРёРµРјР°, СЂР°Р·СЂ РїРµСЂРµРґР°С‡Рё.
+  UCSR1C = (1<<UCSZ11)|(1<<UCSZ10); //СЂР°Р·РјРµСЂ СЃР»РѕРІР° 8 СЂР°Р·СЂСЏРґРѕРІ
 }
 __restore_interrupts();
 }
@@ -138,12 +138,12 @@ __restore_interrupts();
 
 //______________________________________________________________________________
  /*
-unsigned char USART_Get_txCount(void) //возвращает колличество символов передающего буфера
+unsigned char USART_Get_txCount(void) //РІРѕР·РІСЂР°С‰Р°РµС‚ РєРѕР»Р»РёС‡РµСЃС‚РІРѕ СЃРёРјРІРѕР»РѕРІ РїРµСЂРµРґР°СЋС‰РµРіРѕ Р±СѓС„РµСЂР°
 {
   return Usart_txCount;
 }
 */
-void USART_FlushTxBuf(uint8_t sel) //"очищает" передающий буфер
+void USART_FlushTxBuf(uint8_t sel) //"РѕС‡РёС‰Р°РµС‚" РїРµСЂРµРґР°СЋС‰РёР№ Р±СѓС„РµСЂ
 {
 __disable_interrupts();
 v_u32_TX_CNT=0;
@@ -168,9 +168,9 @@ __restore_interrupts();
 
 
 //OPTIMISED!
-//помещает символ в буфер, инициирует начало передачи
+//РїРѕРјРµС‰Р°РµС‚ СЃРёРјРІРѕР» РІ Р±СѓС„РµСЂ, РёРЅРёС†РёРёСЂСѓРµС‚ РЅР°С‡Р°Р»Рѕ РїРµСЂРµРґР°С‡Рё
 
-void USART_PutChar(uint8_t sel, unsigned char symbol) //помещает символ в буфер, инициирует начало передачи
+void USART_PutChar(uint8_t sel, unsigned char symbol) //РїРѕРјРµС‰Р°РµС‚ СЃРёРјРІРѕР» РІ Р±СѓС„РµСЂ, РёРЅРёС†РёРёСЂСѓРµС‚ РЅР°С‡Р°Р»Рѕ РїРµСЂРµРґР°С‡Рё
 {
  uint16_t Tmp_0 = Usart0_txBufHead;
  uint16_t Tmp_1 = Usart1_txBufHead;
@@ -179,8 +179,8 @@ void USART_PutChar(uint8_t sel, unsigned char symbol) //помещает символ в буфер,
  {
    case USART_0:
  Usart_0:
-       // if(((UCSR0A & (1<<UDRE0)) == 1)) {UDR0 = symbol;} //если модуль usart свободен //((UCSRA & (1<<UDRE)) == 1) && (Usart0_txCount == 0)
-       //  else {                                                           //пишем символ прямо в регистр UDR
+       // if(((UCSR0A & (1<<UDRE0)) == 1)) {UDR0 = symbol;} //РµСЃР»Рё РјРѕРґСѓР»СЊ usart СЃРІРѕР±РѕРґРµРЅ //((UCSRA & (1<<UDRE)) == 1) && (Usart0_txCount == 0)
+       //  else {                                                           //РїРёС€РµРј СЃРёРјРІРѕР» РїСЂСЏРјРѕ РІ СЂРµРіРёСЃС‚СЂ UDR
                if((uint16_t)(Tmp_0 - Usart0_txBufTail ) <= (uint16_t) SIZE_BUF_TX){ // buffer full, wait until symbol transmitted in interrupt
                Usart0_TX_buf[Tmp_0 & (SIZE_BUF_TX - 1)] = symbol;
                ++Tmp_0;
@@ -191,8 +191,8 @@ void USART_PutChar(uint8_t sel, unsigned char symbol) //помещает символ в буфер,
          //    }
    break;
    case USART_1:
-      //  if(((UCSR1A & (1<<UDRE1)) == 1)) {UDR1 = symbol;} //если модуль usart свободен //((UCSRA & (1<<UDRE)) == 1) && (Usart0_txCount == 0)
-       //  else {                                                           //пишем символ прямо в регистр UDR
+      //  if(((UCSR1A & (1<<UDRE1)) == 1)) {UDR1 = symbol;} //РµСЃР»Рё РјРѕРґСѓР»СЊ usart СЃРІРѕР±РѕРґРµРЅ //((UCSRA & (1<<UDRE)) == 1) && (Usart0_txCount == 0)
+       //  else {                                                           //РїРёС€РµРј СЃРёРјРІРѕР» РїСЂСЏРјРѕ РІ СЂРµРіРёСЃС‚СЂ UDR
                if((uint16_t)(Tmp_1 - Usart1_txBufTail) <= (uint16_t) SIZE_BUF_TX){ // buffer full, wait until symbol transmitted in interrupt
                Usart1_TX_buf[Tmp_1 & (SIZE_BUF_TX - 1)] = symbol;
                ++Tmp_1;
@@ -211,7 +211,7 @@ void USART_PutChar(uint8_t sel, unsigned char symbol) //помещает символ в буфер,
 
 
 
-void USART_Send_Str(uint8_t sel, unsigned char * data)//функция посылающая строку по usart`у
+void USART_Send_Str(uint8_t sel, unsigned char * data)//С„СѓРЅРєС†РёСЏ РїРѕСЃС‹Р»Р°СЋС‰Р°СЏ СЃС‚СЂРѕРєСѓ РїРѕ usart`Сѓ
 {
   while(*data)
   {
@@ -219,7 +219,7 @@ void USART_Send_Str(uint8_t sel, unsigned char * data)//функция посылающая строк
   }
 }
 
-void USART_Send_StrFl(uint8_t sel, unsigned char __flash * data) //функция посылающая строку из флэша по usart`у
+void USART_Send_StrFl(uint8_t sel, unsigned char __flash * data) //С„СѓРЅРєС†РёСЏ РїРѕСЃС‹Р»Р°СЋС‰Р°СЏ СЃС‚СЂРѕРєСѓ РёР· С„Р»СЌС€Р° РїРѕ usart`Сѓ
 {
   while(*data)
   {
@@ -229,7 +229,7 @@ void USART_Send_StrFl(uint8_t sel, unsigned char __flash * data) //функция посыл
 
 
   //Optimised
-//обработчик прерывания по завершению передачи
+//РѕР±СЂР°Р±РѕС‚С‡РёРє РїСЂРµСЂС‹РІР°РЅРёСЏ РїРѕ Р·Р°РІРµСЂС€РµРЅРёСЋ РїРµСЂРµРґР°С‡Рё
 interrupt [USART0_DRE] void usart0_dre_my(void)  //USART Data Register Empty Interrupt
 {
 uint16_t Tmp = Usart0_txBufTail; // use local variable instead of volatile
@@ -251,7 +251,7 @@ v_u32_TX_CNT++;
 #endif
 }
 
-//обработчик прерывания по завершению передачи
+//РѕР±СЂР°Р±РѕС‚С‡РёРє РїСЂРµСЂС‹РІР°РЅРёСЏ РїРѕ Р·Р°РІРµСЂС€РµРЅРёСЋ РїРµСЂРµРґР°С‡Рё
 interrupt [USART1_DRE] void usart1_dre_my(void)  //USART Data Register Empty Interrupt
 {
 uint16_t Tmp = Usart1_txBufTail; // use local variable instead of volatile
@@ -282,12 +282,12 @@ ISR (USART_TXC_vect) {
 */
 //______________________________________________________________________________
 
-unsigned char USART_Get_rxCount(uint8_t sel) //возвращает колличество символов находящихся в приемном буфере
+unsigned char USART_Get_rxCount(uint8_t sel) //РІРѕР·РІСЂР°С‰Р°РµС‚ РєРѕР»Р»РёС‡РµСЃС‚РІРѕ СЃРёРјРІРѕР»РѕРІ РЅР°С…РѕРґСЏС‰РёС…СЃСЏ РІ РїСЂРёРµРјРЅРѕРј Р±СѓС„РµСЂРµ
 {
 return  sel ? Usart1_rxCount : Usart0_rxCount;
 }
 
-void USART_FlushRxBuf(uint8_t sel)//"очищает" приемный буфер
+void USART_FlushRxBuf(uint8_t sel)//"РѕС‡РёС‰Р°РµС‚" РїСЂРёРµРјРЅС‹Р№ Р±СѓС„РµСЂ
 {
   // uint8_t saved_state;
    v_u32_RX_CNT = 0;
@@ -305,35 +305,35 @@ __restore_interrupts();
 }
 
 
-char USART_Get_Char(uint8_t Uart_sel) //чтение буфера
+char USART_Get_Char(uint8_t Uart_sel) //С‡С‚РµРЅРёРµ Р±СѓС„РµСЂР°
 {
   unsigned char symbol;
   uint8_t saved_state;
 if(!Uart_sel)
 {
-  if (Usart0_rxCount > 0)        //если приемный буфер не пустой
+  if (Usart0_rxCount > 0)        //РµСЃР»Рё РїСЂРёРµРјРЅС‹Р№ Р±СѓС„РµСЂ РЅРµ РїСѓСЃС‚РѕР№
   {
-    symbol = Usart0_RX_buf[Usart0_rxBufHead];        //прочитать из него символ
-    Usart0_rxBufHead++;                        //инкрементировать индекс головы буфера
+    symbol = Usart0_RX_buf[Usart0_rxBufHead];        //РїСЂРѕС‡РёС‚Р°С‚СЊ РёР· РЅРµРіРѕ СЃРёРјРІРѕР»
+    Usart0_rxBufHead++;                        //РёРЅРєСЂРµРјРµРЅС‚РёСЂРѕРІР°С‚СЊ РёРЅРґРµРєСЃ РіРѕР»РѕРІС‹ Р±СѓС„РµСЂР°
     if (Usart0_rxBufHead == SIZE_BUF_RX) Usart0_rxBufHead = 0;
 __disable_interrupts();
-    Usart0_rxCount--;                          //уменьшить счетчик символов
+    Usart0_rxCount--;                          //СѓРјРµРЅСЊС€РёС‚СЊ СЃС‡РµС‚С‡РёРє СЃРёРјРІРѕР»РѕРІ
 __restore_interrupts();
-    return symbol;                         //вернуть прочитанный символ
+    return symbol;                         //РІРµСЂРЅСѓС‚СЊ РїСЂРѕС‡РёС‚Р°РЅРЅС‹Р№ СЃРёРјРІРѕР»
   }
   return 0;
 }
   else
   {
-   if (Usart1_rxCount > 0)        //если приемный буфер не пустой
+   if (Usart1_rxCount > 0)        //РµСЃР»Рё РїСЂРёРµРјРЅС‹Р№ Р±СѓС„РµСЂ РЅРµ РїСѓСЃС‚РѕР№
   {
-    symbol = Usart1_RX_buf[Usart1_rxBufHead];        //прочитать из него символ
-    Usart1_rxBufHead++;                        //инкрементировать индекс головы буфера
+    symbol = Usart1_RX_buf[Usart1_rxBufHead];        //РїСЂРѕС‡РёС‚Р°С‚СЊ РёР· РЅРµРіРѕ СЃРёРјРІРѕР»
+    Usart1_rxBufHead++;                        //РёРЅРєСЂРµРјРµРЅС‚РёСЂРѕРІР°С‚СЊ РёРЅРґРµРєСЃ РіРѕР»РѕРІС‹ Р±СѓС„РµСЂР°
     if (Usart1_rxBufHead == SIZE_BUF_RX) Usart1_rxBufHead = 0;
 __disable_interrupts();
-    Usart1_rxCount--;                          //уменьшить счетчик символов
+    Usart1_rxCount--;                          //СѓРјРµРЅСЊС€РёС‚СЊ СЃС‡РµС‚С‡РёРє СЃРёРјРІРѕР»РѕРІ
 __restore_interrupts();
-    return symbol;                         //вернуть прочитанный символ
+    return symbol;                         //РІРµСЂРЅСѓС‚СЊ РїСЂРѕС‡РёС‚Р°РЅРЅС‹Р№ СЃРёРјРІРѕР»
   }
   return 0;
   }
@@ -358,17 +358,17 @@ __restore_interrupts();
 	}
 }
 */
-#warning проверить, действительно ли нужно наращивать при приёме Tail а не Head!
- interrupt [USART0_RXC] void usart0_rxc(void) //переривання по завершенню прийому
+#warning РїСЂРѕРІРµСЂРёС‚СЊ, РґРµР№СЃС‚РІРёС‚РµР»СЊРЅРѕ Р»Рё РЅСѓР¶РЅРѕ РЅР°СЂР°С‰РёРІР°С‚СЊ РїСЂРё РїСЂРёС‘РјРµ Tail Р° РЅРµ Head!
+ interrupt [USART0_RXC] void usart0_rxc(void) //РїРµСЂРµСЂРёРІР°РЅРЅСЏ РїРѕ Р·Р°РІРµСЂС€РµРЅРЅСЋ РїСЂРёР№РѕРјСѓ
 {
 char data;
 data =  UDR0;// read to clear RxC flag
-    if (Usart0_rxCount < SIZE_BUF_RX) //якщо в буфері ще є місце
+    if (Usart0_rxCount < SIZE_BUF_RX) //СЏРєС‰Рѕ РІ Р±СѓС„РµСЂС– С‰Рµ С” РјС–СЃС†Рµ
     {
-       Usart0_RX_buf[Usart0_rxBufTail] = data;//зчитати символ до буфера
-      Usart0_rxBufTail++;                    //збільшити індекс кінця буферу
+       Usart0_RX_buf[Usart0_rxBufTail] = data;//Р·С‡РёС‚Р°С‚Рё СЃРёРјРІРѕР» РґРѕ Р±СѓС„РµСЂР°
+      Usart0_rxBufTail++;                    //Р·Р±С–Р»СЊС€РёС‚Рё С–РЅРґРµРєСЃ РєС–РЅС†СЏ Р±СѓС„РµСЂСѓ
       Usart0_rxCount++;
-#warning проверить необходимость следующего куска
+#warning РїСЂРѕРІРµСЂРёС‚СЊ РЅРµРѕР±С…РѕРґРёРјРѕСЃС‚СЊ СЃР»РµРґСѓСЋС‰РµРіРѕ РєСѓСЃРєР°
      if (Usart0_rxBufTail == SIZE_BUF_RX)
       {
        Usart0_rxBufTail = 0;
@@ -382,31 +382,31 @@ v_u32_RX_CNT++;
 
 
 
- interrupt [USART1_RXC] void usart1_rxc(void) //прерывание по завершению приема
+ interrupt [USART1_RXC] void usart1_rxc(void) //РїСЂРµСЂС‹РІР°РЅРёРµ РїРѕ Р·Р°РІРµСЂС€РµРЅРёСЋ РїСЂРёРµРјР°
 {
 char data;//!
 data =  UDR1;//! read to clear RxC flag!
 if(!U1_in_buf_flag)
   {
-    if (Usart1_rxCount < SIZE_BUF_RX) //если в буфере еще есть место
+    if (Usart1_rxCount < SIZE_BUF_RX) //РµСЃР»Рё РІ Р±СѓС„РµСЂРµ РµС‰Рµ РµСЃС‚СЊ РјРµСЃС‚Рѕ
     {
-       Usart1_RX_buf[Usart1_rxBufTail] = data;//!    //считать символ  в буфер
-      Usart1_rxBufTail++;                    //увеличить индекс хвоста приемного буфера
-      Usart1_rxCount++;                      //увеличить счетчик принятых символов
-#warning проверить необходимость следующего куска
+       Usart1_RX_buf[Usart1_rxBufTail] = data;//!    //СЃС‡РёС‚Р°С‚СЊ СЃРёРјРІРѕР»  РІ Р±СѓС„РµСЂ
+      Usart1_rxBufTail++;                    //СѓРІРµР»РёС‡РёС‚СЊ РёРЅРґРµРєСЃ С…РІРѕСЃС‚Р° РїСЂРёРµРјРЅРѕРіРѕ Р±СѓС„РµСЂР°
+      Usart1_rxCount++;                      //СѓРІРµР»РёС‡РёС‚СЊ СЃС‡РµС‚С‡РёРє РїСЂРёРЅСЏС‚С‹С… СЃРёРјРІРѕР»РѕРІ
+#warning РїСЂРѕРІРµСЂРёС‚СЊ РЅРµРѕР±С…РѕРґРёРјРѕСЃС‚СЊ СЃР»РµРґСѓСЋС‰РµРіРѕ РєСѓСЃРєР°
     if (Usart1_rxBufTail == SIZE_BUF_RX)
       {
        Usart1_rxBufTail = 0;
       }
-     }  //TODO - добавить переход на обработчик переполнения буффера!
+     }  //TODO - РґРѕР±Р°РІРёС‚СЊ РїРµСЂРµС…РѕРґ РЅР° РѕР±СЂР°Р±РѕС‚С‡РёРє РїРµСЂРµРїРѕР»РЅРµРЅРёСЏ Р±СѓС„С„РµСЂР°!
   }
- else   //При флаге - грузим в буфер системного юарта и сразу на вывод!
- {      //эмуляция приёма системным юартом данніх извне! отладить!
-    if((uint16_t)(Usart1_txBufHead - Usart1_txBufTail) <= (uint16_t) SIZE_BUF_TX) //если в буфере еще есть место
+ else   //РџСЂРё С„Р»Р°РіРµ - РіСЂСѓР·РёРј РІ Р±СѓС„РµСЂ СЃРёСЃС‚РµРјРЅРѕРіРѕ СЋР°СЂС‚Р° Рё СЃСЂР°Р·Сѓ РЅР° РІС‹РІРѕРґ!
+ {      //СЌРјСѓР»СЏС†РёСЏ РїСЂРёС‘РјР° СЃРёСЃС‚РµРјРЅС‹Рј СЋР°СЂС‚РѕРј РґР°РЅРЅС–С… РёР·РІРЅРµ! РѕС‚Р»Р°РґРёС‚СЊ!
+    if((uint16_t)(Usart1_txBufHead - Usart1_txBufTail) <= (uint16_t) SIZE_BUF_TX) //РµСЃР»Рё РІ Р±СѓС„РµСЂРµ РµС‰Рµ РµСЃС‚СЊ РјРµСЃС‚Рѕ
     {
-      Usart0_TX_buf[Usart1_txBufHead & (SIZE_BUF_TX - 1)] = data;//!    //считать символ  в буфер
-      Usart0_txBufHead++;     //увеличить индекс   буфера  
-      #warning возможно не Голову, а Хвост!! Проверить!
+      Usart0_TX_buf[Usart1_txBufHead & (SIZE_BUF_TX - 1)] = data;//!    //СЃС‡РёС‚Р°С‚СЊ СЃРёРјРІРѕР»  РІ Р±СѓС„РµСЂ
+      Usart0_txBufHead++;     //СѓРІРµР»РёС‡РёС‚СЊ РёРЅРґРµРєСЃ   Р±СѓС„РµСЂР°  
+      #warning РІРѕР·РјРѕР¶РЅРѕ РЅРµ Р“РѕР»РѕРІСѓ, Р° РҐРІРѕСЃС‚!! РџСЂРѕРІРµСЂРёС‚СЊ!
       //UCSR0B |= (1 << UDRIE0); // TX int - on
       }
  }
@@ -415,7 +415,7 @@ if(!U1_in_buf_flag)
 /*
 */
 
-//считает кол-во данных в кольцевом буфере
+//СЃС‡РёС‚Р°РµС‚ РєРѕР»-РІРѕ РґР°РЅРЅС‹С… РІ РєРѕР»СЊС†РµРІРѕРј Р±СѓС„РµСЂРµ
  uint16_t usart_calc_BufData (uint16_t BufTail, uint16_t BufHead)
 {
     if (BufTail >=  BufHead)
